@@ -216,6 +216,9 @@ AUTHENTICATION_BACKENDS = (
 )
 
 
+########## DJANGO_SOCIAL_AUTH CONFIGURATION
+LOGIN_REDIRECT_URL = u'/'
+
 ########## LOGGING CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#logging
 # A sample logging configuration. The only tangible logging

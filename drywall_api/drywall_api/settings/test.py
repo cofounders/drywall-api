@@ -4,18 +4,19 @@ from base import *
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 #TEST_DISCOVER_TOP_LEVEL = SITE_ROOT
 #TEST_DISCOVER_ROOT = SITE_ROOT
-#TEST_DISCOVER_PATTERN = "test_*.py"
+#TEST_DISCOVER_PATTERN = "test*.py"
 
 INSTALLED_APPS += (
     'django_nose',
 )
 
 NOSE_ARGS = [
-    '--with-coverage',
+#    '--with-coverage',
     '--nocapture',
+    '--exclude=social_auth',
 ]
 
-NOSE_ARGS += [ '--cover-package={}'.format(pack) for pack in LOCAL_APPS]
+#NOSE_ARGS += [ '--cover-package={}'.format(pack) for pack in LOCAL_APPS]
 
 GITHUB_APP_ID = '0de51057b17b6c698ab8'
 GITHUB_API_SECRET = 'ded4e0b2d98b4688b3f226fa9e8578f09c861795'
