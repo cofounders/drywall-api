@@ -1,60 +1,62 @@
-# Numerous always-ignore extensions
-*.diff
-*.err
-*.orig
-*.log
-*.rej
-*.swo
-*.swp
-*.vi
-*~
-*.sass-cache
+*.py[co]
+.Python
 
-# OS or Editor folders
-.DS_Store
-._*
-Thumbs.db
-.cache
-.project
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+include
+#lib
+tmp
+develop-eggs
+.installed.cfg
 .settings
-.tmproj
-nbproject
-*.sublime-workspace
-codekit-config.json
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-npm-debug.log
 
-# Dreamweaver added files
-_notes
-dwsync.xml
+# emacs files
+*#
+*~
 
-# Komodo
-*.komodoproject
-.komodotools
+# vim files
+*.swp
+*.swo
 
-# Espresso
-*.esproj
-*.espressostorage
+XSXC
+# Installer logs
+pip-log.txt
 
-# Rubinius
-*.rbc
+# Unit test / coverage reports
+.tox
+.project
+.pydevproject
+.coverage
+cover/*
+coverage.xml
 
-# Folders to ignore
-.hg
-.svn
-.CVS
+# PyCharm
 .idea
-appdirectory-build
-pids
-logs
-results
 
-# NPM
-node_modules
+# Rope
+.ropeproject/
+
+# Dependancy ignore
+src/django-paypal
+src/facebook-sdk
+src/django-sqs
+
+# Temp Dir and thumbs from windows.
+f:/
+Thumbs.db
+
+# coverage
+
+# nose
+nosetests.xml
+# translations
+*.mo
+
+# celery
+celerybeat-schedule
