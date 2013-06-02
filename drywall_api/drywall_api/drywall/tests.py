@@ -22,6 +22,7 @@ class SetupUsers(TestCase):
     user = {
         "login": "octocat",
         "access_token": 'dummy',
+        "token_type": "bearer",
         "id": 1,
         "avatar_url": "https://github.com/images/error/octocat_happy.gif",
         "gravatar_id": "somehexcode",
@@ -57,6 +58,7 @@ class ViewsAuthorize(SetupUsers):
         self.client.login(user=self.user, backend='github')
         User = get_user_model()
         user = User.objects.get(pk=1)
+        self.assertEqual(user.username, 'octocat')
 
     def test_authorize_redirect(self):
         url = reverse(self.view,

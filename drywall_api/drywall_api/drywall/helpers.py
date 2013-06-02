@@ -65,17 +65,17 @@ class GithubClient(Client):
             "type": "User"
             }
         """
-
         token = 'dummyToken'
+        gh_user = user.copy()
+        gh_user['access_token'] = token
         backends = {
             'github': (
+                simplejson.dumps(user),
                 urllib.urlencode({
-                    'access_token': token,
+                    'acess_token': token,
                     'token_type': 'bearer',
                 }),
-                simplejson.dumps(
-            {u'access_token': token,
-                u'token_type': u'bearer'}),
+                simplejson.dumps(user),
             ),
         }
 
