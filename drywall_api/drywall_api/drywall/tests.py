@@ -7,6 +7,7 @@ Replace this with more appropriate tests for your application.
 import urlparse
 
 from django.test import TestCase
+from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.conf import settings
@@ -16,7 +17,9 @@ from helpers import GithubClient
 
 from factories import UserFactory
 
-class SetupUsers(TestCase):
+User = get_user_model()
+
+class SetDefaults(TestCase):
     __test__ = False
 
     user = {
@@ -43,27 +46,51 @@ class SetupUsers(TestCase):
         "type": "User"
     }
 
-    def set_up(self):
+    def make_user_dict(self, user):
+        """Passed a user, update the dict to use its particulars"""
+        user_dict = self.user.copy()
+        user_dict.update(
+                {'login':user.username,
+                 'email':user.email,
+                 'id':user.social_auth.get().uid,
+                 'name':user.first_name,})
+        return user_dict
+
+    def setUp(self):
         self.client = GithubClient()
+
+
+class SetupUsers(SetDefaults):
+    __test__ = True
+
+    def setUp(self):
+        super(SetupUsers, self).setUp()
         self.user1 = UserFactory.create()
-        self.user2 = UserFacotry.create()
+        self.user2 = UserFactory.create()
 
 
-class ViewsAuthorize(SetupUsers):
+class TestViewsAuthorize(SetDefaults):
     __test__ = True
     view = "socialauth_begin"
 
+    client = GithubClient()
+
     def test_github_client(self):
-        self.client = GithubClient()
         self.client.login(user=self.user, backend='github')
-        User = get_user_model()
         user = User.objects.get(pk=1)
         self.assertEqual(user.username, 'octocat')
 
-    def test_authorize_redirect(self):
-        url = reverse(self.view,
-                      kwargs={'backend':'github'})
-        resp = self.client.post(reverse(self.view,
-                                       kwargs={'backend':'github'}))
-        self.assertRedirects(resp, reverse('socialauth_complete',
-                                           kwargs={'backend':'github'}))
+    def test_github_login_existing(self):
+        """Make sure a user created with a factory can log in using the
+        mocked call"""
+        user = UserFactory.create()
+        user_dict = self.make_user_dict(user)
+        self.client.login(user=user_dict, backend='github')
+        self.assertEquals(User.objects.all().count(), 1)
+
+
+class TestAPIIssues(SetupUsers):
+    __test__ = True
+
+    def test_get_issue_list(self):
+        self.client = GithubClient()

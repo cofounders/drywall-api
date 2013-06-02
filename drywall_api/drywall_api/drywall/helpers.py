@@ -6,6 +6,13 @@ from django.utils import simplejson
 from django.utils.importlib import import_module
 from mock import patch
 from social_auth.views import complete
+import pytz
+
+sg_tz = pytz.timezone("Asia/Singapore")
+sg_tz = sg_tz.localize(pytz.datetime.datetime.now()).tzinfo
+
+default_start = lambda: tz_now(sg_tz)
+default_start_formated = lambda: default_start().strftime("%Y-%m-%d")
 
 class DumbResponse(object):
     """
