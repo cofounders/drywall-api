@@ -180,7 +180,9 @@ class SetDefaults(GithubResourceTestCase):
     }
 
     def get_credentials(self, user):
-        return self.create_session(user)
+        result = self.api_client.login(user=make_user_dict(user),
+                                       backend='github')
+        return result
 
     def make_user_dict(self, user):
         """Passed a user, update the dict to use its particulars"""
@@ -238,4 +240,14 @@ class TestUserAPI(SetupUsers):
         resp = self.api_client.get('api/v1/user/', format='json')
         self.assertHttpUnauthorized(resp)
         user1_dict = self.make_user_dict(self.user1)
-        self.client.login(user=user1_dict, backend='github')
+        resp = self.api_client.get('api/v1/user/',
+                                   format='json',
+                                   authentication=self.get_credentials(self.user1))
+        self.assertHttpOK(resp)
+        user1_resp = {
+            'id': user.id,
+            'github_id': user.social_auth.get().uid,
+            'name': user.first_name,
+            'email': user.email,}
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(self.deserialize(resp), user1_resp)
