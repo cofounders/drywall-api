@@ -57,6 +57,10 @@ DATABASES = {
 ########## END DATABASE CONFIGURATION
 
 
+########## TASTYPIE CONFIGURATION
+
+TASTYPIE_DEFAULT_FORMAT = ['json',]
+
 ########## GENERAL CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#time-zone
 TIME_ZONE = 'Asia/Singapore'

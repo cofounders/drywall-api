@@ -23,6 +23,7 @@ from factories import UserFactory
 from mock import patch
 from social_auth.views import complete
 from tastypie.test import TestApiClient, ResourceTestCase
+from tastypie.serializers import Serializer
 
 User = get_user_model()
 
@@ -140,10 +141,22 @@ class GithubClient(Client):
 
         return True
 
+class PrettyJSONSerializer(Serializer):
+    json_indent = 2
+
+    def to_json(self, data, options=None):
+        option = options or {}
+        data = self.to_simple(data, option)
+        return simplejson.dumps(data, cls=json.DjangoJSONEncoder,
+                                sort_keys=True, ensure_ascii=False,
+                                indent=self.json_indent)
+
+
 class GithubResourceTestClient(GithubClient, TestApiClient):
     def __init__(self, *args, **kwargs):
         super(GithubResourceTestClient, self).__init__(*args, **kwargs)
         self.client = GithubClient()
+        self.serializer = PrettyJSONSerializer()
 
 
 class GithubResourceTestCase(ResourceTestCase):
@@ -180,7 +193,7 @@ class SetDefaults(GithubResourceTestCase):
     }
 
     def get_credentials(self, user):
-        result = self.api_client.login(user=make_user_dict(user),
+        result = self.api_client.login(user=self.make_user_dict(user),
                                        backend='github')
         return result
 
@@ -193,6 +206,10 @@ class SetDefaults(GithubResourceTestCase):
                  'id':user.social_auth.get().uid,
                  'name':user.first_name,})
         return user_dict
+
+    def setUp(self):
+        super(SetDefaults, self).setUp()
+        self.serializer = PrettyJSONSerializer()
 
 
 class SetupUsers(SetDefaults):
@@ -224,30 +241,35 @@ class TestViewsAuthorize(SetDefaults):
 
 class TestUserAPI(SetupUsers):
     def test_get_all_users(self):
-        resp = self.api_client.get('api/v1/users/', format='json')
+        resp = self.api_client.get('/api/v1/users/',
+                                   authentication=self.get_credentials(self.user1))
         self.assertValidJSONResponse(resp)
-        user_list = [
-            self.make_user_dict(self.user1),
-            self.make_user_dict(self.user2),
-        ]
-        self.assertEqual(len(self.deserialize(resp)), 2)
-        self.assertEqual(self.deserialize(resp),
-                         user_list)
+        user1_resp = {
+            u'id': unicode(self.user1.id),
+            u'github_id': [unicode(self.user1.social_auth.get().uid),],
+            u'name': unicode(self.user1.first_name),
+            u'email': unicode(self.user1.email),}
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        deserialzed_resp = self.deserialize(resp)['objects'][0]
+        for key in user1_resp:
+            self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
 
     def test_get_authed_user(self):
         """Make sure user/ endpoint doesn't work on an unauth`d user
         and that it does work for an auth`d one"""
-        resp = self.api_client.get('api/v1/user/', format='json')
-        self.assertHttpUnauthorized(resp)
+        resp = self.api_client.get('/api/v1/user/', format='json')
+        self.assertHttpNotFound(resp)
         user1_dict = self.make_user_dict(self.user1)
-        resp = self.api_client.get('api/v1/user/',
+        resp = self.api_client.get('/api/v1/user/',
                                    format='json',
                                    authentication=self.get_credentials(self.user1))
         self.assertHttpOK(resp)
         user1_resp = {
-            'id': user.id,
-            'github_id': user.social_auth.get().uid,
-            'name': user.first_name,
-            'email': user.email,}
+            u'id': unicode(self.user1.id),
+            u'github_id': [unicode(self.user1.social_auth.get().uid),],
+            u'name': unicode(self.user1.first_name),
+            u'email': unicode(self.user1.email),}
         self.assertValidJSONResponse(resp)
-        self.assertEqual(self.deserialize(resp), user1_resp)
+        deserialzed_resp = self.deserialize(resp)
+        for key in user1_resp:
+            self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
