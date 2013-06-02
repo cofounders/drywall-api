@@ -196,6 +196,8 @@ THIRD_PARTY_APPS = (
     # Database migration helpers:
     'south',
     'social_auth',
+    'provider',
+    'provider.oauth2',
     'tastypie',
     'django_nose',
 )

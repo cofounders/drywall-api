@@ -5,6 +5,7 @@ when you run "manage.py test".
 Replace this with more appropriate tests for your application.
 """
 import urlparse
+import urllib
 
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -12,14 +13,146 @@ from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth import get_user_model
-
-from helpers import GithubClient
+from django.contrib.auth.models import AnonymousUser
+from django.test.client import RequestFactory, Client
+from django.utils import simplejson
+from django.utils.importlib import import_module
 
 from factories import UserFactory
 
+from mock import patch
+from social_auth.views import complete
+from tastypie.test import TestApiClient, ResourceTestCase
+
 User = get_user_model()
 
-class SetDefaults(TestCase):
+class DumbResponse(object):
+    """
+    Response from a call to, urllib2.urlopen()
+    """
+
+    def __init__(self, data_str, url=None):
+        self.data_str = data_str
+        self.url = url
+
+    def read(self):
+        return self.data_str
+
+class GithubClient(Client):
+    """
+    .. py:class:: GithubClient
+
+    Social client to test against Github
+    """
+
+    @patch('social_auth.utils.urlopen')
+    def login(self, mock_urlopen, user, backend='github'):
+        """
+        .. py:method:: login(user, mock_urlopen[ backend='github'])
+
+        Login or register a github user.
+
+        If the user has never logged in then they get registered and logged in.
+        If the user has already registered, then they are logged in.
+
+        :param user: user to login/register
+        :type user: dict
+        :param mock_urlopen: mock object for social_auth.utils.urlopen
+        :param backend: backend to use, defaults to github
+
+        example github user Response::
+
+            {
+            "login": "octocat",
+            "id": 1,
+            "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+            "gravatar_id": "somehexcode",
+            "url": "https://api.github.com/users/octocat",
+            "name": "monalisa octocat",
+            "company": "GitHub",
+            "blog": "https://github.com/blog",
+            "location": "San Francisco",
+            "email": "octocat@github.com",
+            "hireable": false,
+            "bio": "There once was...",
+            "public_repos": 2,
+            "public_gists": 1,
+            "followers": 20,
+            "following": 0,
+            "html_url": "https://github.com/octocat",
+            "created_at": "2008-01-14T04:33:35Z",
+            "type": "User"
+            }
+        """
+        token = 'dummyToken'
+        gh_user = user.copy()
+        gh_user['access_token'] = token
+        backends = {
+            'github': (
+                simplejson.dumps(user),
+                urllib.urlencode({
+                    'acess_token': token,
+                    'token_type': 'bearer',
+                }),
+                simplejson.dumps(user),
+            ),
+        }
+
+        if backend not in backends:
+            raise NoBackendError("%s is not supported" % backend)
+
+        """
+        mock out urlopen
+        """
+        mock_urlopen.side_effect = [
+            DumbResponse(r) for r in backends[backend]
+        ]
+
+        factory = RequestFactory()
+        request = factory.post('', {'code': 'dummy',
+            'redirect_state': 'dummy'})
+
+        engine = import_module(settings.SESSION_ENGINE)
+        if self.session:
+            request.session = self.session
+        else:
+            request.session = engine.SessionStore()
+
+        request.user = AnonymousUser()
+        request.session['github_state'] = 'dummy'
+
+        # make it happen.
+        redirect = complete(request, backend)
+
+        request.session.save()
+
+        # Set the cookie for this session.
+        session_cookie = settings.SESSION_COOKIE_NAME
+        self.cookies[session_cookie] = request.session.session_key
+        cookie_data = {
+            'max-age': None,
+            'path': '/',
+            'domain': settings.SESSION_COOKIE_DOMAIN,
+            'secure': settings.SESSION_COOKIE_SECURE or None,
+            'expires': None,
+        }
+        self.cookies[session_cookie].update(cookie_data)
+
+        return True
+
+class GithubResourceTestClient(GithubClient, TestApiClient):
+    def __init__(self, *args, **kwargs):
+        super(GithubResourceTestClient, self).__init__(*args, **kwargs)
+        self.client = GithubClient()
+
+
+class GithubResourceTestCase(ResourceTestCase):
+    def setUp(self):
+        super(ResourceTestCase, self).setUp()
+        self.api_client = GithubResourceTestClient()
+
+
+class SetDefaults(GithubResourceTestCase):
     __test__ = False
 
     user = {
@@ -46,6 +179,9 @@ class SetDefaults(TestCase):
         "type": "User"
     }
 
+    def get_credentials(self, user):
+        return self.create_session(user)
+
     def make_user_dict(self, user):
         """Passed a user, update the dict to use its particulars"""
         user_dict = self.user.copy()
@@ -55,9 +191,6 @@ class SetDefaults(TestCase):
                  'id':user.social_auth.get().uid,
                  'name':user.first_name,})
         return user_dict
-
-    def setUp(self):
-        self.client = GithubClient()
 
 
 class SetupUsers(SetDefaults):
@@ -73,10 +206,8 @@ class TestViewsAuthorize(SetDefaults):
     __test__ = True
     view = "socialauth_begin"
 
-    client = GithubClient()
-
     def test_github_client(self):
-        self.client.login(user=self.user, backend='github')
+        self.api_client.login(user=self.user, backend='github')
         user = User.objects.get(pk=1)
         self.assertEqual(user.username, 'octocat')
 
@@ -85,12 +216,26 @@ class TestViewsAuthorize(SetDefaults):
         mocked call"""
         user = UserFactory.create()
         user_dict = self.make_user_dict(user)
-        self.client.login(user=user_dict, backend='github')
+        self.api_client.login(user=user_dict, backend='github')
         self.assertEquals(User.objects.all().count(), 1)
 
 
-class TestAPIIssues(SetupUsers):
-    __test__ = True
+class TestUserAPI(SetupUsers):
+    def test_get_all_users(self):
+        resp = self.api_client.get('api/v1/users/', format='json')
+        self.assertValidJSONResponse(resp)
+        user_list = [
+            self.make_user_dict(self.user1),
+            self.make_user_dict(self.user2),
+        ]
+        self.assertEqual(len(self.deserialize(resp)), 2)
+        self.assertEqual(self.deserialize(resp),
+                         user_list)
 
-    def test_get_issue_list(self):
-        self.client = GithubClient()
+    def test_get_authed_user(self):
+        """Make sure user/ endpoint doesn't work on an unauth`d user
+        and that it does work for an auth`d one"""
+        resp = self.api_client.get('api/v1/user/', format='json')
+        self.assertHttpUnauthorized(resp)
+        user1_dict = self.make_user_dict(self.user1)
+        self.client.login(user=user1_dict, backend='github')

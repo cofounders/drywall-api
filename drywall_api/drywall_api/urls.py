@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='base.html')),
 
     url(r'', include('social_auth.urls')),
+    url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
