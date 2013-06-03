@@ -6,6 +6,7 @@ Replace this with more appropriate tests for your application.
 """
 import urlparse
 import urllib
+import json as simplejson
 
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -15,7 +16,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
 from django.test.client import RequestFactory, Client
-from django.utils import simplejson
 from django.utils.importlib import import_module
 
 from factories import UserFactory
@@ -193,9 +193,8 @@ class SetDefaults(GithubResourceTestCase):
     }
 
     def get_credentials(self, user):
-        result = self.api_client.login(user=self.make_user_dict(user),
+        return self.api_client.login(user=self.make_user_dict(user),
                                        backend='github')
-        return result
 
     def make_user_dict(self, user):
         """Passed a user, update the dict to use its particulars"""
