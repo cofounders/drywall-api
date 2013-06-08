@@ -9,7 +9,6 @@ import urllib
 import json as simplejson
 
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.conf import settings
@@ -18,7 +17,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.test.client import RequestFactory, Client
 from django.utils.importlib import import_module
 
-from factories import UserFactory
+from factories import UserFactory, OrgFactory
 
 from mock import patch
 from social_auth.views import complete
@@ -206,6 +205,16 @@ class SetDefaults(GithubResourceTestCase):
                  'name':user.first_name,})
         return user_dict
 
+    def make_org_dict(self, org):
+        org_dict = dict(
+            name=org.name,
+            url=org.url,
+            html_url=org.html_url,
+            id=org.uid,
+            avatar_url=org.avatar_url,
+            email=org.email,)
+        return org_dict
+
     def setUp(self):
         super(SetDefaults, self).setUp()
         self.serializer = PrettyJSONSerializer()
@@ -272,3 +281,53 @@ class TestUserAPI(SetupUsers):
         deserialzed_resp = self.deserialize(resp)
         for key in user1_resp:
             self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
+
+
+class TestOrganization(SetupUsers):
+    def setUp(self):
+        super(TestOrganization, self).setUp()
+        self.org1 = OrgFactory.create()
+        self.org1.save()
+
+    def test_get_users_orgs(self):
+        self.org1.users.add(self.user1)
+        resp = self.api_client.get(
+            '/api/v1/users/{}/orgs/'.format(self.user1.pk),
+            authentication=self.get_credentials(self.user1))
+        self.assertValidJSONResponse(resp)
+        expected = [self.make_org_dict(org),]
+        self.assertEqual(len(self.deserialize(resp)['objects']), len(expected))
+        deserialzed_resp = self.deserialize(resp)['objects'][0]
+        for key in expected:
+            self.assertEqual(deserialzed_resp.pop(key), expected[key])
+
+    def test_get_my_orgs(self):
+        self.org1.users.add(self.user1)
+        resp = self.api_client.get('/api/v1/user/orgs/',
+                                   authentication=self.get_credentials(self.user1))
+        self.assertValidJSONResponse(resp)
+        expected = [self.make_org_dict(org),]
+        self.assertEqual(len(self.deserialize(resp)['objects']), len(expected))
+        deserialzed_resp = self.deserialize(resp)['objects'][0]
+        for key in expected:
+            self.assertEqual(deserialzed_resp.pop(key), expected[key])
+
+    def test_get_orgs(self):
+        resp = self.api_client.get('/api/v1/orgs/',
+                                   authentication=self.get_credentials(self.user1))
+        self.assertValidJSONResponse(resp)
+        expected = [self.make_org_dict(org),]
+        self.assertEqual(len(self.deserialize(resp)['objects']), len(expected))
+        deserialzed_resp = self.deserialize(resp)['objects'][0]
+        for key in expected:
+            self.assertEqual(deserialzed_resp.pop(key), expected[key])
+
+    def test_get_one_org(self):
+        resp = self.api_client.get('/api/v1/orgs/{}'.format(self.org1.pk),
+                                   authentication=self.get_credentials(self.user1))
+        self.assertValidJSONResponse(resp)
+        expected = [self.make_org_dict(org),]
+        self.assertEqual(len(self.deserialize(resp)['objects']), len(expected))
+        deserialzed_resp = self.deserialize(resp)['objects'][0]
+        for key in expected:
+            self.assertEqual(deserialzed_resp.pop(key), expected[key])

@@ -1,0 +1,62 @@
+[
+  {
+    "login": "pandion",
+    "id": 101419,
+    "url": "https://api.github.com/orgs/pandion",
+    "repos_url": "https://api.github.com/orgs/pandion/repos",
+    "events_url": "https://api.github.com/orgs/pandion/events",
+    "members_url": "https://api.github.com/orgs/pandion/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/pandion/public_members{/member}",
+    "avatar_url": "https://secure.gravatar.com/avatar/33b13ad6b1e80426e7ea88a99d0b5706?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-org-420.png"
+  },
+  {
+    "login": "beermatesjs",
+    "id": 518615,
+    "url": "https://api.github.com/orgs/beermatesjs",
+    "repos_url": "https://api.github.com/orgs/beermatesjs/repos",
+    "events_url": "https://api.github.com/orgs/beermatesjs/events",
+    "members_url": "https://api.github.com/orgs/beermatesjs/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/beermatesjs/public_members{/member}",
+    "avatar_url": "https://secure.gravatar.com/avatar/6ce4baa08f8a8534f61b68d38a7e84bc?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-org-420.png"
+  },
+  {
+    "login": "tribeim",
+    "id": 1129799,
+    "url": "https://api.github.com/orgs/tribeim",
+    "repos_url": "https://api.github.com/orgs/tribeim/repos",
+    "events_url": "https://api.github.com/orgs/tribeim/events",
+    "members_url": "https://api.github.com/orgs/tribeim/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/tribeim/public_members{/member}",
+    "avatar_url": "https://secure.gravatar.com/avatar/23439da79cb0ba0e81dd4b6b1a523101?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-org-420.png"
+  },
+  {
+    "login": "jscamp",
+    "id": 1659205,
+    "url": "https://api.github.com/orgs/jscamp",
+    "repos_url": "https://api.github.com/orgs/jscamp/repos",
+    "events_url": "https://api.github.com/orgs/jscamp/events",
+    "members_url": "https://api.github.com/orgs/jscamp/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/jscamp/public_members{/member}",
+    "avatar_url": "https://secure.gravatar.com/avatar/3b5eb621b8faa35baabe674f1365dc75?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-org-420.png"
+  },
+  {
+    "login": "cofounders",
+    "id": 1776840,
+    "url": "https://api.github.com/orgs/cofounders",
+    "repos_url": "https://api.github.com/orgs/cofounders/repos",
+    "events_url": "https://api.github.com/orgs/cofounders/events",
+    "members_url": "https://api.github.com/orgs/cofounders/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/cofounders/public_members{/member}",
+    "avatar_url": "https://secure.gravatar.com/avatar/2ff120dd2b6d5530897ff3297d93225e?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-org-420.png"
+  },
+  {
+    "login": "Redmart",
+    "id": 3480598,
+    "url": "https://api.github.com/orgs/Redmart",
+    "repos_url": "https://api.github.com/orgs/Redmart/repos",
+    "events_url": "https://api.github.com/orgs/Redmart/events",
+    "members_url": "https://api.github.com/orgs/Redmart/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/Redmart/public_members{/member}",
+    "avatar_url": "https://secure.gravatar.com/avatar/810dfe16558607fe66640aa7d6fe3509?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-org-420.png"
+  }
+]

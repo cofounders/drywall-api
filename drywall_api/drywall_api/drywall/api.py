@@ -67,3 +67,7 @@ class GithubUserResource(ModelResource):
     def apply_authorization_limits(self, request, object_list):
         return object_list.filter(user=request.user,
                                   provider='github')
+
+    def dehydrate(self, bundle):
+        import ipdb; ipdb.set_trace() ### XXX BREAKPOINT
+        bundle.data['data'] = bundle.user.github_api.users.get(bundle.login)
