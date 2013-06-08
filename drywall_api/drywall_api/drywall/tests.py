@@ -25,7 +25,12 @@ from tastypie.test import TestApiClient, ResourceTestCase
 from tastypie.serializers import Serializer
 from path import path
 
+from models import Org
+from pygithub3 import Github3
+
+
 User = get_user_model()
+
 
 class DumbResponse(object):
     """
@@ -224,10 +229,10 @@ class TestViewsAuthorize(SetDefaults):
         self.assertEqual(user.username, self.user['login'])
 
     @patch.object(User, 'github_data')
-    def test_github_login_existing(self, gh_data):
+    def test_github_login_existing(self, user_data):
         """Make sure a user created with a factory can log in using the
         mocked call"""
-        gh_data.return_value = self.user1_data
+        user_data.return_value = self.user1_data
         user = UserFactory.create(
             username=self.user1_data['login'])
         user_dict = self.make_user_dict(user)
@@ -237,8 +242,8 @@ class TestViewsAuthorize(SetDefaults):
 
 @patch.object(User, 'github_data')
 class TestUserAPI(SetupUsers):
-    def test_get_all_users(self, gh_data):
-        gh_data.return_value = self.user1_data
+    def test_get_all_users(self, user_data):
+        user_data.return_value = self.user1_data
         resp = self.api_client.get('/api/v1/users/',
                                    authentication=self.get_credentials(self.user1))
         self.assertValidJSONResponse(resp)
@@ -253,8 +258,8 @@ class TestUserAPI(SetupUsers):
         for key in user1_resp:
             self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
 
-    def test_get_authed_user(self, gh_data):
-        gh_data.return_value = self.user1_data
+    def test_get_authed_user(self, user_data):
+        user_data.return_value = self.user1_data
         """Make sure user/ endpoint doesn't work on an unauth`d user
         and that it does work for an auth`d one"""
         resp = self.api_client.get('/api/v1/user/', format='json')
@@ -279,14 +284,16 @@ class TestUserAPI(SetupUsers):
             self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
 
 
+
+@patch.object(Github, '_orgs.list')
+@patch.object(User, 'github_data')
 class TestOrganization(SetupUsers):
     def setUp(self):
         super(TestOrganization, self).setUp()
-        self.org1 = OrgFactory.create()
-        self.org1.save()
 
-    def test_get_users_orgs(self):
-        self.org1.users.add(self.user1)
+    def test_get_users_orgs(self, user_data, mock_orgs):
+        user_data.return_value = self.user1_data
+
         resp = self.api_client.get(
             '/api/v1/users/{}/orgs/'.format(self.user1.pk),
             authentication=self.get_credentials(self.user1))
@@ -297,8 +304,9 @@ class TestOrganization(SetupUsers):
         for key in expected:
             self.assertEqual(deserialzed_resp.pop(key), expected[key])
 
-    def test_get_my_orgs(self):
-        self.org1.users.add(self.user1)
+    def test_get_my_orgs(self, user_data, org_list, org_get):
+        user_data.return_value = self.user1_data
+        org_list.return_value = self.user1_orgs
         resp = self.api_client.get('/api/v1/user/orgs/',
                                    authentication=self.get_credentials(self.user1))
         self.assertValidJSONResponse(resp)
@@ -308,7 +316,9 @@ class TestOrganization(SetupUsers):
         for key in expected:
             self.assertEqual(deserialzed_resp.pop(key), expected[key])
 
-    def test_get_orgs(self):
+    def test_get_orgs(self, user_data, org_list, org_get):
+        user_data.return_value = self.user1_data
+        org_list.return_value = self.user1_orgs
         resp = self.api_client.get('/api/v1/orgs/',
                                    authentication=self.get_credentials(self.user1))
         self.assertValidJSONResponse(resp)
@@ -318,7 +328,9 @@ class TestOrganization(SetupUsers):
         for key in expected:
             self.assertEqual(deserialzed_resp.pop(key), expected[key])
 
-    def test_get_one_org(self):
+    def test_get_one_org(self, user_data, org_list, org_get):
+        user_data.return_value = self.user1_data
+        org_get.return_value = self.user1_orgs[0]
         resp = self.api_client.get('/api/v1/orgs/{}'.format(self.org1.pk),
                                    authentication=self.get_credentials(self.user1))
         self.assertValidJSONResponse(resp)

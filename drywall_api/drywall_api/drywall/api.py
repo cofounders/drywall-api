@@ -67,3 +67,13 @@ class GithubUserResource(ModelResource):
     def determine_format(self, request):
         return 'application/json'
 
+
+
+class OrgResource(ModelResource):
+    class Meta:
+        queryset = UserSocialAuth.objects.all()
+
+    def dehydrate(self, bundle):
+        user = bundle.request.user
+        bundle.data['data'] = bundle.obj.github_data(user)
+        return bundle
