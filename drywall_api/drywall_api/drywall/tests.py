@@ -221,12 +221,15 @@ class TestViewsAuthorize(SetDefaults):
     def test_github_client(self):
         self.api_client.login(user=self.user, backend='github')
         user = User.objects.get(pk=1)
-        self.assertEqual(user.username, 'octocat')
+        self.assertEqual(user.username, self.user['login'])
 
-    def test_github_login_existing(self):
+    @patch.object(User, 'github_data')
+    def test_github_login_existing(self, gh_data):
         """Make sure a user created with a factory can log in using the
         mocked call"""
-        user = UserFactory.create()
+        gh_data.return_value = self.user1_data
+        user = UserFactory.create(
+            username=self.user1_data['login'])
         user_dict = self.make_user_dict(user)
         self.api_client.login(user=user_dict, backend='github')
         self.assertEquals(User.objects.all().count(), 1)
