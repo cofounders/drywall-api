@@ -23,6 +23,7 @@ from mock import patch
 from social_auth.views import complete
 from tastypie.test import TestApiClient, ResourceTestCase
 from tastypie.serializers import Serializer
+from path import path
 
 User = get_user_model()
 
@@ -167,30 +168,6 @@ class GithubResourceTestCase(ResourceTestCase):
 class SetDefaults(GithubResourceTestCase):
     __test__ = False
 
-    user = {
-        "login": "octocat",
-        "access_token": 'dummy',
-        "token_type": "bearer",
-        "id": 1,
-        "avatar_url": "https://github.com/images/error/octocat_happy.gif",
-        "gravatar_id": "somehexcode",
-        "url": "https://api.github.com/users/octocat",
-        "name": "monalisa octocat",
-        "company": "GitHub",
-        "blog": "https://github.com/blog",
-        "location": "San Francisco",
-        "email": "octocat@github.com",
-        "hireable": False,
-        "bio": "There once was...",
-        "public_repos": 2,
-        "public_gists": 1,
-        "followers": 20,
-        "following": 0,
-        "html_url": "https://github.com/octocat",
-        "created_at": "2008-01-14T04:33:35Z",
-        "type": "User"
-    }
-
     def get_credentials(self, user):
         return self.api_client.login(user=self.make_user_dict(user),
                                        backend='github')
@@ -216,6 +193,14 @@ class SetDefaults(GithubResourceTestCase):
         return org_dict
 
     def setUp(self):
+        with open(settings.DJANGO_ROOT / 'fixtures/cbas.json') as cbas:
+            self.user1_data = simplejson.loads(cbas.read())
+            self.user = self.user1_data
+            self.user.update({
+                "access_token": 'dummy',
+                "token_type": "bearer",})
+        with open(settings.DJANGO_ROOT / 'fixtures/cbas_orgs.json') as orgs:
+            self.user1_orgs = simplejson.loads(orgs.read())
         super(SetDefaults, self).setUp()
         self.serializer = PrettyJSONSerializer()
 
@@ -247,22 +232,26 @@ class TestViewsAuthorize(SetDefaults):
         self.assertEquals(User.objects.all().count(), 1)
 
 
+@patch.object(User, 'github_data')
 class TestUserAPI(SetupUsers):
-    def test_get_all_users(self):
+    def test_get_all_users(self, gh_data):
+        gh_data.return_value = self.user1_data
         resp = self.api_client.get('/api/v1/users/',
                                    authentication=self.get_credentials(self.user1))
         self.assertValidJSONResponse(resp)
         user1_resp = {
             u'id': unicode(self.user1.id),
-            u'github_id': [unicode(self.user1.social_auth.get().uid),],
             u'name': unicode(self.user1.first_name),
+            u'data': self.user1_data,
+            u'resource_uri': '/api/v1/users/1/',
             u'email': unicode(self.user1.email),}
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         deserialzed_resp = self.deserialize(resp)['objects'][0]
         for key in user1_resp:
             self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
 
-    def test_get_authed_user(self):
+    def test_get_authed_user(self, gh_data):
+        gh_data.return_value = self.user1_data
         """Make sure user/ endpoint doesn't work on an unauth`d user
         and that it does work for an auth`d one"""
         resp = self.api_client.get('/api/v1/user/', format='json')
@@ -274,11 +263,15 @@ class TestUserAPI(SetupUsers):
         self.assertHttpOK(resp)
         user1_resp = {
             u'id': unicode(self.user1.id),
-            u'github_id': [unicode(self.user1.social_auth.get().uid),],
             u'name': unicode(self.user1.first_name),
+            u'data': self.user1_data,
+            u'resource_uri': '/api/v1/users/1/',
             u'email': unicode(self.user1.email),}
         self.assertValidJSONResponse(resp)
         deserialzed_resp = self.deserialize(resp)
+        self.assertEquals(
+            set(deserialzed_resp.keys()) - set(user1_resp.keys()),
+            set([]))
         for key in user1_resp:
             self.assertEqual(deserialzed_resp.pop(key), user1_resp[key])
 
