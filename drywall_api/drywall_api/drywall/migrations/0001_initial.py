@@ -26,7 +26,6 @@ class Migration(SchemaMigration):
             ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('github_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
         db.send_create_signal(u'drywall', ['DWUser'])
 
