@@ -8,8 +8,8 @@ from django.db import models
 class Migration(SchemaMigration):
 
     needed_by = (
-        ('social_auth', '0001_initial'),
         ('tastypie', '0001_initial'),
+        ('social_auth', '0001_initial'),
     )
 
     def forwards(self, orm):
@@ -26,6 +26,7 @@ class Migration(SchemaMigration):
             ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('github_username', self.gf('django.db.models.fields.CharField')(max_length=50)),
         ))
         db.send_create_signal(u'drywall', ['DWUser'])
 
@@ -98,6 +99,7 @@ class Migration(SchemaMigration):
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'github_username': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),

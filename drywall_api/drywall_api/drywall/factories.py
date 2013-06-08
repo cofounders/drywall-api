@@ -10,6 +10,8 @@ from social_auth.db.django_models import UserSocialAuth
 
 from helpers import sg_tz
 
+from models import Org
+
 
 class SocialAuthFactory(factory.DjangoModelFactory):
     FACTORY_FOR = UserSocialAuth
