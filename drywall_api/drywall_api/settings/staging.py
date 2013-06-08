@@ -58,7 +58,7 @@ DATABASES = {
         'NAME': 'drywall',
         'USER': 'root',
         'PASSWORD': 'iloveponies',
-        'HOST': '127.0.0.1',
+        'HOST': 'drywalldb.crgpzyenohl9.ap-southeast-1.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
