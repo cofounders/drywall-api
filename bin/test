@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/_manage.sh"
+
+DJANGO_SETTINGS_MODULE="drywall_api.settings.test"
+manage test

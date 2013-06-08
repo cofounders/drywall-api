@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/_manage.sh"
+
+ensure_updated
+( cd $MANAGE_DIR ; gunicorn -c $BASE/gunicorn_settings.py drywall_api.wsgi)

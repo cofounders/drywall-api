@@ -1,0 +1,4 @@
+#!/bin/bash
+source "$(dirname "$0")/_manage.sh"
+
+ot_supervisor start "${PROJECT_NAME}_worker"

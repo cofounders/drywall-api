@@ -1,0 +1,5 @@
+#!/bin/bash
+source "$(dirname "$0")/_manage.sh"
+
+ensure_updated
+manage celery worker -B -E

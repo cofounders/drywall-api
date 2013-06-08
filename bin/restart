@@ -1,0 +1,6 @@
+#!/bin/bash
+source "$(dirname "$0")/_manage.sh"
+
+
+$BIN_DIR/restart-website
+$BIN_DIR/restart-worker
