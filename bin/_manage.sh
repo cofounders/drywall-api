@@ -1,17 +1,17 @@
-PROJECT_NAME='onetransport'
+PROJECT_NAME='drywall_api'
 export PATH=$HOME/.virtualenvs/$PROJECT_NAME/bin:/usr/local/bin:/usr/local/sbin:$PATH:/usr/bin:/usr/sbin:/bin:/sbin
 BASE=`(cd $(dirname "$0") && cd .. && pwd)`
-export MANAGE_DIR="$BASE/$PROJECT_NAME"
+export MANAGE_DIR="$BASE/src/$PROJECT_NAME"
 export BIN_DIR="$BASE/bin"
-export TEST_UPDATED_FILE="/tmp/test-$PROJECT"
+export TEST_UPDATED_FILE="/tmp/test-$PROJECT_NAME"
 export PROJECT_UPDATED_FILE="$BASE/.updated"
 
 # Sets which django settings file to use
-settings="$1"
-if [ -z $settings ] || [ $settings = ""  ] || [ $settings = "dev" ] ; then
-    settings='local'
+settings="settings_$1"
+if [ $settings = "settings_"  ] || [ $settings = "settings_local" ] ; then
+    settings='settings'
 fi
-export DJANGO_SETTINGS_MODULE="onetransport.settings.$settings"
+export DJANGO_SETTINGS_MODULE="conf.$settings"
 
 # if RESTART=1 then force a restart of the background process
 RESTART=0
@@ -36,7 +36,7 @@ function compile_translations {
 }
 
 function ensure_updated {
-    /bin/touch -d "10 minutes ago" $TEST_UPDATED_FILE
+    touch -d "10 minutes ago" $TEST_UPDATED_FILE
 
     if [ ! -f $PROJECT_UPDATED_FILE ] || [ $PROJECT_UPDATED_FILE -ot $TEST_UPDATED_FILE ] ; then
         $BIN_DIR/update
@@ -49,7 +49,7 @@ function supervisor_exists {
     return 1
 }
 
-function cf_supervisor {
+function mp_supervisor {
     command=$1
     supervisor_name=$2
 

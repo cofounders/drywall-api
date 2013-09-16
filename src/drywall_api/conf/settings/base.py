@@ -24,6 +24,9 @@ sys_path.append(DJANGO_ROOT)
 
 AUTH_USER_MODEL = 'drywall.DWUser'
 
+print DJANGO_ROOT
+print SITE_ROOT
+print SITE_NAME
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug
