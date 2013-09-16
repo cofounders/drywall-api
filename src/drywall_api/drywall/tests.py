@@ -26,7 +26,7 @@ from tastypie.serializers import Serializer
 from path import path
 
 from models import Org
-from pygithub3 import Github3
+from pygithub3 import Github
 
 
 User = get_user_model()
@@ -198,13 +198,13 @@ class SetDefaults(GithubResourceTestCase):
         return org_dict
 
     def setUp(self):
-        with open(settings.DJANGO_ROOT / 'fixtures/cbas.json') as cbas:
+        with open(settings.DJANGO_ROOT / 'drywall/fixtures/cbas.json') as cbas:
             self.user1_data = simplejson.loads(cbas.read())
             self.user = self.user1_data
             self.user.update({
                 "access_token": 'dummy',
                 "token_type": "bearer",})
-        with open(settings.DJANGO_ROOT / 'fixtures/cbas_orgs.json') as orgs:
+        with open(settings.DJANGO_ROOT / 'drywall/fixtures/cbas_orgs.json') as orgs:
             self.user1_orgs = simplejson.loads(orgs.read())
         super(SetDefaults, self).setUp()
         self.serializer = PrettyJSONSerializer()
