@@ -228,10 +228,12 @@ class TestViewsAuthorize(SetDefaults):
         user = User.objects.get(pk=1)
         self.assertEqual(user.username, self.user['login'])
 
+    @patch.object(Org, 'github_data')
     @patch.object(User, 'github_data')
-    def test_github_login_existing(self, user_data):
+    def test_github_login_existing(self, user_data, org_data):
         """Make sure a user created with a factory can log in using the
         mocked call"""
+        org_data.return_value = self.user1_orgs
         user_data.return_value = self.user1_data
         user = UserFactory.create(
             username=self.user1_data['login'])
