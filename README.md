@@ -29,7 +29,7 @@ In the mongo/bin folder, run mongo.exe
     > db.<collection>.drop()   //drops documents and indexes    
 
 
-###To play with/research a litle more:
+###To play with/research a little more:
 Generate API documentation (needs redis): https://github.com/mashery/iodocs     
 Create configurable REST APIs using Mongoose schemata: https://github.com/wprl/baucis    
 Create restful APIs with express: https://github.com/baugarten/node-restful    
