@@ -8,7 +8,11 @@ RESTful API using Node.js, Express, and MongoDB
 
     npm install
     
-4) Start mongodb: bin/mongod.exe   
+4) Start mongodb: bin/mongod.exe  
+5) Run the node server on localhost (default port 3003)
+
+    node server.js
+
 5) To see a list of repos for an organisation, navigate to:
 
     http://localhost:3003/orgs/cofounders/repos
@@ -23,3 +27,11 @@ In the mongo/bin folder, run mongo.exe
     > db.<collection>.find({id: 1})    
     > db.<collection>.remove() //Does not remove indexes    
     > db.<collection>.drop()   //drops documents and indexes    
+
+
+###To play with/research a litle more:
+Generate API documentation (needs redis): https://github.com/mashery/iodocs     
+Create configurable REST APIs using Mongoose schemata: https://github.com/wprl/baucis    
+Create restful APIs with express: https://github.com/baugarten/node-restful    
+
+mongoose? Do we need it? Working with just [node-mongodb-native](https://github.com/mongodb/node-mongodb-native) seems sufficient.... Needs a little more reading.
