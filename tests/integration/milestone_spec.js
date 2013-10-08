@@ -1,18 +1,11 @@
 var frisby               = require('frisby');
-var fromPath             = require('../helpers/endpoint.js').endpoint;
+var mkFrisbyJSON200      = require('../helpers/frisby.js').mkFrisbyJSON200;
 var isGithubMilestone    = require('../helpers/typecheck.js').isGithubMilestone;
 var allHaveProperty      = require('../helpers/typecheck.js').allHaveProperty;
 
-var endpoint   = fromPath('milestones/someGithubRepo');
-var output     = { milestones: Array };
-var sub_output = { 
-  milestones: allHaveProperty(isGithubMilestone)
-};
-
-frisby.create('List of milestones for some repo')
-      .get(endpoint)
-      .expectStatus(200)
-      .expectHeaderContains('content-type','application/json')
-      .expectJSONTypes('0', output)
-      .expectJSONTypes('0', sub_output)
-      .toss();
+mkFrisbyJSON200(
+  'List of milestones for some repo',
+  'milestones/someGithubRepo',
+  { milestones: Array },
+  { milestones: allHaveProperty(isGithubMilestone) }
+).toss();
