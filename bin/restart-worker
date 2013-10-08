@@ -1,4 +1,4 @@
 #!/bin/bash
 source "$(dirname "$0")/_manage.sh"
 
-ot_supervisor restart "${PROJECT_NAME}_worker"
+mp_supervisor restart "${PROJECT_NAME}_worker"

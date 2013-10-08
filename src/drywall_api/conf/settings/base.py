@@ -2,25 +2,31 @@
 
 
 from os.path import abspath, basename, dirname, join, normpath
-from sys import path
+from sys import path as sys_path
 from sys import argv
+from path import path
 
 
 ########## PATH CONFIGURATION
 # Absolute filesystem path to the Django project directory:
-DJANGO_ROOT = dirname(dirname(abspath(__file__)))
+DJANGO_ROOT = (path(__file__).abspath() / '../../..').abspath()
 
 # Absolute filesystem path to the top-level project folder:
-SITE_ROOT = dirname(DJANGO_ROOT)
+SITE_ROOT = DJANGO_ROOT.dirname()
 
 # Site name:
-SITE_NAME = basename(DJANGO_ROOT)
+SITE_NAME =DJANGO_ROOT.basename()
 
 # Add our project to our pythonpath, this way we don't need to type our project
 # name in our dotted import paths:
-path.append(DJANGO_ROOT)
+sys_path.append(DJANGO_ROOT)
 ########## END PATH CONFIGURATION
 
+AUTH_USER_MODEL = 'drywall.DWUser'
+
+print DJANGO_ROOT
+print SITE_ROOT
+print SITE_NAME
 
 ########## DEBUG CONFIGURATION
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#debug

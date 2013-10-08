@@ -38,13 +38,16 @@ class UsersResource(ModelResource):
         return self.get_detail(request, id=request.user.id)
 
     def dehydrate(self, bundle):
-        user = bundle.request.user
-        github_auths= user.social_auth.filter(provider='github')
-        bundle.data['github_id'] = [gha.uid for gha in github_auths]
+        bundle.data['data'] = bundle.request.user.github_data()
         return bundle
 
     def determine_format(self, request):
         return 'application/json'
+
+
+    def apply_authorization_limits(self, request, object_list):
+        return object_list.filter(user=request.user,
+                                  provider='github')
 
 
 class GithubUserResource(ModelResource):
@@ -64,6 +67,13 @@ class GithubUserResource(ModelResource):
     def determine_format(self, request):
         return 'application/json'
 
-    def apply_authorization_limits(self, request, object_list):
-        return object_list.filter(user=request.user,
-                                  provider='github')
+
+
+class OrgResource(ModelResource):
+    class Meta:
+        queryset = UserSocialAuth.objects.all()
+
+    def dehydrate(self, bundle):
+        user = bundle.request.user
+        bundle.data['data'] = bundle.obj.github_data(user)
+        return bundle
