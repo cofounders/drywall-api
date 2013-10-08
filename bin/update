@@ -1,5 +1,4 @@
 #!/bin/bash
-set -o verbose
 source "$(dirname "$0")/_manage.sh"
 
 function current_git_branch() {

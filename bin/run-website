@@ -2,4 +2,4 @@
 source "$(dirname "$0")/_manage.sh"
 
 ensure_updated
-( cd $MANAGE_DIR ; gunicorn -c $BASE/gunicorn_settings.py drywall_api.wsgi)
+cd $MANAGE_DIR ; exec gunicorn -c $BASE/gunicorn_settings.py conf.wsgi

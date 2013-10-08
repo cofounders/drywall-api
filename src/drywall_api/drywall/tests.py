@@ -26,7 +26,7 @@ from tastypie.serializers import Serializer
 from path import path
 
 from models import Org
-from pygithub3 import Github3
+from pygithub3 import Github
 
 
 User = get_user_model()
@@ -198,13 +198,13 @@ class SetDefaults(GithubResourceTestCase):
         return org_dict
 
     def setUp(self):
-        with open(settings.DJANGO_ROOT / 'fixtures/cbas.json') as cbas:
+        with open(settings.DJANGO_ROOT / 'drywall/fixtures/cbas.json') as cbas:
             self.user1_data = simplejson.loads(cbas.read())
             self.user = self.user1_data
             self.user.update({
                 "access_token": 'dummy',
                 "token_type": "bearer",})
-        with open(settings.DJANGO_ROOT / 'fixtures/cbas_orgs.json') as orgs:
+        with open(settings.DJANGO_ROOT / 'drywall/fixtures/cbas_orgs.json') as orgs:
             self.user1_orgs = simplejson.loads(orgs.read())
         super(SetDefaults, self).setUp()
         self.serializer = PrettyJSONSerializer()
@@ -228,10 +228,12 @@ class TestViewsAuthorize(SetDefaults):
         user = User.objects.get(pk=1)
         self.assertEqual(user.username, self.user['login'])
 
+    @patch.object(Org, 'github_data')
     @patch.object(User, 'github_data')
-    def test_github_login_existing(self, user_data):
+    def test_github_login_existing(self, user_data, org_data):
         """Make sure a user created with a factory can log in using the
         mocked call"""
+        org_data.return_value = self.user1_orgs
         user_data.return_value = self.user1_data
         user = UserFactory.create(
             username=self.user1_data['login'])

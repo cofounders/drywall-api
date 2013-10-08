@@ -1,8 +1,12 @@
 #!/bin/bash
 source "$(dirname "$0")/_manage.sh"
 
-DJANGO_SETTINGS_MODULE="conf.settings"
+if [[ -d "$DOCUMENTS" ]] ; then
+    rm -rf $DOCUMENTS
+fi
+
+DJANGO_SETTINGS_MODULE="conf.settings_test"
 (cd $MANAGE_DIR && \
     coverage run manage.py test && \
-    coverage xml --include="$SITE_URL*" --omit="admin.py,*.virtualenvs/$PROJECT_NAME*" && \
+    coverage xml --omit="*/tests/*,*/migrations/*,*/admin.py,*.virtualenvs/*,conf/*,*/fixtures*" && \
     mv -f coverage.xml $BASE)

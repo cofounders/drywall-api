@@ -2,3 +2,4 @@
 source "$(dirname "$0")/_manage.sh"
 
 $BIN_DIR/stop-website
+$BIN_DIR/stop-worker
