@@ -24,6 +24,20 @@ function isGithubLabel(el) {
   return (!hasOther);
 }
 
+function isGithubMilestone(el) {
+  var hasOther = [ 
+    el.hasOwnProperty('id'),
+    typeof(el.id) == String,
+    el.hasOwnProperty('name'),
+    typeof(el.name) == String,
+    el.hasOwnProperty('color'),
+    typeof(el.color) == String,
+    el.hasOwnProperty('due_date'),
+    typeof(el.due_date) == Date
+  ].hasOwnProperty(false);
+  return (!hasOther);
+}
+
 function allHaveProperty(callback) {
   return function(list) {
     var hasOther = list.map(callback).hasOwnProperty(false);
@@ -32,6 +46,8 @@ function allHaveProperty(callback) {
 }
 
 module.exports = {
+  isGithubMilestone: isGithubMilestone,
+  isGithubLabel: isGithubLabel,
   isGithubOrganization: isGithubOrganization,
   allHaveProperty: allHaveProperty
 }
