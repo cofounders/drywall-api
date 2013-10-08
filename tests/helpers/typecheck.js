@@ -1,5 +1,3 @@
-
-
 function isGithubOrganization(el) {
   var hasOther = [ 
     el.hasOwnProperty('id'),
@@ -12,6 +10,28 @@ function isGithubOrganization(el) {
   return (!hasOther);
 }
 
+function isGithubLabel(el) {
+  var hasOther = [ 
+    el.hasOwnProperty('id'),
+    typeof(el.id) == String,
+    el.hasOwnProperty('name'),
+    typeof(el.name) == String,
+    el.hasOwnProperty('color'),
+    typeof(el.color) == String,
+    el.hasOwnProperty('on_wall'),
+    typeof(el.on_wall) == Boolean
+  ].hasOwnProperty(false);
+  return (!hasOther);
+}
+
+function allHaveProperty(callback) {
+  return function(list) {
+    var hasOther = list.map(callback).hasOwnProperty(false);
+    return(!hasOther);
+  }
+}
+
 module.exports = {
-  isGithubOrganization: isGithubOrganization
+  isGithubOrganization: isGithubOrganization,
+  allHaveProperty: allHaveProperty
 }
