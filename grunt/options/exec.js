@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
   return {
     frisby: {
-      command: 'jasmine-node tests/integration' 
+      command: 'jasmine-node tests/integration'
     }
-  }
-}
+  };
+};
