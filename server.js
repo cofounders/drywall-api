@@ -1,6 +1,6 @@
 var express = require('express'),
     orgs = require('./routes/orgs'),
-    app = express()
+    app = express();
 
 app.configure(function () {
 	app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
