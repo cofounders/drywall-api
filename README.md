@@ -3,7 +3,9 @@
 RESTful API using Node.js, Express, and MongoDB
 
 1) Install [nodejs](http://nodejs.org/)
+
 2) Install [mongoDB](http://docs.mongodb.org/manual/installation/)
+
 3) Grab node dependencies (express):
 
 	npm install
@@ -13,6 +15,7 @@ RESTful API using Node.js, Express, and MongoDB
 	npm install nodemon -g
 
 5) Start mongodb: `bin/mongod.exe` or `mongod &`
+
 6) Run the node server on localhost (default port 3003)
 
 	nodemon server.js
