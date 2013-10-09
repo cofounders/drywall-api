@@ -30,6 +30,10 @@ function mkFrisbyDELETE(desc, path, response, type, output, sub_output) {
   return mkFrisby(desc, path, 'delete', {}, response, type, output, sub_output);
 }
 
+function mkFrisbyGET302(desc, path) {
+  return mkFrisby(desc, path, 'get', {}, 302, 'text/html', {}, {})
+}
+
 
 module.exports = {
   mkFrisby:            mkFrisby,
@@ -37,5 +41,6 @@ module.exports = {
   mkFrisbyPOST:        mkFrisbyPOST,
   mkFrisbyPUT:         mkFrisbyPUT,
   mkFrisbyDELETE:      mkFrisbyDELETE,
-  mkFrisbyGETJSON200:  mkFrisbyGETJSON200
+  mkFrisbyGETJSON200:  mkFrisbyGETJSON200,
+  mkFrisbyGET302: mkFrisbyGET302
 }
