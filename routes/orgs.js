@@ -54,13 +54,13 @@ exports.getRepos = function(req, res) {
   checkDB();
 
   var org = req.params.org;
-  console.log("Getting repos from " + org)
+  console.log("Getting repos from " + org);
   db.collection('repos', function(err, col) {
     col.find({'owner.login': org}).toArray(function(err, items) {
       if(items.length > 0) {
         res.send(items);
       } else {
-        res.send("No items retrieved for "+ org)
+        res.send("No items retrieved for "+ org);
       }
     });
   });
@@ -375,7 +375,7 @@ var populateReposCol = function() {
     }
   }
 
-]
+];
   
   db.collection('repos', function(err, collection) {
      collection.insert(repos, {safe:true}, function(err, result) {});

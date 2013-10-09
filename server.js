@@ -1,7 +1,6 @@
 var express = require('express'),
-	orgs = require('./routes/orgs'),
-	app = express(),
-	port = process.env.PORT || 3003;
+    orgs = require('./routes/orgs'),
+    app = express();
 
 app.configure(function () {
 	app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
@@ -15,6 +14,4 @@ app.get('/orgs/:org/repos',   orgs.getRepos);
 //GET /repos/:owner/:repo/branches
 //app.get('/repos/:owner/:repo/issues')  repos.getIssues
 
-app.listen(port);
-
-console.log('Server running at port ' + port);
+module.exports = app;
