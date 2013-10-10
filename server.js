@@ -1,17 +1,41 @@
-var express = require('express'),
-    orgs = require('./routes/orgs'),
-    app = express();
+#!/bin/env node
 
-app.configure(function () {
-	app.use(express.logger('dev'));     /* 'default', 'short', 'tiny', 'dev' */
-	app.use(express.bodyParser());
+var requirejs = require('requirejs');
+requirejs.config({
+	// Pass the top-level main.js/index.js require
+	// function to requirejs so that node modules
+	// are loaded relative to the top-level JS file.
+	nodeRequire: require
 });
 
-app.get('/user/orgs',         orgs.getOrgs );
-app.get('/orgs/:org/repos',   orgs.getRepos);
-//app.post('/orgs/:org/repos',  orgs.addRepo );
-//app.patch('/orgs/:org/repos', orgs.editRepo);
-//GET /repos/:owner/:repo/branches
-//app.get('/repos/:owner/:repo/issues')  repos.getIssues
 
-module.exports = app;
+requirejs([
+	'config/config.js', 'express', 'mongoose', 'fs'
+], function(config, express, mongoose, fs) {
+
+	var app = express();
+	config.dirname = __dirname;
+
+	mongoose.connect(config.db.mongo1);
+
+	var models_path = __dirname + '/app/models';
+	fs.readdirSync(models_path).forEach(function (file) {
+		if (~file.indexOf('.js')) {
+			requirejs(models_path + '/' + file);
+		}
+	});
+
+	requirejs('config/express')(app, config);
+	requirejs('config/router')(app, config);
+
+	app.listen(
+		config.server.port,
+		function() {
+			console.log('%s: Node server started on %s:%d ...',
+				Date(Date.now()), config.server.ip, config.server.port
+			);
+		}
+	);
+
+	return app;
+});
