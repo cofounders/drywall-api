@@ -7,18 +7,18 @@ function toTypeOf(cons) {
 }
 
 function isTrue(val) {
-  return (val==true);
+  return (val===true);
 }
 
 function fromSpecification(spec) {
   return function(element) {
     return _.map(spec, function(type, name) {
-      var property = element[name]
-      var has      = typeof(property) != 'undefined'
-      var is       = typeof(property) == toTypeOf(type)
-      return (has&&is)
+      var property = element[name];
+      var has      = typeof(property) != 'undefined';
+      var is       = typeof(property) == toTypeOf(type);
+      return (has&&is);
     }).every(isTrue);
-  }
+  };
 }
 
 isGithubOrganization = fromSpecification({
@@ -50,12 +50,12 @@ isStickie = fromSpecification ({
   label:         String,
   x:             Number,
   y:             Number
-})
+});
 
 function allHaveProperty(callback) {
   return function(list) {
     return list.map(callback).every(isTrue);
-  }
+  };
 }
 
 module.exports = {
@@ -64,4 +64,4 @@ module.exports = {
   isGithubOrganization: isGithubOrganization,
   isStickie: isStickie,
   allHaveProperty: allHaveProperty
-}
+};

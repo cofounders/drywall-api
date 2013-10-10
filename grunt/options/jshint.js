@@ -11,7 +11,8 @@ module.exports = function (grunt) {
     tests: {
       jshintrc: '.jshintrc',
       src: [
-        'tests/**/*_spec.js'
+        'tests/**/*_spec.js',
+        'tests/helpers/*.js'
       ]
     },
     app: {

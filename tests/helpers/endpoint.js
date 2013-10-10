@@ -6,4 +6,4 @@ function endpoint(path) {
 
 module.exports = {
   endpoint: endpoint
-}
+};

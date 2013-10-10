@@ -4,13 +4,14 @@ var isGithubOrganization = require('../helpers/typecheck.js').isGithubOrganizati
 var isGithubRepository   = require('../helpers/typecheck.js').isGithubRepository;
 var allHaveProperty      = require('../helpers/typecheck.js').allHaveProperty;
 
-mkFrisbyGETJSON200(
-  'List repos by organisation',
-  'repositories/?github_organisation=someid',
-  { organizations: Array,
+mkFrisbyGETJSON200('List repos by organisation', {
+  endpoint: 'repositories/?github_organisation=someid',
+  output: {
+    organizations: Array,
     repositories:  Array
   },
-  { organizations: allHaveProperty(isGithubOrganization),
+  sub_output: {
+    organizations: allHaveProperty(isGithubOrganization),
     repositories:  allHaveProperty(isGithubRepository)
   }
-).toss();
+}).toss();

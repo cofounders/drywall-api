@@ -6,19 +6,17 @@ var mkFrisbyDELETE     = require('../helpers/frisby.js').mkFrisbyDELETE;
 var isStickie          = require('../helpers/typecheck.js').isStickie;
 var allHaveProperty    = require('../helpers/typecheck.js').allHaveProperty;
 
-mkFrisbyGETJSON200(
-  'issues by organisation and repository',
-  'stickies/?github_organization=someOrg&github_repository=someRepo',
-  { stickies: Array },
-  { stickies: allHaveProperty(isStickie) }
-).toss();
+mkFrisbyGETJSON200('issues by organisation and repository', {
+  endpoint: 'stickies/?github_organization=someOrg&github_repository=someRepo',
+  output:     { stickies: Array },
+  sub_output: { stickies: allHaveProperty(isStickie) }
+}).toss();
 
-mkFrisbyGETJSON200(
-  'issues by organisation and repository:get',
-  'stickies/someId',
-  { stickie: Object },
-  { stickie: isStickie }
-).toss();
+mkFrisbyGETJSON200('issues by organisation and repository:get', {
+  endpoint: 'stickies/someId',
+  output:     { stickie: Object },
+  sub_output: { stickie: isStickie }
+}).toss();
 
 someStickie = {
   id: "6a0f0731d84afa4082031e3a72354991",
@@ -31,31 +29,28 @@ someStickie = {
   y: 5
 };
 
-mkFrisbyPOST(
-  'issues by organisation and repository:post',
-  'stickies/someId',
-  someStickie,
-  200,
-  'application/json',
-  { stickie: Object },
-  { stickie: isStickie }
-).toss();
+mkFrisbyPOST('issues by organisation and repository:post',{
+  endpoint: 'stickies/someId',
+  body: someStickie,
+  response: 200,
+  type: 'application/json',
+  output:     { stickie: Object },
+  sub_output: { stickie: isStickie }
+}).toss();
 
-mkFrisbyPUT(
-  'issues by organisation and repository:put',
-  'stickies/someId',
-  someStickie,
-  200,
-  'application/json',
-  { stickie: Object },
-  { stickie: isStickie }
-).toss();
+mkFrisbyPUT('issues by organisation and repository:put', {
+  endpoint: 'stickies/someId',
+  body: someStickie,
+  response: 200,
+  type: 'application/json',
+  output:     { stickie: Object },
+  sub_output: { stickie: isStickie }
+}).toss();
 
-mkFrisbyDELETE(
-  'issues by organisation and repository:delete',
-  'stickies/someId',
-  200,
-  'application/json',
-  { stickie: Object },
-  { stickie: isStickie }
-).toss();
+mkFrisbyDELETE('issues by organisation and repository:delete', {
+  endpoint: 'stickies/someId',
+  response: 200,
+  type: 'application/json',
+  output:     { stickie: Object },
+  sub_output: { stickie: isStickie }
+}).toss();
