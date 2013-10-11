@@ -18,16 +18,18 @@ var frisbyDefaults = {
   sub_output: {}
 };
 
-function mkFrisby(desc, mkOptions, mkDefaults) {
-  var frisbee  = frisby.create(desc);
-  var defaults = _.extend(frisbyDefaults, mkDefaults);
-  var options  = _.defaults(mkOptions, defaults);
-
-  var m = options.method, // Not in `frisbyDefaults`!
+function mkFrisbyRequest(desc, options) {
+  var frisbee = frisby.create(desc);
+  var m = options.method,
       e = fromPath(options.endpoint),
       b = options.body;
-  frisbee = frisbee[m](e,b);
+  return frisbee[m](e,b);
+}
 
+function mkFrisby(desc, mkOptions, mkDefaults) {
+  var defaults = _.extend(frisbyDefaults, mkDefaults);
+  var options  = _.defaults(mkOptions, defaults);
+  var frisbee  = mkFrisbyRequest(desc, options);
   _(parameters).each(function(fn, par){
     var option = options[par];
     if (option) { frisbee = fn(frisbee, option); }
