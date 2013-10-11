@@ -1,4 +1,4 @@
-define(['request', 'app/components/utils/uri'], function (request, uri) {
+define(['request', 'app/components/utils/uri', 'app/models/login'], function (request, uri, login) {
   function redirectURL(where,state) {
     return uri.toURL("http://localhost:9000/login/github/redirect", {
       redirect_uri: where,
@@ -21,7 +21,7 @@ define(['request', 'app/components/utils/uri'], function (request, uri) {
   function saveWithSession(session) {
     return function(str) {
       var parameters = uri.fromParameterString(str);
-      new GithubLogin({
+      new login({
         session: session,
         access_token: parameters.access_token
       }).save;
