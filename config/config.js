@@ -2,6 +2,17 @@ define([
 	'underscore',
 ], function (_) {
 
+  var keys = {
+    ghClientId: 'a110297b7d6a6fab5dac',
+    ghClientSecret: '1f452780e9f37f5c49a3406e60917e0c1032fae7' // Abuse wisely. ;-)
+  }
+  
+  var endpoints = {
+    dwRedirect: "http://localhost:9000/login/github/redirect",
+    ghAuthorize: "https://github.com/login/oauth/authorize",
+    ghAccessToken: "https://github.com/login/oauth/access_token"
+  };
+
 	var env = (function () {
 		var envTmp = {}
 		_.each(process.env, function (value, key) {
@@ -53,6 +64,8 @@ define([
 				process.env.MONGOHQ_URL ||
 				mongo1
 		},
-		env: env
+		env: env,
+		endpoints: endpoints,
+		keys: keys
 	};
 });

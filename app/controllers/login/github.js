@@ -1,15 +1,7 @@
-define(['request', 'app/components/utils/uri', 'app/models/login'], function (request, uri, login) {
-
-  var keys = {
-    ghClientId: 'a110297b7d6a6fab5dac',
-    ghClientSecret: '1f452780e9f37f5c49a3406e60917e0c1032fae7' // Abuse wisely. ;-)
-  }
-
-  var endpoints = {
-    dwRedirect: "http://localhost:9000/login/github/redirect",
-    ghAuthorize: "https://github.com/login/oauth/authorize",
-    ghAccessToken: "https://github.com/login/oauth/access_token"
-  };
+define(['request', 'app/components/utils/uri', 'app/models/login', 'config/config'], 
+function (request, uri, login, config) {
+  var endpoints = config.endpoints;
+  var keys = config.keys;
 
   function redirectURL(where,state) {
     return uri.toURL(endpoints.dwRedirect, {
@@ -17,6 +9,16 @@ define(['request', 'app/components/utils/uri', 'app/models/login'], function (re
       session: state
     });
   };
+
+  function mkLogin(code, session) { 
+    getAccessToken(code, function(body) {
+      var parameters = uri.fromParameterString(body);
+      login.create({
+        session: session,
+        access_token: parameters.access_token
+      });
+    });
+  }
 
   function authorize(req, res) {
     var later = req.query.redirect_uri
@@ -32,21 +34,11 @@ define(['request', 'app/components/utils/uri', 'app/models/login'], function (re
   function redirect(req, res) {
     var code    = req.query.code;
     var session = req.query.session;
-    getAccessToken(code, saveWithSession(session));
+    mkLogin(code, session);
     var after = req.query.redirect_uri;
     res.redirect(after);
   };
-
-  function saveWithSession(session) {
-    return function(str) {
-      var parameters = uri.fromParameterString(str);
-      new login({
-        session: session,
-        access_token: parameters.access_token
-      }).save;
-    } 
-  }
-
+  
   function getAccessToken(code, callback) {
     var url = uri.toURL(endpoints.ghAccessToken, {
       client_id: keys.ghClientId,
@@ -56,10 +48,10 @@ define(['request', 'app/components/utils/uri', 'app/models/login'], function (re
     request.post(url, {}, function(err,resp,body) {
       callback(body);
     });
-  }
+  };
 
-	return {
-	  authorize: authorize,
-	  redirect: redirect
-	};
+  return {
+    authorize: authorize,
+    redirect: redirect
+  };
 });
