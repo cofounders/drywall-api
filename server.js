@@ -20,7 +20,7 @@ requirejs([
 
 	var models_path = __dirname + '/app/models';
 	fs.readdirSync(models_path).forEach(function (file) {
-		if (~file.indexOf('.js')) {
+		if (/\.js$/.exec(~file)) {
 			requirejs(models_path + '/' + file);
 		}
 	});
