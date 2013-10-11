@@ -1,5 +1,5 @@
 define(['app/controllers/login/github'], function (gh) {
 	return {
-	  github: gh.github
+	  github: gh
 	};
 });

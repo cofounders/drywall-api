@@ -18,7 +18,7 @@ define([
 		// .get('/repos/:owner/:repo/branches', Do.Something)
 		// .get('/repos/:owner/:repo/issues')  repos.getIssues
 
-    .get('/login/github', login.github)
+    .get('/login/github/authorize', login.github.authorize)
 
 		.all('*', function (req, res) {
 			res.send(404);
