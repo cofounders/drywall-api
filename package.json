@@ -4,8 +4,7 @@
   "description": "drywall API",
   "main": "server.js",
   "scripts": {
-    "test": "grunt test",
-    "start": "grunt dev"
+    "test": "grunt test"
   },
   "repository": {
     "type": "git",
@@ -25,7 +24,8 @@
   "devDependencies": {
     "frisby": "0.6.9",
     "grunt": "0.4.1",
-    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-watch": "0.5.3",
+    "grunt-express-server": "0.4.4",
     "grunt-jasmine-node": "0.1.0",
     "grunt-contrib-jshint": "0.6.4",
     "grunt-nodemon": "0.1.1",
