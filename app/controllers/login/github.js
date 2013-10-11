@@ -1,20 +1,20 @@
 define(['request', 'app/components/utils/uri'], function (request, uri) {
+  function redirectURL(where) {
+    return uri.toURL("http://localhost:9000/login/github/redirect", {
+      redirect_uri: where
+    });
+  };
 
-  // Redirect users to Github to request access.
-  // Afterwards, have GitHub redirect to another URI, with `code` as parameter.
-  //  (Include a redirect in the endpoint, so we know where to go next..)
   function authorize(req, res) {
-    var url = uri.toURL('https://github.com/login/oauth/authorize', {
-      redirect_uri: req.query.redirect_uri, // '/login/github/redirect?redirect_uri=app'
+    var later = req.query.redirect_uri
+    var url = uri.toURL("https://github.com/login/oauth/authorize", {
+      redirect_uri: redirectURL(later),
       client_id: 'a110297b7d6a6fab5dac',
       scope: 'repo'
     });
     res.redirect(url);
   }; 
 
-  // Take the code parameter, and exchange this for an access token.
-  //  (Persist this, someplace..)
-  // Having authenticated, redirect..
   function redirect(req, res) {
     var code  = req.query.code;
     var token = getAccessToken(code);
@@ -28,7 +28,9 @@ define(['request', 'app/components/utils/uri'], function (request, uri) {
       client_secret: '1f452780e9f37f5c49a3406e60917e0c1032fae7', // Abuse wisely. ;-)
       code: code
     });
-    return request.post(url);
+    request.post(url, {}, function(err,resp,body) {
+      console.log(body);
+    });
   }
 
 	return {
