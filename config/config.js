@@ -45,7 +45,7 @@ define([
 
 	return {
 		server: {
-			port: env.PORT || 3003,
+			port: env.PORT || 9000,
 			ip: env.IP || "127.0.0.1",
 		},
 		db: {

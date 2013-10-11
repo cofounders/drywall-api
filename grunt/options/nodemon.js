@@ -1,25 +1,9 @@
 module.exports = {
-  development: {
+  server: {
     options: {
-      file: 'server.js',
+      file: '<%= package.main %>',
       env: {
-        PORT: '9002'
-      }
-    }
-  },
-  staging: {
-    options: {
-      file: 'server.js',
-      env: {
-        PORT: '9001'
-      }
-    }
-  },
-  production: {
-    options: {
-      file: 'server.js',
-      env: {
-        PORT: '9000'
+        PORT: '<%= package.port %>'
       }
     }
   }
