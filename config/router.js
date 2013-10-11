@@ -1,8 +1,9 @@
 define([
 	'underscore',
-	'app/controllers/organizations'
+	'app/controllers/organizations',
+	'app/controllers/login'
 ], function (
-	_, Organizations
+	_, Organizations, login
 ) {
 	return function (app, config) {
 
@@ -17,7 +18,7 @@ define([
 		// .get('/repos/:owner/:repo/branches', Do.Something)
 		// .get('/repos/:owner/:repo/issues')  repos.getIssues
 
-
+    .get('/login/github', login.github)
 
 		.all('*', function (req, res) {
 			res.send(404);

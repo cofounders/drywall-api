@@ -1,13 +1,16 @@
 define([
-	'config/config.js'
+	'config/config.js',
+	'app/components/utils/uri'
 ], function(
-	config
+	config,
+	uri
 ) {
 	var Exports = {};
 
 	Exports.someUtility = function (req, callback) {
-
 	}
+
+	Exports.uri = uri;
 
 	return Exports;
 });
