@@ -3,7 +3,6 @@ var fromPath = require('./endpoint.js').endpoint;
 
 function mkFrisby(desc, path, method, body, response, type, output, sub_output) {
   var endpoint = fromPath(path);
-  console.log('test ' + path);
   return frisby.create(desc)[method](endpoint, body)
                .expectStatus(response)
                .expectHeaderContains('content-type', type)
