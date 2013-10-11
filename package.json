@@ -23,16 +23,13 @@
     "cors": ""
   },
   "devDependencies": {
-    "nodemon": "",
+    "frisby": "0.6.9",
     "grunt": "0.4.1",
-    "grunt-contrib-jshint": "~0.6.4",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt-express": "1.2.1",
-    "grunt-exec": "~0.4.2",
-    "frisby": "~0.6.9",
-    "jasmine-node": "~1.11.0",
-    "load-grunt-config": "0.5.0",
-    "underscore": "~1.5.2"
+    "grunt-jasmine-node": "0.1.0",
+    "grunt-contrib-jshint": "0.6.4",
+    "grunt-nodemon": "0.1.1",
+    "load-grunt-config": "0.5.0"
   },
   "engines": {
     "node": "0.10.x",

@@ -1,10 +1,6 @@
 module.exports = function (grunt) {
   require('load-grunt-config')(grunt, {
-  configPath: 'grunt/options',
-  config: {
-      base: grunt.option('base') || process.cwd(),
-    }
+    configPath: 'grunt/options'
   });
-
   grunt.loadTasks('grunt/tasks');
 };
