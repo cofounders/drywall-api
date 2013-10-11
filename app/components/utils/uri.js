@@ -1,19 +1,15 @@
-define(['underscore'], function(_) {
-  function pairJoin(pair) {
-    return pair.join('=');
-  };
+define(['URIjs'], function(URI) {
 
-  function toParameters(p) {
-    var tail = _.pairs(p).map(pairJoin).join('&');
-    return ('?' + tail);
-  };
-
-  function toURL(base,params) {
-    var url = base + toParameters(params);
-    return url;
-  };
+  function toURL(base, params) {
+    return URI(base).search(params).toString();
+  }
+  
+  function fromParameterString(str) {
+    return URI('?' + str).query(true)
+  }
 
   return {
-    toURL: toURL 
+    toURL: toURL ,
+    fromParameterString: fromParameterString
   }
 });
