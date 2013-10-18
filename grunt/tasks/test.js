@@ -2,6 +2,7 @@ module.exports = function (grunt) {
   grunt.registerTask('test', [
     'jshint',
     'express',
-    'jasmine_node'
+    'exec:unit_tests',
+    'exec:integration_tests'
   ]);
 };
