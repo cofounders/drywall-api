@@ -2,8 +2,8 @@ deployment:
   production:
     branch: master
     heroku:
-      appname: drywall-production
+      appname: drywall-api-production
   staging:
     branch: develop
     heroku:
-      appname: drywall-staging
+      appname: drywall-api-staging
