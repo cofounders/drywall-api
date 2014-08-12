@@ -1,16 +1,11 @@
-define([
-	'underscore', 'mongoose'
-], function (
-	_, mongoose
-) {
-	var Exports = {};
+var Exports = {};
 
 	/*
 	* Populate the collections in our DB
 	* https://api.github.com/orgs/cofounders
 	* https://api.github.com/orgs/cofounders/repos
 	*/
-	var populateOrgsCol = function() {
+	Exports.populateOrgsCol = function() {
 		var orgs = [{
 			"login": "cofounders",
 			"id": 1776840,
@@ -40,7 +35,7 @@ define([
 		});
 	};
 
-	var populateReposCol = function() {
+	Exports.populateReposCol = function() {
 		var repos = [{
 			"id": 5520683,
 			"name": "api-boilerplate",
@@ -310,7 +305,9 @@ define([
 		}];
 
 		db.collection('repos', function(err, collection) {
-			 collection.insert(repos, {safe:true}, function(err, result) {});
+			collection.insert(repos, {safe:true}, function(err, result) {
+				console.log('repos inserted!')
+			});
 		});
 	};
 
@@ -319,5 +316,4 @@ define([
 
 	}
 
-	return Exports;
-});
+module.exports = Exports;

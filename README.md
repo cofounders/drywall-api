@@ -36,7 +36,7 @@ Run the app in development mode to automatically restart when you make a change 
 
 Sanity check the code and run integration tests.
 
-    npm test
+    grunt test
 
 ### Configuration
 
