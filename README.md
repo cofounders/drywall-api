@@ -2,6 +2,8 @@
 
 *RESTful API using Node.js, Express, and MongoDB*
 
+[ ![Codeship Status for cofounders/drywall-api](https://codeship.io/projects/cb87fab0-04be-0132-38cc-22164d46567f/status)](https://codeship.io/projects/30705)
+
 ### Setup
 
 1. Install [Node.js](http://nodejs.org/)
@@ -36,7 +38,7 @@ Run the app in development mode to automatically restart when you make a change 
 
 Sanity check the code and run integration tests.
 
-    grunt test
+    npm test
 
 ### Configuration
 
