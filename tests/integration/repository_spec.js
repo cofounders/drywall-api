@@ -1,5 +1,5 @@
 var frisby               = require('frisby');
-var mkFrisbyGETJSON200      = require('../helpers/frisby.js').mkFrisbyGETJSON200;
+var mkFrisbyGETJSON200   = require('../helpers/frisby.js').mkFrisbyGETJSON200;
 var isGithubOrganization = require('../helpers/typecheck.js').isGithubOrganization;
 var isGithubRepository   = require('../helpers/typecheck.js').isGithubRepository;
 var allHaveProperty      = require('../helpers/typecheck.js').allHaveProperty;
