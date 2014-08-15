@@ -26,4 +26,4 @@ stickiesSchema.pre('save', function (next) {
 	next();
 });
 
-module.exports = mongoose.model('Note', stickiesSchema);
+module.exports = mongoose.model('Stickie', stickiesSchema);
