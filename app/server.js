@@ -13,8 +13,8 @@ var routes = require('./routes');
 var app = express();
 var dbUrl = config.db.uri;
 var authenticate = jwt({
-  secret: new Buffer(process.env.WEBUILD_AUTH0_CLIENT_SECRET, 'base64'),
-  audience: process.env.WEBUILD_AUTH0_CLIENT_ID
+  secret: new Buffer(config.auth0.secret, 'base64'),
+  audience: config.auth0.clientId
 });
 
 app.use(bodyParser.json());

@@ -9,6 +9,11 @@ module.exports = {
       'mongodb://127.0.0.1:27017/test'
   },
 
+  auth0: {
+    secret: process.env.AUTH0_CLIENT_SECRET,
+    clientId: process.env.AUTH0_CLIENT_ID
+  },
+
   keys: {
     ghClientId: 'a110297b7d6a6fab5dac',
     ghClientSecret: '1f452780e9f37f5c49a3406e60917e0c1032fae7' // Abuse wisely. ;-)
