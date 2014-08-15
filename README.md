@@ -11,35 +11,34 @@
 1. Install [MongoDB](http://docs.mongodb.org/manual/installation/)
 
 1. Install the dependencies
-
-		npm install
-
+```
+	$ npm install
+```
 1. Start MongoDB
-
-		bin/mongod
-
-    See MongoDB documentation for how to set this up as a background process.
-
+```
+  $ mongod
+  $ mongod --dbpath /data/db  # specify path to db data
+```
 1. Run the node server on localhost (default port 9000)
+```
+	$ npm start
+```
+1. Check that its working:
 
-		npm start
-
-1. To see a list of repos for an organisation, navigate to:
-
-	<http://localhost:9000/orgs/cofounders/repos>
+	<http://localhost:9000>
 
 ### Development
 
 Run the app in development mode to automatically restart when you make a change to the source code.
-
-    grunt dev
-
+```
+  $ grunt dev
+```
 ### Tests
 
 Sanity check the code and run integration tests.
-
-    npm test
-
+```
+  $ npm test
+```
 ### Configuration
 
 | Environment Variable | Default Value | Description |

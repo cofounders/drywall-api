@@ -1,9 +1,10 @@
-var express = require('express');
-var mongoose = require('mongoose');
-var cors = require('cors');
 var bodyParser = require('body-parser');
-var morgan  = require('morgan');
+var express = require('express');
 var compression = require('compression');
+var cors = require('cors');
+var jwt = require('express-jwt');
+var mongoose = require('mongoose');
+var morgan  = require('morgan');
 
 var config = require('./config');
 var db = require('./components/database');
@@ -11,6 +12,10 @@ var routes = require('./routes');
 
 var app = express();
 var dbUrl = config.db.uri;
+var authenticate = jwt({
+  secret: new Buffer(process.env.WEBUILD_AUTH0_CLIENT_SECRET, 'base64'),
+  audience: process.env.WEBUILD_AUTH0_CLIENT_ID
+});
 
 app.use(bodyParser.json());
 app.use(morgan('combined'));
@@ -20,6 +25,7 @@ app.use(cors({
   methods: ['GET, PUT, POST, DELETE, OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.use('/api', authenticate);
 
 console.log('Connecting to', dbUrl);
 db.connect(dbUrl, function(err) {
@@ -32,3 +38,11 @@ db.connect(dbUrl, function(err) {
     console.log('Server up at port %d', config.port);
   }
 });
+
+app.get('/ping', function(req, res) {
+  res.send(200, {text: "All good. You don't need to be authenticated to call this"});
+});
+
+app.get('/api/ping', function(req, res) {
+  res.send(200, {text: "All good. You only get this message if you're authenticated"});
+})
