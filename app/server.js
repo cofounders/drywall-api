@@ -13,7 +13,7 @@ var routes = require('./routes');
 var app = express();
 var dbUrl = config.db.uri;
 var authenticate = jwt({
-  secret: new Buffer(config.auth0.secret, 'base64'),
+  secret: new Buffer(config.auth0.secret || '', 'base64'),
   audience: config.auth0.clientId
 });
 
@@ -34,8 +34,8 @@ db.connect(dbUrl, function(err) {
     process.exit(1);
   } else {
     routes.setup(app);
-    app.listen(config.port);
-    console.log('Server up at port %d', config.port);
+    app.listen(9000);
+   console.log('Server up at port ' + config.port);
   }
 });
 
