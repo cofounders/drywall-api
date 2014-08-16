@@ -34,8 +34,8 @@ db.connect(dbUrl, function(err) {
     process.exit(1);
   } else {
     routes.setup(app);
-    app.listen(9000);
-   console.log('Server up at port ' + config.port);
+    app.listen(config.port);
+    console.log('Server up at port ' + config.port);
   }
 });
 
