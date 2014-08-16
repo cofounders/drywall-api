@@ -19,4 +19,5 @@ function setup(app) {
     res.send(404);
   });
 }
+
 exports.setup = setup;
