@@ -19,7 +19,7 @@
     "compression": "1.0.11",
     "cors": "2.4.1",
     "express": "4.8.3",
-    "express-jwt": "^0.3.1",
+    "express-jwt": "0.3.1",
     "mongoose": "3.8.14",
     "morgan": "1.2.2",
     "request": "2.40.0",
@@ -30,7 +30,7 @@
     "grunt": "0.4.1",
     "grunt-contrib-watch": "0.5.3",
     "grunt-express-server": "0.4.4",
-    "grunt-jasmine-node": "git://github.com/AmpexShouldTicklesDazzler/grunt-jasmine-node-multitask.git#multitask",
+    "grunt-jasmine-node": "0.2.1",
     "grunt-contrib-jshint": "0.6.4",
     "grunt-nodemon": "0.1.1",
     "load-grunt-config": "0.5.0"
