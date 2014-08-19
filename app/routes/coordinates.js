@@ -13,28 +13,6 @@ function modelValues(obj) {
   return attributes;
 }
 
-function add(req, res) {
-  console.log('POST: ', req.query);
-  var owner = req.params.owner;
-  var repo = req.params.repo;
-
-  values = modelValues(_.extend(req.query, {
-    'owner': owner, 'repo': repo
-  }));
-
-  var coordinates = new CoordinatesModel(values);
-  coordinates.save(function (err) {
-    if (!err) {
-      console.log('Coordinates created');
-      return res.send(values);
-    } else {
-      console.error(err.errors);
-      res.status(500)
-         .send('Error saving coordinates for ' + owner + '/' + repo);
-    }
-  });
-}
-
 function list(req, res) {
   console.log('GET: ', req.params);
   var owner = req.params.owner;
@@ -48,18 +26,69 @@ function list(req, res) {
       return res.send(coordinate);
     } else {
       console.error(err.errors);
-      return res.status(404)
-      .send('Error finding coordinates for ' + owner + '/' + repo);
+      return res.status(400)
+         .send('Error finding coordinates for ' + owner + '/' + repo);
+    }
+  });
+}
+
+function add(req, res) {
+  console.log('POST: ', req.query);
+  var owner = req.params.owner;
+  var repo = req.params.repo;
+
+  values = modelValues(_.extend(req.query, {
+    owner: owner, repo: repo
+  }));
+
+  var coordinates = new CoordinatesModel(values);
+  coordinates.save(function (err) {
+    if (!err) {
+      console.log('Coordinates created');
+      return res.send(values);
+    } else {
+      console.error(err.errors);
+      return res.status(400)
+         .send('Error saving coordinates for ' + owner + '/' + repo);
     }
   });
 }
 
 function update(req, res) {
   console.log('PUT: ', req.query);
+
+  if (!req.query.number || !req.query.x || !req.query.y) {
+    return res.status(400)
+       .send('Missing required param `x`,`y` or `number`');
+  }
+  var owner = req.params.owner;
+  var repo = req.params.repo;
+  var queryVals = {
+    owner: owner,
+    repo: repo,
+    number: req.query.number
+  };
+  var updateVals = {
+    x: req.query.x,
+    y: req.query.y
+  };
+
+  function callback(err, obj) {
+    if (!err) {
+      console.log('Updated Coordinates' + obj);
+      return res.send(_.extend(queryVals, updateVals));
+    } else {
+      console.error(err.errors);
+      return res.status(400)
+         .send('Error updating coordinates for ' + owner + '/' + repo);
+    }
+  }
+
+  CoordinatesModel.findOneAndUpdate(queryVals, updateVals, {upsert: true}, callback);
 }
 
 module.exports = {
-  add: add,
   list: list,
+  add: add,
   update: update
 };

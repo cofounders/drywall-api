@@ -41,4 +41,14 @@ function getCoordinates() {
   }).catch(errFunc);
 }
 
-postCoordinates();
+function updateCoordinates() {
+  prequest({
+    method: 'PUT',
+    url: baseUrl + '/cofounders/drywall-web/coordinates' +
+          '?x=100&y=200'
+  }).then(function(d) {
+    console.log(d);
+  }).catch(errFunc);
+}
+
+updateCoordinates();
