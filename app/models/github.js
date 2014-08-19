@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var request = require('request');
 var uri = require('../components/uri');
 var config = require('../config');
 
@@ -16,9 +15,9 @@ function getAccessToken(code, callback) {
     client_secret: keys.ghClientSecret,
     code: code
   });
-  request.post(url, {}, function(err,resp,body) {
-    callback(body);
-  });
+  // request.post(url, {}, function(err,resp,body) {
+  //   callback(body);
+  // });
 }
 
 schema.static('make', function(code, session) {
