@@ -3,7 +3,8 @@ module.exports = function (grunt) {
     express: {
       options: {
         script: '<%= package.main %>',
-        port: '<%= package.port %>'
+        port: '<%= package.port %>',
+        output: 'Server up'
       }
     }
   };
