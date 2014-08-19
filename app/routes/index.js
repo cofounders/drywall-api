@@ -15,9 +15,7 @@ function setup(app) {
   });
   app.post('/:owner/:repo/coordinates', coordinates.add);
   app.get('/:owner/:repo/coordinates', coordinates.list);
-  // app.put('/:organisation/:repo/stickies', stickies.update);
-  // app.post('/:organisation/:repo/stickies', stickies.add);
-  // app.delete('/:organisation/:repo/stickies', stickies.delete);
+  app.put('/:owner/:repo/coordinates', coordinates.update);
   app.get('/login/github', github.authorize);
   app.get('/login/github/redirect', github.redirect);
   app.all('*', function (req, res, next) {

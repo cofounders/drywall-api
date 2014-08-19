@@ -54,7 +54,12 @@ function list(req, res) {
   });
 }
 
+function update(req, res) {
+  console.log('PUT: ', req.query);
+}
+
 module.exports = {
   add: add,
-  list: list
+  list: list,
+  update: update
 };

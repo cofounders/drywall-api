@@ -29,4 +29,6 @@ CoordinateSchema.pre('save', function (next) {
 	next();
 });
 
+CoordinateSchema.index({owner: 1, repo: 1});
+
 module.exports = mongoose.model('Coordinate', CoordinateSchema);
