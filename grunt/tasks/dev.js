@@ -1,6 +1,9 @@
 module.exports = function (grunt) {
   grunt.registerTask('dev', [
     'jshint',
-    'nodemon'
+    'concurrent'
+    //'express',
+    //'nodemon',
+    //'node-inspector'
   ]);
 };

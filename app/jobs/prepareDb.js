@@ -29,10 +29,6 @@ var Exports = {};
 			"updated_at": "2013-10-01T11:51:33Z",
 			"type": "Organization"
 		}];
-
-		db.collection('orgs', function(err, collection) {
-			 collection.insert(orgs, {safe:true}, function(err, result) {});
-		});
 	};
 
 	Exports.populateReposCol = function() {
@@ -306,7 +302,7 @@ var Exports = {};
 
 		db.collection('repos', function(err, collection) {
 			collection.insert(repos, {safe:true}, function(err, result) {
-				console.log('repos inserted!')
+				console.log('repos inserted!');
 			});
 		});
 	};
@@ -314,6 +310,6 @@ var Exports = {};
 
 	Exports.run = function () {
 
-	}
+	};
 
 module.exports = Exports;

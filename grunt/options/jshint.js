@@ -11,15 +11,13 @@ module.exports = function (grunt) {
     tests: {
       jshintrc: '.jshintrc',
       src: [
-        'tests/**/*_spec.js',
-        'tests/helpers/*.js'
+        'tests/**/*js',
       ]
     },
     app: {
       jshintrc: '.jshintrc',
       src: [
-        'server.js',
-        'routes/*.js'
+        'app/**/*.js'
       ]
     }
   };

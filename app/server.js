@@ -40,9 +40,11 @@ db.connect(dbUrl, function(err) {
 });
 
 app.get('/ping', function(req, res) {
-  res.send(200, {text: "All good. You don't need to be authenticated to call this"});
+  res.status(200).send({text: "All good. You don't need to be authenticated to call this"});
 });
 
 app.get('/api/ping', function(req, res) {
-  res.send(200, {text: "All good. You only get this message if you're authenticated"});
-})
+  console.error('!!' + JSON.stringify(req.user));
+  console.log(req.query.access_token);
+  res.status(200).send({text: "All good. You only get this message if you're authenticated"});
+});

@@ -17,7 +17,7 @@ function connect(dbUrl, cb) {
     log('mongo connection opened at:', dbUrl);
     cb(null);
   });
-};
+}
 
 module.exports = {
   connect: connect

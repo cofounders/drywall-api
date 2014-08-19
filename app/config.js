@@ -4,8 +4,8 @@ module.exports = {
   db: {
     sess_interval: 3600,
     uri:
-      process.env.MONGOLAB_URI ||
-      process.env.MONGOHQ_URL ||
+      process.env.DRYWALL_MONGOLAB_URI ||
+      process.env.DRYWALL_MONGOHQ_URI ||
       'mongodb://127.0.0.1:27017/test'
   },
 

@@ -9,18 +9,18 @@ function redirectURL(where,state) {
     redirect_uri: where,
     session: state
   });
-};
+}
 
 function authorize(req, res) {
-  var later = req.query.redirect_uri
-  var state = req.query.session
+  var later = req.query.redirect_uri;
+  var state = req.query.session;
   var url = uri.toURL(endpoints.ghAuthorize, {
     redirect_uri: redirectURL(later,state),
     client_id: keys.ghClientId,
     scope: 'repo'
   });
   res.redirect(url);
-};
+}
 
 function redirect(req, res) {
   var code = req.query.code;
@@ -28,7 +28,7 @@ function redirect(req, res) {
   login.make(code, session);
   var after = req.query.redirect_uri;
   res.redirect(after);
-};
+}
 
 module.exports = {
   authorize: authorize,

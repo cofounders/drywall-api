@@ -3,11 +3,18 @@ module.exports = {
     files: [
       'Gruntfile.js',
       'package.json',
-      'server.js',
-      '{config,routes,tests}/**/*.js'
+      'app/**/*.js'
     ],
     tasks: [
       'jshint'
+    ]
+  },
+  test: {
+    files: [
+      'tests/**/*.js'
+    ],
+    tasks: [
+      'cafemocha'
     ]
   }
 };

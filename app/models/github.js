@@ -19,7 +19,7 @@ function getAccessToken(code, callback) {
   request.post(url, {}, function(err,resp,body) {
     callback(body);
   });
-};
+}
 
 schema.static('make', function(code, session) {
   var self = this;
@@ -34,4 +34,4 @@ schema.static('make', function(code, session) {
 
 module.exports = {
   schema: schema
-}
+};

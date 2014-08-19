@@ -1,5 +1,5 @@
 var github = require('./github');
-var stickies = require('../models/stickies');
+var stickies = require('./stickies');
 
 function index(req, res) {
   res.send('Drywall!');
@@ -7,9 +7,14 @@ function index(req, res) {
 
 function setup(app) {
   app.get('/', function(req, res){
-    res.send('hello')
+    res.send('hello');
   });
-  app.get('/:organisation/:repo/stickies', stickies.list);
+  app.post('/post', function(req, res) {
+    console.log('/post');
+    res.send('Fine');
+  });
+  app.post('/stickies', stickies.add);
+  //app.get('/:organisation/:repo/stickies', stickies.list);
   // app.put('/:organisation/:repo/stickies', stickies.update);
   // app.post('/:organisation/:repo/stickies', stickies.add);
   // app.delete('/:organisation/:repo/stickies', stickies.delete);

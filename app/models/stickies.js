@@ -4,7 +4,8 @@ var stickiesSchema = new mongoose.Schema({
 	number: Number,
   x: Number,
   y: Number,
-  x: Number,
+  owner: String,
+  repo: String,
   timestamp: {
     type: Date,
     default: Date.now
@@ -16,10 +17,12 @@ stickiesSchema.methods = {
 };
 
 stickiesSchema.statics = {
-  list: function () { return },
-  update: function () { return },
-  add: function () { return },
-  remove: function () { return }
+  list: function () { return; },
+  update: function () { return; },
+  add: function () { return; },
+  remove: function () {
+    return;
+  }
 };
 
 stickiesSchema.pre('save', function (next) {
