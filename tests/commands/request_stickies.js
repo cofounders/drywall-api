@@ -2,6 +2,9 @@ var prequest = require('request-promise');
 var jwt = require('jsonwebtoken');
 var expressjwt = require('express-jwt');
 var config = require('../../app/config');
+var errFunc = function(e) {
+  return console.error(e.statusCode, e.error);
+};
 
 var token = jwt.sign(
   {foo: 'bar'},
@@ -27,8 +30,12 @@ function postEmptyStickie() {
     url: baseUrl + '/stickies'
   }).then(function(d) {
     console.log(d);
-  }).catch(function(e) {
-    console.error(e.statusCode, e.error);
-  });
+  }).catch(errFunc);
 }
 
+function getStickies() {
+  prequest(baseUrl + '/stickies?owner=cofounders&repo=drywall-web')
+  .then(function(d) {
+    console.log(d);
+  }).catch(errFunc);
+}

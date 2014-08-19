@@ -14,7 +14,7 @@ function setup(app) {
     res.send('Fine');
   });
   app.post('/stickies', stickies.add);
-  //app.get('/:organisation/:repo/stickies', stickies.list);
+  app.get('/stickies', stickies.list);
   // app.put('/:organisation/:repo/stickies', stickies.update);
   // app.post('/:organisation/:repo/stickies', stickies.add);
   // app.delete('/:organisation/:repo/stickies', stickies.delete);

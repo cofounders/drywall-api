@@ -13,7 +13,7 @@ function modelValues(obj) {
 }
 
 function add(req, res) {
-  console.log("POST: ", req.body);
+  console.log('POST: ', req.body);
   values = modelValues(req.body);
   console.log(Object.keys(values).length);
   if (Object.keys(values).length === 0) {
@@ -32,6 +32,28 @@ function add(req, res) {
   return res.send('Stickie posted');
 }
 
+function list(req, res) {
+  console.log('GET: ', req.query);
+  var owner = req.query.owner;
+  var repo = req.query.repo;
+  if (!owner || !repo) {
+    return res.status(404).send('No owner or repo');
+  }
+
+  StickiesModel.find({
+    repo: repo,
+    owner: owner
+  }, function (err, stickie) {
+    if (!err) {
+      return res.send(stickie);
+    } else {
+      console.error(err);
+      return res.status(404).send('No stickie found');
+    }
+  });
+}
+
 module.exports = {
-  add: add
+  add: add,
+  list: list
 };
