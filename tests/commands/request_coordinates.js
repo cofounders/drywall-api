@@ -24,18 +24,21 @@ prequest({
   console.error('Could not connect');
 });
 
-function postEmptyCoordinate() {
+function postCoordinates() {
   prequest({
     method: 'POST',
-    url: baseUrl + '/coordinates'
+    url: baseUrl + '/cofounders/drywall-web/coordinates' +
+          '?x=10&y=20&number=70'
   }).then(function(d) {
     console.log(d);
   }).catch(errFunc);
 }
 
 function getCoordinates() {
-  prequest(baseUrl + '/coordinates?owner=cofounders&repo=drywall-web')
+  prequest(baseUrl + '/cofounders/drywall-web/coordinates')
   .then(function(d) {
     console.log(d);
   }).catch(errFunc);
 }
+
+postCoordinates();

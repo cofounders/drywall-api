@@ -1,3 +1,4 @@
+var _ = require('underscore');
 var CoordinatesModel = require('../models/coordinates');
 
 function modelValues(obj) {
@@ -13,32 +14,31 @@ function modelValues(obj) {
 }
 
 function add(req, res) {
-  console.log('POST: ', req.body);
-  values = modelValues(req.body);
-  console.log(Object.keys(values).length);
-  if (Object.keys(values).length === 0) {
-    return res.status(200)
-              .send('No coordinates posted');
-  }
+  console.log('POST: ', req.query);
+  var owner = req.params.owner;
+  var repo = req.params.repo;
+
+  values = modelValues(_.extend(req.query, {
+    'owner': owner, 'repo': repo
+  }));
 
   var coordinates = new CoordinatesModel(values);
   coordinates.save(function (err) {
     if (!err) {
-      return console.log('Coordinate created');
+      console.log('Coordinates created');
+      return res.send(values);
     } else {
-      return console.log(err);
+      console.error(err.errors);
+      res.status(500)
+         .send('Error saving coordinates for ' + owner + '/' + repo);
     }
   });
-  return res.send('Coordinate posted');
 }
 
 function list(req, res) {
-  console.log('GET: ', req.query);
-  var owner = req.query.owner;
-  var repo = req.query.repo;
-  if (!owner || !repo) {
-    return res.status(404).send('No owner or repo');
-  }
+  console.log('GET: ', req.params);
+  var owner = req.params.owner;
+  var repo = req.params.repo;
 
   CoordinatesModel.find({
     repo: repo,
@@ -47,8 +47,9 @@ function list(req, res) {
     if (!err) {
       return res.send(coordinate);
     } else {
-      console.error(err);
-      return res.status(404).send('No coordinates found');
+      console.error(err.errors);
+      return res.status(404)
+      .send('Error finding coordinates for ' + owner + '/' + repo);
     }
   });
 }

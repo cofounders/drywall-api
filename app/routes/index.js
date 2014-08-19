@@ -13,8 +13,8 @@ function setup(app) {
     console.log('/post');
     res.send('Fine');
   });
-  app.post('/coordinates', coordinates.add);
-  app.get('/coordinates', coordinates.list);
+  app.post('/:owner/:repo/coordinates', coordinates.add);
+  app.get('/:owner/:repo/coordinates', coordinates.list);
   // app.put('/:organisation/:repo/stickies', stickies.update);
   // app.post('/:organisation/:repo/stickies', stickies.add);
   // app.delete('/:organisation/:repo/stickies', stickies.delete);

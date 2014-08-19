@@ -1,9 +1,9 @@
 var mongoose = require('mongoose');
 
 var CoordinateSchema = new mongoose.Schema({
-	number: Number,
-  x: Number,
-  y: Number,
+	number: {type: Number, required: true},
+  x: {type: Number, required: true},
+  y: {type: Number, required: true},
   owner: String,
   repo: String,
   timestamp: {
