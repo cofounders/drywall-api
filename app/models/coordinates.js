@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var stickiesSchema = new mongoose.Schema({
+var CoordinateSchema = new mongoose.Schema({
 	number: Number,
   x: Number,
   y: Number,
@@ -12,11 +12,11 @@ var stickiesSchema = new mongoose.Schema({
   },
 }, { strict: false });
 
-stickiesSchema.methods = {
+CoordinateSchema.methods = {
 
 };
 
-stickiesSchema.statics = {
+CoordinateSchema.statics = {
   list: function () { return; },
   update: function () { return; },
   add: function () { return; },
@@ -25,8 +25,8 @@ stickiesSchema.statics = {
   }
 };
 
-stickiesSchema.pre('save', function (next) {
+CoordinateSchema.pre('save', function (next) {
 	next();
 });
 
-module.exports = mongoose.model('Stickie', stickiesSchema);
+module.exports = mongoose.model('Coordinate', CoordinateSchema);

@@ -1,9 +1,9 @@
-var StickiesModel = require('../models/stickies');
+var CoordinatesModel = require('../models/coordinates');
 
 function modelValues(obj) {
   var attributes = {};
 
-  StickiesModel.schema.eachPath(function(key) {
+  CoordinatesModel.schema.eachPath(function(key) {
     if (obj[key]) {
       attributes[key] = obj[key];
     }
@@ -18,18 +18,18 @@ function add(req, res) {
   console.log(Object.keys(values).length);
   if (Object.keys(values).length === 0) {
     return res.status(200)
-              .send('No stickies posted');
+              .send('No coordinates posted');
   }
 
-  var stickies = new StickiesModel(values);
-  stickies.save(function (err) {
+  var coordinates = new CoordinatesModel(values);
+  coordinates.save(function (err) {
     if (!err) {
-      return console.log('Stickie created');
+      return console.log('Coordinate created');
     } else {
       return console.log(err);
     }
   });
-  return res.send('Stickie posted');
+  return res.send('Coordinate posted');
 }
 
 function list(req, res) {
@@ -40,15 +40,15 @@ function list(req, res) {
     return res.status(404).send('No owner or repo');
   }
 
-  StickiesModel.find({
+  CoordinatesModel.find({
     repo: repo,
     owner: owner
-  }, function (err, stickie) {
+  }, function (err, coordinate) {
     if (!err) {
-      return res.send(stickie);
+      return res.send(coordinate);
     } else {
       console.error(err);
-      return res.status(404).send('No stickie found');
+      return res.status(404).send('No coordinates found');
     }
   });
 }

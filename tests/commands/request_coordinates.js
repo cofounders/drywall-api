@@ -24,17 +24,17 @@ prequest({
   console.error('Could not connect');
 });
 
-function postEmptyStickie() {
+function postEmptyCoordinate() {
   prequest({
     method: 'POST',
-    url: baseUrl + '/stickies'
+    url: baseUrl + '/coordinates'
   }).then(function(d) {
     console.log(d);
   }).catch(errFunc);
 }
 
-function getStickies() {
-  prequest(baseUrl + '/stickies?owner=cofounders&repo=drywall-web')
+function getCoordinates() {
+  prequest(baseUrl + '/coordinates?owner=cofounders&repo=drywall-web')
   .then(function(d) {
     console.log(d);
   }).catch(errFunc);

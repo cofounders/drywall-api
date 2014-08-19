@@ -1,5 +1,5 @@
 var github = require('./github');
-var stickies = require('./stickies');
+var coordinates = require('./coordinates');
 
 function index(req, res) {
   res.send('Drywall!');
@@ -13,15 +13,15 @@ function setup(app) {
     console.log('/post');
     res.send('Fine');
   });
-  app.post('/stickies', stickies.add);
-  app.get('/stickies', stickies.list);
+  app.post('/coordinates', coordinates.add);
+  app.get('/coordinates', coordinates.list);
   // app.put('/:organisation/:repo/stickies', stickies.update);
   // app.post('/:organisation/:repo/stickies', stickies.add);
   // app.delete('/:organisation/:repo/stickies', stickies.delete);
   app.get('/login/github', github.authorize);
   app.get('/login/github/redirect', github.redirect);
   app.all('*', function (req, res, next) {
-    res.send(404);
+    res.status(404);
   });
 }
 
