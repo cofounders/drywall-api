@@ -32,7 +32,7 @@ function list(req, res) {
   });
 }
 
-function add(req, res) {
+function create(req, res) {
   console.log('POST: ', req.query);
   var owner = req.params.owner;
   var repo = req.params.repo;
@@ -54,7 +54,7 @@ function add(req, res) {
   });
 }
 
-function update(req, res) {
+function addUpdate(req, res) {
   console.log('PUT: ', req.query);
 
   if (!req.query.number || !req.query.x || !req.query.y) {
@@ -70,7 +70,8 @@ function update(req, res) {
   };
   var updateVals = {
     x: req.query.x,
-    y: req.query.y
+    y: req.query.y,
+    timestamp: new Date().toISOString()
   };
 
   function callback(err, obj) {
@@ -84,11 +85,15 @@ function update(req, res) {
     }
   }
 
-  CoordinatesModel.findOneAndUpdate(queryVals, updateVals, {upsert: true}, callback);
+  CoordinatesModel.findOneAndUpdate(
+    queryVals,
+    updateVals,
+    {upsert: true},
+    callback
+  );
 }
 
 module.exports = {
   list: list,
-  add: add,
-  update: update
+  add: addUpdate
 };

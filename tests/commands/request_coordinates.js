@@ -45,10 +45,8 @@ function updateCoordinates() {
   prequest({
     method: 'PUT',
     url: baseUrl + '/cofounders/drywall-web/coordinates' +
-          '?x=100&y=200'
+          '?x=50&y=60&number=72'
   }).then(function(d) {
     console.log(d);
   }).catch(errFunc);
 }
-
-updateCoordinates();

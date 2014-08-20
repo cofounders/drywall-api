@@ -15,7 +15,6 @@ function setup(app) {
   });
   app.post('/:owner/:repo/coordinates', coordinates.add);
   app.get('/:owner/:repo/coordinates', coordinates.list);
-  app.put('/:owner/:repo/coordinates', coordinates.update);
   app.get('/login/github', github.authorize);
   app.get('/login/github/redirect', github.redirect);
   app.all('*', function (req, res, next) {
