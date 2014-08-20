@@ -8,17 +8,13 @@
 
 1. Install [Node.js](http://nodejs.org/)
 
-1. Install [MongoDB](http://docs.mongodb.org/manual/installation/)
+1. Set a DRYWALL_MONGO environment variable (details below) or install [MongoDB](http://docs.mongodb.org/manual/installation/)
 
 1. Install the dependencies
 ```
 	$ npm install
 ```
-1. Start MongoDB
-```
-  $ mongod
-  $ mongod --dbpath /data/db  # specify path to db data
-```
+
 1. Run the node server on localhost (default port 9000)
 ```
 	$ npm start
@@ -39,17 +35,32 @@ Sanity check the code and run integration tests.
 ```
   $ npm test
 ```
-### Configuration
+### Configurations
+The following environment variables are used in this app and can be configured in `app/config.js`.
+You may grab these values from a heroku application.
 
-| Environment Variable | Default Value | Description |
-| --- | --- |--- |
-| `PORT` | 9000 | TCP port where the app listens for HTTP requests |
-| `MONGOHQ_URL` | n/a | MongoDB connection string |
-| `MONGOLAB_URI` | n/a | MongoDB connection string |
+`PORT` (default: 9000): TCP port where the app listens for HTTP requests
+`DRYWALL_AUTH0_CLIENT_SECRET`: [Auth0](http://auth0.com) client secret for drywall. It handles user social logins.
+`DRYWALL_AUTH0_ID`: [Auth0](http://auth0.com) client id for drywall. It handles user social logins.
+`DRYWALL_MONGOHQ_URI`: MongoDB connection string
+`DRYWALL_MONGOLAB_URI`: MongoDB connection string
 
-By default the app connects to MongoDB as `mongodb://localhost:27017/gitdb`.
+By default the app connects to MongoDB as `mongodb://localhost:27017/test`.
 
-### Quick start usage to playing with the interactive mongo shell
+### Deployment
+Auto deployment from a code branch to heroku is handled by codeship.
+
+| Environment Type | branch | URL |
+| --- | --- | --- |
+| Staging | `develop` | <http://drywall-api-staging.herokuapp.com> |
+| Production | `master` | <http://drywall-api-production.herokuapp.com> |
+
+### MongoDB
+To start MongoDB locally:
+```
+  $ mongod
+  $ mongod --dbpath /data/db  # specify path to db data
+```
 
 <http://docs.mongodb.org/manual/reference/mongo-shell/>
 

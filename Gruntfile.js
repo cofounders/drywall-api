@@ -1,6 +1,8 @@
 module.exports = function (grunt) {
   require('load-grunt-config')(grunt, {
-    configPath: 'grunt/options',
+    configPath: require('path').join(process.cwd(),
+      'grunt/options'
+    ),
     config: {
       port: 9000
     },
