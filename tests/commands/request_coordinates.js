@@ -47,7 +47,7 @@ function updateCoordinates() {
     url: baseUrl + '/cofounders/drywall-web/coordinates',
     json: {
       'x': 80,
-      'y': 80,
+      'y': 100,
       'number': 72
     }
   }).then(function(d) {

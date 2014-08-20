@@ -14,9 +14,7 @@ frisby.create('Test getting coordinates')
   .expectJSONTypes('?', {
     number: Number,
     x: Number,
-    y: Number,
-    owner: owner,
-    repo: repo
+    y: Number
   })
 .toss();
 
@@ -27,8 +25,8 @@ frisby.create('Test posting missing coordinates')
 
 frisby.create('Test updating missing number')
   .post(coordinatesUrl, {
-    x: '100',
-    y: '20'
-  })
+    x: 180,
+    y: 20
+  }, {json: true})
   .expectStatus(400)
 .toss();
