@@ -57,7 +57,9 @@ function create(req, res) {
 function addUpdate(req, res) {
   console.log('PUT: ', req.body);
 
-  if (!req.body.number || !req.body.x || !req.body.y) {
+  if (!req.body.hasOwnProperty('number') ||
+      !req.body.hasOwnProperty('x')||
+      !req.body.hasOwnProperty('y')) {
     return res.status(400)
        .send('Missing required data `x`,`y` or `number`');
   }

@@ -26,6 +26,9 @@ frisby.create('Test posting missing coordinates')
 .toss();
 
 frisby.create('Test updating missing number')
-  .post(coordinatesUrl + '?x=100&y=20')
+  .post(coordinatesUrl, {
+    x: '100',
+    y: '20'
+  })
   .expectStatus(400)
 .toss();
