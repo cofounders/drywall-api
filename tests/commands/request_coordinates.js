@@ -43,10 +43,16 @@ function getCoordinates() {
 
 function updateCoordinates() {
   prequest({
-    method: 'PUT',
-    url: baseUrl + '/cofounders/drywall-web/coordinates' +
-          '?x=50&y=60&number=72'
+    method: 'POST',
+    url: baseUrl + '/cofounders/drywall-web/coordinates',
+    json: {
+      'x': 80,
+      'y': 80,
+      'number': 72
+    }
   }).then(function(d) {
     console.log(d);
   }).catch(errFunc);
 }
+
+updateCoordinates();

@@ -55,22 +55,22 @@ function create(req, res) {
 }
 
 function addUpdate(req, res) {
-  console.log('PUT: ', req.query);
+  console.log('PUT: ', req.body);
 
-  if (!req.query.number || !req.query.x || !req.query.y) {
+  if (!req.body.number || !req.body.x || !req.body.y) {
     return res.status(400)
-       .send('Missing required param `x`,`y` or `number`');
+       .send('Missing required data `x`,`y` or `number`');
   }
   var owner = req.params.owner;
   var repo = req.params.repo;
   var queryVals = {
     owner: owner,
     repo: repo,
-    number: req.query.number
+    number: req.body.number
   };
   var updateVals = {
-    x: req.query.x,
-    y: req.query.y,
+    x: req.body.x,
+    y: req.body.y,
     timestamp: new Date().toISOString()
   };
 
