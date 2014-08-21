@@ -21,10 +21,10 @@ function getAccessToken(code, callback) {
 }
 
 schema.static('make', function(code, session) {
-  var self = this;
+  var Self = this;
   getAccessToken(code, function(body) {
     var parameters = uri.fromParameterString(body);
-    new self({
+    new Self({
       session: session,
       access_token: parameters.access_token
     }).save();

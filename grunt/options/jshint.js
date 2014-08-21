@@ -1,7 +1,9 @@
 module.exports = function (grunt) {
   return {
+    options: {
+      jshintrc: '.jshintrc'
+    },
     build: {
-      jshintrc: '.jshintrc',
       src: [
         'package.json',
         'Gruntfile.js',
@@ -9,15 +11,13 @@ module.exports = function (grunt) {
       ]
     },
     tests: {
-      jshintrc: '.jshintrc',
       src: [
         'tests/**/*js',
       ]
     },
     app: {
-      jshintrc: '.jshintrc',
       src: [
-        'app/**/*.js'
+        ['app/**/*.js', '!app/config.js']
       ]
     }
   };

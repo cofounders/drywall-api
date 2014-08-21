@@ -38,7 +38,7 @@ function create(req, res) {
   var owner = req.params.owner;
   var repo = req.params.repo;
 
-  values = modelValues(_.extend(req.query, {
+  var values = modelValues(_.extend(req.query, {
     owner: owner, repo: repo
   }));
 
