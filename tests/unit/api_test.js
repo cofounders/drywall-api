@@ -20,7 +20,27 @@ describe('Auth tests', function () {
     expressjwt({
       secret: new Buffer(config.auth0.secret || '', 'base64'),
       audience: config.auth0.clientId
-    })(req, res, function() {
+    })(req, res, function(err) {
+      assert.equal(err, undefined);
+      assert.equal('bar', req.user.foo);
+    });
+  });
+
+  it('should failed if authorization header has invalid jwt', function() {
+    var secret = new Buffer(config.auth0.secret || '', 'base64');
+    var audience = config.auth0.clientId;
+    var token = jwt.sign(
+      {foo: 'bar'}, 'invalid secret'
+    );
+
+    req.headers = {};
+    req.headers.authorization = 'Bearer ' + token;
+    expressjwt({
+      secret: new Buffer(config.auth0.secret || '', 'base64'),
+      audience: config.auth0.clientId
+    })(req, res, function(err) {
+      assert.equal(err.status, 401);
+      assert.equal(err.code, 'invalid_token');
       assert.equal('bar', req.user.foo);
     });
   });
