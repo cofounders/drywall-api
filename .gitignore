@@ -1,10 +1,8 @@
 # NPM
 node_modules
 
-# Jekyll
-_site
-
 # Numerous always-ignore extensions
+.env
 *.diff
 *.err
 *.orig
@@ -26,8 +24,6 @@ Thumbs.db
 .tmproj
 nbproject
 *.sublime-workspace
-codekit-config.json
-lib-cov
 *.seed
 *.log
 *.csv
@@ -36,21 +32,6 @@ lib-cov
 *.pid
 *.gz
 npm-debug.log
-
-# Dreamweaver added files
-_notes
-dwsync.xml
-
-# Komodo
-*.komodoproject
-.komodotools
-
-# Espresso
-*.esproj
-*.espressostorage
-
-# Rubinius
-*.rbc
 
 # Folders to ignore
 .hg
