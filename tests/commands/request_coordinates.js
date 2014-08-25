@@ -1,4 +1,4 @@
-var prequest = require('request-promise');
+var prequest = require('bluebird').promisify(require('request'));
 var jwt = require('jsonwebtoken');
 var expressjwt = require('express-jwt');
 var config = require('../../app/config');
@@ -18,8 +18,8 @@ prequest({
   headers: {
     'Authorization': 'Bearer ' + token
   }
-}).then(function(d) {
-  console.log(d);
+}).spread(function (response, data) {
+  console.log(data);
 }).catch(function(err) {
   console.error('Could not connect');
 });
@@ -29,15 +29,15 @@ function postCoordinates() {
     method: 'POST',
     url: baseUrl + '/cofounders/drywall-web/coordinates' +
           '?x=10&y=20&number=70'
-  }).then(function(d) {
-    console.log(d);
+  }).spread(function (response, data) {
+    console.log(data);
   }).catch(errFunc);
 }
 
 function getCoordinates() {
-  prequest(baseUrl + '/cofounders/drywall-web/coordinates')
-  .then(function(d) {
-    console.log(d);
+  prequest(baseUrl + '/webuildsg/live/coordinates')
+  .spread(function (response, data) {
+    console.log(data);
   }).catch(errFunc);
 }
 
@@ -50,9 +50,9 @@ function updateCoordinates() {
       'y': 100,
       'number': 72
     }
-  }).then(function(d) {
-    console.log(d);
+  }).spread(function (response, data) {
+    console.log(data);
   }).catch(errFunc);
 }
 
-updateCoordinates();
+getCoordinates();

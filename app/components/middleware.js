@@ -1,9 +1,10 @@
 var path = require('path');
 var jwt = require('express-jwt');
-var prequest = require('request-promise');
+var _ = require('underscore');
+var prequest = require('bluebird').promisify(require('request'));
 var NodeCache = require('node-cache');
 var config = require('../config');
-var cache = new NodeCache({checkperiod: 108000}); //30mins
+var cache = new NodeCache({checkperiod: 0});
 
 function authenticate(req, res, next) {
   return jwt({
@@ -35,27 +36,33 @@ function githubAuthorization(req, res, next) {
   var repo = req.params.repo;
   var url = 'https://api.github.com/' +
           path.join('repos', owner, repo) + accessQuery;
+  var moreHeaders = {};
 
-  cache.get(url, function(err, value) {
-  if (!err && Object.keys(value).length !== 0) {
+  cache.get(url, function(err, store) {
+    if (!err && Object.keys(store).length !== 0) {
       console.log('From cache: ' + url);
-      req.github = value[url];
-      return next();
+      req.github = store[url].github;
+      moreHeaders = {'If-None-Match': store[url].etag};
     }
   });
 
   prequest({
     url: url,
-    headers: {'User-Agent': owner},
+    headers: _.defaults({'User-Agent': owner}, moreHeaders),
     json: true
-  }).then(function (data) {
+  }).spread(function (response, data) {
+    if (response.statusCode === 304) {
+      return next();
+    }
+
     var permissions = data.permissions || {};
     req.github = {
       private: data.private || false,
       read: !data.private ? true : permissions.pull || false,
       write: permissions.push || false,
     };
-    cache.set(url, req.github);
+
+    cache.set(url, {github: req.github, etag: response.headers.etag});
     return next();
   }).catch(function (err) {
     err.message = 'Cannot access ' + url;
