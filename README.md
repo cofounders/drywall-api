@@ -15,13 +15,13 @@
 	$ npm install
 ```
 
-1. Run the node server on localhost (default port 9000)
+1. Run the node server on localhost (default port 8000)
 ```
 	$ npm start
 ```
 1. Check that its working:
 
-	<http://localhost:9000>
+	<http://localhost:8000>
 
 ### Development
 
@@ -36,14 +36,14 @@ Sanity check the code and run integration tests.
   $ npm test
 ```
 ### Configurations
-The following environment variables are used in this app and can be configured in `app/config.js`.
-You may grab these values from a heroku application.
+The following environment variables are used in this app and can be configured by creating a `.env` file in the root of the project.
+It should be in the format: KEY=VALUE
 
-`PORT` (default: 9000): TCP port where the app listens for HTTP requests
+`PORT` (default: 8000): TCP port where the app listens for HTTP requests
 `DRYWALL_AUTH0_CLIENT_SECRET`: [Auth0](http://auth0.com) client secret for drywall. It handles user social logins.
 `DRYWALL_AUTH0_ID`: [Auth0](http://auth0.com) client id for drywall. It handles user social logins.
-`DRYWALL_MONGOHQ_URI`: MongoDB connection string
-`DRYWALL_MONGOLAB_URI`: MongoDB connection string
+`DRYWALL_MONGOHQ_URI`: [MongoHQ/compose](https://www.compose.io) connection string (only one MongoDB connection).
+`DRYWALL_MONGOLAB_URI`: [MongoLab](https://mongolab.com/) connection string (only one MongoDB connection).
 
 By default the app connects to MongoDB as `mongodb://localhost:27017/test`.
 

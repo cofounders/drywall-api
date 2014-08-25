@@ -4,7 +4,7 @@ module.exports = function (grunt) {
       'grunt/options'
     ),
     config: {
-      port: 9000
+      port: 8000
     },
     loadGruntTasks: {
       pattern: 'grunt-*',

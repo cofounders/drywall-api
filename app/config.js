@@ -1,5 +1,8 @@
+var dotenv = require('dotenv');
+dotenv.load();
+
 module.exports = {
-  port: process.env.PORT || 9000,
+  port: process.env.PORT || 8000,
 
   db: {
     sess_interval: 3600,
@@ -20,8 +23,8 @@ module.exports = {
   },
 
   endpoints: {
-    dwRedirect: "http://localhost:9000/login/github/redirect",
-    ghAuthorize: "https://github.com/login/oauth/authorize",
-    ghAccessToken: "https://github.com/login/oauth/access_token"
+    dwRedirect: 'http://localhost:9000/login/github/redirect',
+    ghAuthorize: 'https://github.com/login/oauth/authorize',
+    ghAccessToken: 'https://github.com/login/oauth/access_token'
   }
 };
