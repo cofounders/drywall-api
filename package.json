@@ -42,7 +42,9 @@
     "grunt-node-inspector": "0.1.5",
     "grunt-nodemon": "0.3.0",
     "jsonwebtoken": "^0.4.1",
-    "load-grunt-config": "0.13.0"
+    "load-grunt-config": "0.13.0",
+    "mocha": "1.21.4",
+    "supertest": "0.13.0"
   },
   "engines": {
     "node": "0.10.x",
