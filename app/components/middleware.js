@@ -1,10 +1,10 @@
 var path = require('path');
 var jwt = require('express-jwt');
 var _ = require('underscore');
-var prequest = require('bluebird').promisify(require('request'));
 var NodeCache = require('node-cache');
-var config = require('../config');
 var cache = new NodeCache({checkperiod: 0});
+var prequest = require('./prequest');
+var config = require('../config');
 
 function authenticate(req, res, next) {
   return jwt({
@@ -30,7 +30,7 @@ function errorHandler(err, req, res, next) {
 function githubAuthorization(req, res, next) {
   console.log('Authorizing github' + req.path);
 
-  var token = req.query.access_token || req.body.access_token || undefined;
+  var token = req.query.access_token || (req.body && req.body.access_token);
   var accessQuery = token ? '?access_token=' + token : '';
   var owner = req.params.owner;
   var repo = req.params.repo;
@@ -49,7 +49,7 @@ function githubAuthorization(req, res, next) {
   prequest({
     url: url,
     headers: _.defaults({'User-Agent': owner}, moreHeaders),
-    json: true
+    arrayResponse: true
   }).spread(function (response, data) {
     if (response.statusCode === 304) {
       return next();
