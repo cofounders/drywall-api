@@ -17,6 +17,7 @@
     "URIjs": "1.13.2",
     "bluebird": "2.3.2",
     "body-parser": "1.6.5",
+    "chai": "^1.9.1",
     "compression": "1.0.11",
     "cors": "2.4.1",
     "dotenv": "0.4.0",

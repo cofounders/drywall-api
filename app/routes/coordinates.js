@@ -22,12 +22,12 @@ function list(req, res) {
     repo: repo,
     owner: owner
   }).select('x y z number'
-  ).exec(function (err, coordinate) {
+  ).exec(function (err, coordinates) {
     if (!err) {
-      return res.send(coordinate);
+      return res.send(coordinates);
     } else {
       console.error(err.errors);
-      return res.status(400)
+      return res.status(404)
          .send('Error finding coordinates for ' + owner + '/' + repo);
     }
   });
@@ -39,7 +39,8 @@ function create(req, res) {
   var repo = req.params.repo;
 
   var values = modelValues(_.extend(req.query, {
-    owner: owner, repo: repo
+    owner: owner,
+    repo: repo
   }));
 
   var coordinates = new CoordinatesModel(values);

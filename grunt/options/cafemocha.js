@@ -5,7 +5,7 @@ module.exports = function (grunt) {
         ui: 'bdd',
         reporter: 'list'
       },
-      src: ['tests/unit/*.js']
+      src: ['tests/unit/*.js', 'tests/database/*.js']
     }
   };
 };

@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 var config = require('../../app/config');
 var assert = require('assert');
 
-describe('Auth tests', function () {
+describe('JWT token tests', function () {
   var req = {};
   var res = {};
 

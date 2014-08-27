@@ -38,9 +38,12 @@ describe('Auth header tests', function () {
   var githubAccessToken = '';
 
   var app = express();
-  app.get('/:owner/:repo', middleware.githubAuthorization, function(req, res) {
-    res.send(req.github || 'nothing');
-  });
+  app.get('/:owner/:repo',
+    middleware.githubAuthorization,
+    function(req, res) {
+      res.send(req.github || 'nothing');
+    }
+  );
   var agent = supertest(app);
 
   beforeEach(function (done) {
