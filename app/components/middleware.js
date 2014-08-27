@@ -83,10 +83,20 @@ function githubAccess(type) {
   };
 }
 
+function paidAccess(req, res, next) {
+  if (!req.github.private) {
+    return next();
+  } else {
+    // Check that there is an entry in billings and that it has been paid
+    return next();
+  }
+}
+
 module.exports = {
   authenticate: authenticate,
   errorHandler: errorHandler,
   githubAuthorization: githubAuthorization,
   githubReadAccess: githubAccess('read'),
-  githubWriteAccess: githubAccess('write')
+  githubWriteAccess: githubAccess('write'),
+  paidAccess: paidAccess
 };

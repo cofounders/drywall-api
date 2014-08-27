@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var AccountSchema = new mongoose.Schema({
   pid: {type: Number, required: true},
   owner: {type: String, required: true},
-  plan: String,
+  plan: Number,
   user: String,
   lastPaid: Date,
   isPaid: {type: Boolean, default: false}

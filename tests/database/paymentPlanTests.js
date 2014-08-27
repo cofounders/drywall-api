@@ -3,7 +3,7 @@ var config = require('../../app/config');
 var database = require('../../app/components/database');
 var PaymentPlanModel = require('../../app/models/paymentplans');
 
-describe('Payment Plan Collection Test', function() {
+describe('Payment Plan collection test', function() {
 
   before(function (done) {
     this.timeout(5000);

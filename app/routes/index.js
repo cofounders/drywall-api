@@ -1,6 +1,7 @@
 var express = require('express');
 var github = require('./github');
 var coordinates = require('./coordinates');
+var paypal = require('./paypal');
 var mod = require('../components/middleware');
 
 
@@ -28,9 +29,11 @@ function setup(app) {
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
-    .all(mod.githubAuthorization)
+    .all(mod.githubAuthorization, mod.paidAccess)
     .get(mod.githubReadAccess, coordinates.list)
     .post(mod.githubWriteAccess, mod.authenticate, coordinates.add);
+
+  router.post('/paypal_callback', paypal.ipnHandler);
 
   addTestRoutes(router);
   app.use('/', router);
