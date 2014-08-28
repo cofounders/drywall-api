@@ -45,6 +45,11 @@ It should be in the format: KEY=VALUE
 `DRYWALL_MONGOHQ_URI`: [MongoHQ/compose](https://www.compose.io) connection string (only one MongoDB connection).
 `DRYWALL_MONGOLAB_URI`: [MongoLab](https://mongolab.com/) connection string (only one MongoDB connection).
 
+paypalMode is either `SANDBOX` or `LIVE`
+`DRYWALL_PAYPAL_LIVE_MODE` (default: false): Either `true` or `false` to specify whether to use live mode credentials
+`DRYWALL_PAYPAL_<paypalMode>_CLIENT_ID`: Paypal client id for this mode.
+`DRYWALL_PAYPAL_<paypalMode>_SECRET`: Paypal secret for this mode.
+
 By default the app connects to MongoDB as `mongodb://localhost:27017/test`.
 
 ### Deployment
