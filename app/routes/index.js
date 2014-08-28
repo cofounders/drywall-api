@@ -1,15 +1,15 @@
 var express = require('express');
-var github = require('./github');
 var coordinates = require('./coordinates');
 var paypal = require('./paypal');
-var mod = require('../components/middleware');
+var mid = require('../middlewares');
 
+function testRoutes() {
+  var router = express.Router();
 
-function addTestRoutes(router) {
-  router.use('/api', mod.authenticate);
+  router.use('/api', mid.authenticate);
 
   router.get('/ping/:owner/:repo',
-    mod.githubAuthorization,
+    mid.github.authorization,
     function(req, res) {
     console.log(req.github);
     res.status(200).send({text: 'All good. No need to be authenticated'});
@@ -20,6 +20,8 @@ function addTestRoutes(router) {
     res.status(200)
        .send({text: 'All good. Authenticated'});
   });
+
+  return router;
 }
 
 function setup(app) {
@@ -29,15 +31,16 @@ function setup(app) {
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
-    .all(mod.githubAuthorization, mod.paidAccess)
-    .get(mod.githubReadAccess, coordinates.list)
-    .post(mod.githubWriteAccess, mod.authenticate, coordinates.add);
+    .all(mid.github.authorization, mid.paidAccess)
+    .get(mid.github.readAccess, coordinates.list)
+    .post(mid.github.writeAccess, mid.authenticate, coordinates.add);
 
   router.post('/paypal_callback', paypal.ipnHandler);
+  router.post('/paypal', paypal.paymentHandler);
 
-  addTestRoutes(router);
   app.use('/', router);
-  app.use(mod.errorHandler);
+  app.use(testRoutes());
+  app.use(mid.errorHandler);
 }
 
 exports.setup = setup;

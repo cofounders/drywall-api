@@ -31,6 +31,6 @@ frisby.create('No Authorization header')
   .get(utils.localhost('/api/ping'))
   .expectStatus(401)
   .expectJSONTypes({
-    error: String
+    message: String
   })
 .toss();

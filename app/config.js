@@ -1,6 +1,8 @@
 var dotenv = require('dotenv');
 dotenv.load();
 
+var isPaypalLiveMode = process.env.DRYWALL_PAYPAL_LIVE_MODE || false;
+
 module.exports = {
   port: process.env.PORT || 8000,
 
@@ -15,6 +17,20 @@ module.exports = {
   auth0: {
     secret: process.env.DRYWALL_AUTH0_CLIENT_SECRET,
     clientId: process.env.DRYWALL_AUTH0_CLIENT_ID
+  },
+
+  paypal: {
+    mode: isPaypalLiveMode ? 'live' : 'sandbox',
+    live: {
+      clientId: process.env.DRYWALL_PAYPAL_LIVE_CLIENT_ID,
+      secret: process.env.DRYWALL_PAYPAL_LIVE_SECRET,
+      url: 'https://api.paypal.com/v1'
+    },
+    sandbox: {
+      clientId: process.env.DRYWALL_PAYPAL_SANDBOX_CLIENT_ID,
+      secret: process.env.DRYWALL_PAYPAL_SANDBOX_SECRET,
+      url: 'https://api.sandbox.paypal.com/v1'
+    }
   },
 
   keys: {

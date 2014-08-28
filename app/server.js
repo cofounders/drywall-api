@@ -12,6 +12,7 @@ var routes = require('./routes');
 var app = express();
 var dbUrl = config.db.uri;
 
+app.use('/static', express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(morgan('combined'));
 app.use(compression());
