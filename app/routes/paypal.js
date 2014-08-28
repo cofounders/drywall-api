@@ -1,17 +1,10 @@
 var _ = require('underscore');
 var path = require('path');
 var qs = require('querystring');
-var paypal = require('paypal-rest-sdk');
 var basicAuth = require('basic-auth-header');
 var prequest = require('../components/prequest');
 var config = require('../config');
 var paypalMode = config.paypal.mode;
-
-paypal.configure({
-  mode: paypalMode,
-  client_id: config.paypal[paypalMode].clientId,
-  client_secret: config.paypal[paypalMode].secret
-});
 
 function ipnHandler(req, res) {
   console.log('Paypal POST: ', req, res);
@@ -64,6 +57,15 @@ function billingPlanAttributes() {
     ]
   };
 }
+var billingPlanUpdateAttributes = [
+  {
+    'op': 'replace',
+    'path': '/',
+    'value': {
+      'state': 'ACTIVE'
+    }
+  }
+];
 
 function paymentHandler(req, res, next) {
   var ppConfig = config.paypal[paypalMode];
@@ -85,18 +87,34 @@ function paymentHandler(req, res, next) {
         'Authorization': 'Bearer ' + oauth.access_token
       },
       body: billingPlanAttributes()
-    }).then(function (planRes) {
-      console.log(planRes);
+    }).then(function (billingPlan) {
+      console.log('Billing Plan: ', billingPlan);
+      prequest({
+        url: ppConfig.url + '/payments/billing-plans/' + billingPlan.id,
+        method: 'PATCH',
+        headers: {
+          'Authorization': 'Bearer ' + oauth.access_token
+        },
+        body: billingPlanUpdateAttributes
+      }).then(function (agreement) {
+        console.log('Billing Agreement: ', agreement);
+
+      }).catch(function (err) {
+        err.statusCode = 500;
+        err.message = 'Failed to update paypal billing plan';
+        console.error(err.message, err.body);
+        return next(err);
+      });
     }).catch(function (err) {
       err.statusCode = 500;
       err.message = 'Failed creating a paypal billing plan';
-      console.error(err.body);
+      console.error(err.message, err.body);
       return next(err);
     });
   }).catch(function (err) {
     err.statusCode = 500;
     err.message = 'Failed getting paypal access token';
-    console.error(err.body);
+    console.error(err.message, err.body);
     return next(err);
   });
 }

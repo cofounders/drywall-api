@@ -44,6 +44,8 @@ It should be in the format: KEY=VALUE
 `DRYWALL_AUTH0_ID`: [Auth0](http://auth0.com) client id for drywall. It handles user social logins.
 `DRYWALL_MONGOHQ_URI`: [MongoHQ/compose](https://www.compose.io) connection string (only one MongoDB connection).
 `DRYWALL_MONGOLAB_URI`: [MongoLab](https://mongolab.com/) connection string (only one MongoDB connection).
+`GITHUB_CLIENT_ID`: client id from a github application. This is to allow more requests.
+`GITHUB_SECRET`: client secret from a github application.
 
 paypalMode is either `SANDBOX` or `LIVE`
 `DRYWALL_PAYPAL_LIVE_MODE` (default: false): Either `true` or `false` to specify whether to use live mode credentials
