@@ -33,14 +33,8 @@ module.exports = {
     }
   },
 
-  keys: {
-    ghClientId: 'a110297b7d6a6fab5dac',
-    ghClientSecret: '1f452780e9f37f5c49a3406e60917e0c1032fae7'
-  },
-
-  endpoints: {
-    dwRedirect: 'http://localhost:9000/login/github/redirect',
-    ghAuthorize: 'https://github.com/login/oauth/authorize',
-    ghAccessToken: 'https://github.com/login/oauth/access_token'
+  github: {
+    clientId: process.env.GITHUB_CLIENT_ID,
+    secret: process.env.GITHUB_SECRET
   }
 };

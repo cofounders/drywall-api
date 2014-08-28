@@ -1,4 +1,5 @@
 var path = require('path');
+var qs = require('querystring');
 var _ = require('underscore');
 var NodeCache = require('node-cache');
 var cache = new NodeCache({checkperiod: 0});
@@ -9,11 +10,14 @@ function authorization(req, res, next) {
   console.log('Authorizing github' + req.path);
 
   var token = req.query.access_token || (req.body && req.body.access_token);
-  var accessQuery = token ? '?access_token=' + token : '';
+  var query = token ? 'access_token=' + token : qs.stringify({
+    client_id: config.github.clientId,
+    client_secret: config.github.secret
+  });
   var owner = req.params.owner;
   var repo = req.params.repo;
   var url = 'https://api.github.com/' +
-          path.join('repos', owner, repo) + accessQuery;
+          path.join('repos', owner, repo) + '?' + query;
   var moreHeaders = {};
 
   cache.get(url, function(err, store) {
