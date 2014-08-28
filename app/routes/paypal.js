@@ -39,18 +39,65 @@ function ipnHandler(req, res) {
   });
 }
 
+function billingPlanAttributes() {
+  return {
+    'name': 'Drywall Monthly Billing Plan',
+    'description': 'Drywall Billing Plan Template',
+    'type': 'INFINITE',
+    'merchant_preferences': {
+      'auto_bill_amount': 'YES',
+      'return_url': 'http://drywall-web-staging.herokuapp.com',
+      'cancel_url': 'http://drywall-web-staging.herokuapp.com/404'
+    },
+    'payment_definitions': [
+      {
+        'amount': {
+          'currency': 'USD',
+          'value': '18'
+        },
+        'cycles': '0',
+        'frequency': 'MONTH',
+        'frequency_interval': '1',
+        'name': 'Monthly 3 users',
+        'type': 'REGULAR'
+      }
+    ]
+  };
+}
+
 function paymentHandler(req, res, next) {
   var ppConfig = config.paypal[paypalMode];
+
   prequest({
     url: ppConfig.url + '/oauth2/token',
+    method: 'POST',
     headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': basicAuth(ppConfig.clientId, ppConfig.secret)
     },
     body: 'grant_type=client_credentials'
-  }).then(function (data) {
-    console.log(data);
+  }).then(function (oauth) {
+    console.log(oauth.access_token);
+    prequest({
+      url: ppConfig.url + '/payments/billing-plans',
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + oauth.access_token
+      },
+      body: billingPlanAttributes()
+    }).then(function (planRes) {
+      console.log(planRes);
+    }).catch(function (err) {
+      err.statusCode = 500;
+      err.message = 'Failed creating a paypal billing plan';
+      console.error(err.body);
+      return next(err);
+    });
   }).catch(function (err) {
-    console.error(err);
+    err.statusCode = 500;
+    err.message = 'Failed getting paypal access token';
+    console.error(err.body);
+    return next(err);
   });
 }
 
