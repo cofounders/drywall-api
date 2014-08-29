@@ -1,10 +1,15 @@
 var Promise = require('bluebird');
 var request = require('request');
 
-function prequest(options) {
-  return new Promise(function (resolve, reject) {
-    options.json = options.json === undefined ? true : options.json;
+function prequest(url, options) {
+  if (options) {
+    options.url = url;
+  } else {
+    options = url;
+  }
+  options.json = options.json === undefined ? true : options.json;
 
+  return new Promise(function (resolve, reject) {
     request(options, function (error, response, body) {
       if (error) {
         reject(error);

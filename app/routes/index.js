@@ -35,7 +35,7 @@ function setup(app) {
     .get(mid.github.readAccess, coordinates.list)
     .post(mid.github.writeAccess, mid.authenticate, coordinates.add);
 
-  router.route('/paypal_callback').all(paypal.ipnHandler);
+  router.post('/paypal_callback', paypal.ipnHandler);
   router.post('/paypal', paypal.paymentHandler);
 
   app.use('/', router);

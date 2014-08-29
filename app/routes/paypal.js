@@ -7,12 +7,19 @@ var config = require('../config');
 var paypalMode = config.paypal.mode;
 
 function ipnHandler(req, res) {
-  console.log('Paypal POST: ', req, res);
-  res.send();
+  console.log('Paypal POST: ', req.body);
+  res.status(200).send('OK');
+  res.end();
 
-  req.query.cmd = '_notify-validate';
-  var data = qs.stringify(req.query);
-  console.log('paypal data: ' + data);
+  // read the IPN message sent from PayPal and prepend 'cmd=_notify-validate'
+  var postreq = 'cmd=_notify-validate';
+  for (var key in req.body) {
+    if (req.body.hasOwnProperty(key)) {
+      var value = qs.escape(req.body[key]);
+      postreq = postreq + '&' + key + '=' + value;
+    }
+  }
+  console.log('paypal data: ' + postreq);
 
   var url = 'https://www.';
   if (process.env.USE_REAL_PAYPAL) {
@@ -24,7 +31,10 @@ function ipnHandler(req, res) {
   prequest({
     url: url + '/cgi-bin/webscr',
     method: 'POST',
-    body: data
+    body: postreq,
+    headers: {
+      'Connection': 'close'
+    }
   }).then(function (body) {
     console.log('Paypal response: ' + body);
   }).catch(function (err) {
