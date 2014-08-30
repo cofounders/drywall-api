@@ -100,8 +100,7 @@ var options = {
   amount: 18,
   billingPeriod: 'Month'
 };
-options.planName = 'Drywall {0}ly {1} Plan'.format(
-  options.billingPeriod, options.name);
+options.plan = 1;
 options.returnUrl = 'http://staging.drywall.cf.sg';
 options.cancelUrl ='http://staging.drywall.cf.sg/404';
 
@@ -112,3 +111,8 @@ if (process.argv[2] === '1') {
 } else if (process.argv[2] === '3') {
   cancelRecurringPayment(process.argv[3], process.argv[4]);
 }
+
+// var PayPalApi = require('../../app/modules/paypal');
+// var paypal = new PayPalApi(_.extend(paypalConfig, options));
+// paypal.createBillingPlan(options);
+//paypal.createRecurringPayment('EC-7JV71005K1778311D');

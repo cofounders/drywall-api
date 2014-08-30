@@ -36,7 +36,7 @@ function setup(app) {
     .get(mid.github.readAccess, coordinates.list)
     .post(mid.github.writeAccess, mid.authenticate, coordinates.add);
 
-  router.use('/billing', mid.authenticate);
+ // router.use('/billing', mid.authenticate);
   router.post('/billing/create', billing.create);
   router.post('/billing/execute', billing.execute);
   router.post('/billing/update', billing.update);
