@@ -2,19 +2,19 @@ var _ = require('underscore');
 var path = require('path');
 var qs = require('querystring');
 var prequest = require('../modules/prequest');
-var config = require('../config');
 var paypalApi = require('../modules/paypal');
-var PayPal = new paypalApi(config.paypal[config.paypal.mode]);
+var config = require('../config');
+var ppConfig = config.paypal[config.paypal.mode];
+var PayPal = new paypalApi(ppConfig);
 
 function create(req, res) {
   var data = req.body;
   if (!_.has(data, 'plan') || !_.has(data, 'returnUrl') ||
       !_.has(data,'cancelUrl')) {
     return res.status(400)
-      .send('Missing plan, returnUrl or cancelUrl in payload');
+      .send('Missing `plan`, `returnUrl` or `cancelUrl` in payload');
   }
 
-  PayPal.setPaymentPlanOptions(data.plan, config.paymentPlans);
   PayPal.createBillingPlan(_.pick(
     data, 'plan', 'returnUrl', 'cancelUrl')
   ).then(function (approvalUrl) {
@@ -27,7 +27,23 @@ function create(req, res) {
 }
 
 function execute(req, res) {
+  var data = req.body;
+  if (!_.has(data, 'token') || !_.has(data, 'owner') ||
+      !_.has(data, 'plan')) {
+    return res.status(400)
+      .send('Missing `token`, `plan` or `owner` in payload');
+  }
 
+  PayPal.createRecurringPayment(_.pick(
+    data, 'plan', 'token', 'owner')
+  ).then(function (profile) {
+    //TODO: Create an account with data.user.id, data.owner
+    console.log('Recurring Payment created for ' + data.owner);
+    res.send(profile);
+  }).catch(function (err) {
+    console.error(err);
+    res.status(500).send('Error: Failed to create recurring payment plan');
+  });
 }
 
 function update(req, res) {
