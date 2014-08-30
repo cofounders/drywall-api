@@ -4,7 +4,6 @@ var database = require('../../app/components/database');
 var PaymentPlanModel = require('../../app/models/paymentplans');
 
 describe('Payment Plan collection test', function() {
-
   before(function (done) {
     this.timeout(5000);
     database.connect(config.db.uri, function (err) {
@@ -18,6 +17,7 @@ describe('Payment Plan collection test', function() {
       if (err) {
         done(err);
       } else {
+
         assert.isArray(plans, 'plans in the db');
         assert.lengthOf(plans, 8, '8 different plans');
         done();
@@ -25,3 +25,4 @@ describe('Payment Plan collection test', function() {
     });
   });
 });
+
