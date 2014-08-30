@@ -4,12 +4,16 @@ var qs = require('querystring');
 var basicAuth = require('basic-auth-header');
 var prequest = require('../components/prequest');
 var config = require('../config');
+var TransactionsModel = require('../models/transactions');
 var paypalMode = config.paypal.mode;
 
 function ipnHandler(req, res) {
-  console.log('Paypal POST: ', req.body);
-  res.status(200).send('OK');
+  console.log('Paypal IPN: ', req.body);
+  res.send();
   res.end();
+
+  var data = qs.parse(req.body);
+  data.cmd = '_notify-validate';
 
   // read the IPN message sent from PayPal and prepend 'cmd=_notify-validate'
   var postreq = 'cmd=_notify-validate';
@@ -19,7 +23,8 @@ function ipnHandler(req, res) {
       postreq = postreq + '&' + key + '=' + value;
     }
   }
-  console.log('paypal data: ' + postreq);
+
+  console.log('paypal data: ' + data);
 
   var url = 'https://www.';
   if (process.env.USE_REAL_PAYPAL) {
@@ -31,12 +36,26 @@ function ipnHandler(req, res) {
   prequest({
     url: url + '/cgi-bin/webscr',
     method: 'POST',
-    body: postreq,
-    headers: {
-      'Connection': 'close'
-    }
+    body: qs.stringify(data),
+    headers: {'Connection': 'close'}
   }).then(function (body) {
-    console.log('Paypal response: ' + body);
+    console.log('Paypal response: ' + body, data);
+    if (body === 'VERIFIED') {
+      var transaction = new TransactionsModel(data);
+      transaction.save(function (err) {
+        if (!err) {
+          console.log(data.recurring_payment_id,
+            data.product_name,
+            data.profile_status
+          );
+          return res.send();
+        } else {
+          console.error(err.errors);
+          return res.status(400)
+             .send('Error saving ipn transaction');
+        }
+      });
+    }
   }).catch(function (err) {
     console.error('Error with paypal ipn', err);
   });

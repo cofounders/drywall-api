@@ -19,7 +19,7 @@ describe('Payment Plan collection test', function() {
         done(err);
       } else {
         assert.isArray(plans, 'plans in the db');
-        assert.lengthOf(plans, 4, '4 different plans');
+        assert.lengthOf(plans, 8, '8 different plans');
         done();
       }
     });
