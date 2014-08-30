@@ -8,23 +8,14 @@ var TransactionsModel = require('../models/transactions');
 var paypalMode = config.paypal.mode;
 
 function ipnHandler(req, res) {
-  console.log('Paypal IPN: ', req.body);
+  var data = req.body;
+  console.log('Paypal IPN: ', data);
   res.send();
   res.end();
 
-  var data = qs.parse(req.body);
   data.cmd = '_notify-validate';
-
-  // read the IPN message sent from PayPal and prepend 'cmd=_notify-validate'
-  var postreq = 'cmd=_notify-validate';
-  for (var key in req.body) {
-    if (req.body.hasOwnProperty(key)) {
-      var value = qs.escape(req.body[key]);
-      postreq = postreq + '&' + key + '=' + value;
-    }
-  }
-
-  console.log('paypal data: ' + data);
+  var payload = qs.stringify(data);
+  console.log('paypal data: ' + payload);
 
   var url = 'https://www.';
   if (process.env.USE_REAL_PAYPAL) {
@@ -36,7 +27,7 @@ function ipnHandler(req, res) {
   prequest({
     url: url + '/cgi-bin/webscr',
     method: 'POST',
-    body: qs.stringify(data),
+    body: payload,
     headers: {'Connection': 'close'}
   }).then(function (body) {
     console.log('Paypal response: ' + body, data);
