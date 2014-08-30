@@ -6,49 +6,37 @@ var prequest = require('../components/prequest');
 var config = require('../config');
 var TransactionsModel = require('../models/transactions');
 var paypalMode = config.paypal.mode;
+var ppConfig = config.paypal[paypalMode];
 
 function ipnHandler(req, res) {
   var data = req.body;
   console.log('Paypal IPN: ', data);
   res.send();
-  res.end();
 
   data.cmd = '_notify-validate';
-  var payload = qs.stringify(data);
-  console.log('paypal data: ' + payload);
-
-  var url = 'https://www.';
-  if (process.env.USE_REAL_PAYPAL) {
-    url += 'paypal.com';
-  } else {
-    url += 'sandbox.paypal.com';
-  }
 
   prequest({
-    url: url + '/cgi-bin/webscr',
+    url: ppConfig.ipnUrl,
     method: 'POST',
-    body: payload,
+    body: qs.stringify(data),
     headers: {'Connection': 'close'}
   }).then(function (body) {
-    console.log('Paypal response: ' + body, data);
+    console.log('Paypal response: ' + body);
     if (body === 'VERIFIED') {
-      var transaction = new TransactionsModel(data);
+      var transaction = new TransactionsModel({data: data});
       transaction.save(function (err) {
         if (!err) {
           console.log(data.recurring_payment_id,
             data.product_name,
             data.profile_status
           );
-          return res.send();
         } else {
-          console.error(err.errors);
-          return res.status(400)
-             .send('Error saving ipn transaction');
+          console.error('Error saving ipn transaction');
         }
       });
     }
   }).catch(function (err) {
-    console.error('Error with paypal ipn', err);
+    console.error('Error with verifying paypal ipn', err);
   });
 }
 
@@ -88,8 +76,6 @@ var billingPlanUpdateAttributes = [
 ];
 
 function paymentHandler(req, res, next) {
-  var ppConfig = config.paypal[paypalMode];
-
   prequest({
     url: ppConfig.url + '/oauth2/token',
     method: 'POST',
