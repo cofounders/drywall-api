@@ -7,16 +7,22 @@ var config = require('../config');
 var ppConfig = config.paypal[config.paypal.mode];
 var PayPal = new paypalApi(ppConfig);
 
+function hasMissingProperties(data, arr) {
+  return arr.some(function (elem) {
+    return (!_.has(data, elem));
+  });
+}
+
 function create(req, res) {
   var data = req.body;
-  if (!_.has(data, 'plan') || !_.has(data, 'returnUrl') ||
-      !_.has(data,'cancelUrl')) {
+  var requiredProperties = ['plan', 'owner', 'returnUrl', 'cancelUrl'];
+  if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
-      .send('Missing `plan`, `returnUrl` or `cancelUrl` in payload');
+      .send('Missing payload: ' + requiredProperties.join(', '));
   }
 
   PayPal.createBillingPlan(_.pick(
-    data, 'plan', 'returnUrl', 'cancelUrl')
+    data, 'plan', 'owner', 'returnUrl', 'cancelUrl')
   ).then(function (approvalUrl) {
     console.log(approvalUrl);
     res.send({url: approvalUrl});
@@ -27,19 +33,20 @@ function create(req, res) {
 }
 
 function execute(req, res) {
-  var data = req.body;
-  if (!_.has(data, 'token') || !_.has(data, 'owner') ||
-      !_.has(data, 'plan')) {
+  var data = req.query;
+  console.log('/billing/execute', data);
+  var requiredProperties = ['token', 'plan', 'owner', 'url'];
+  if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
-      .send('Missing `token`, `plan` or `owner` in payload');
+      .send('Missing payload: ' + requiredProperties.join(', '));
   }
 
   PayPal.createRecurringPayment(_.pick(
-    data, 'plan', 'token', 'owner')
+    data, 'token', 'plan',  'owner')
   ).then(function (profile) {
-    //TODO: Create an account with data.user.id, data.owner
+    //TODO: Create an account with data.user.id, data.owner, data.plan
     console.log('Recurring Payment created for ' + data.owner);
-    res.send(profile);
+    res.redirect(data.url);
   }).catch(function (err) {
     console.error(err);
     res.status(500).send('Error: Failed to create recurring payment plan');
@@ -50,8 +57,22 @@ function update(req, res) {
 
 }
 
+function abort(req, res) {
+  var data = req.query;
+  var requiredProperties = ['token', 'plan', 'owner', 'url'];
+  if (hasMissingProperties(data, requiredProperties)) {
+    return res.status(400)
+      .send('Missing payload: ' + requiredProperties.join(', '));
+  }
+
+  console.log(data.token, data.owner + ' aborted plan ' + data.plan);
+  //TODO: Save to DB
+  res.redirect(data.url);
+}
+
 module.exports = {
   create: create,
   execute: execute,
-  update: update
+  update: update,
+  abort: abort
 };

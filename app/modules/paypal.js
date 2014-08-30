@@ -38,12 +38,18 @@ PayPal.prototype.createBillingPlan = function(data) {
   var options = _.extend(this.options, planOpts);
 
   return new Promise(function (resolve, reject) {
+    var query = qs.stringify({
+      plan: data.plan,
+      owner: data.owner
+    });
     prequest(options.nvpApiUrl, {
       method: 'POST',
       body: that.credQuery + qs.stringify({
         METHOD: 'SetExpressCheckout',
-        RETURNURL: data.returnUrl + '/?plan=' + data.plan,
-        CANCELURL: data.cancelUrl,
+        RETURNURL: '{0}/execute?url={1}&{2}'.format(
+          options.internalUrl, data.returnUrl, query),
+        CANCELURL: '{0}/abort?url={1}&{2}'.format(
+          options.internalUrl, data.cancelUrl, query),
         version: '104.0',
         PAYMENTREQUEST_0_AMT: options.amount,
         PAYMENTREQUEST_0_CURRENCYCODE: 'USD',
@@ -56,7 +62,7 @@ PayPal.prototype.createBillingPlan = function(data) {
         REQCONFIRMSHIPPING: 0,
         NOSHIPPING: 1,
         ADDROVERRIDE: 0,
-        BRANDNAME: 'drywall.cf.sg',
+        BRANDNAME: 'Drywall',
         LOGOIMG: 'http://img4.wikia.nocookie.net/__cb20131205162124/' +
         'elysiantail/images/3/3d/Tasty_Cupcake.png'
       })

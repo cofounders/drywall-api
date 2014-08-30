@@ -38,8 +38,9 @@ function setup(app) {
 
  // router.use('/billing', mid.authenticate);
   router.post('/billing/create', billing.create);
-  router.post('/billing/execute', billing.execute);
   router.post('/billing/update', billing.update);
+  router.get('/billing/execute', billing.execute);
+  router.get('/billing/abort', billing.abort);
 
   router.post('/paypal_callback', ipnListener);
 
