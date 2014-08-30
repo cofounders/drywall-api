@@ -4,7 +4,6 @@ var compression = require('compression');
 var cors = require('cors');
 var mongoose = require('mongoose');
 var morgan  = require('morgan');
-
 var config = require('./config');
 var db = require('./components/database');
 var routes = require('./routes');
@@ -29,6 +28,7 @@ db.connect(dbUrl, function(err) {
     console.log('Not connected to a database');
     process.exit(1);
   } else {
+    db.loadPaymentPlans(config);
     routes.setup(app);
     app.listen(config.port);
     console.log('Server up at port ' + config.port);

@@ -21,7 +21,7 @@ function list(req, res) {
   CoordinatesModel.find({
     repo: repo,
     owner: owner
-  }).select('x y z number'
+  }).select('-_id -timestamp'
   ).exec(function (err, coordinates) {
     if (!err) {
       return res.send(coordinates);

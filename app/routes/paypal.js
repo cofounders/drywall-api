@@ -8,7 +8,22 @@ var TransactionsModel = require('../models/transactions');
 var paypalMode = config.paypal.mode;
 var ppConfig = config.paypal[paypalMode];
 
-function ipnHandler(req, res) {
+function saveTransaction(data) {
+  var transaction = new TransactionsModel({data: data});
+
+  transaction.save(function (err) {
+    if (!err) {
+      console.log(data.recurring_payment_id,
+        data.product_name,
+        data.profile_status
+      );
+    } else {
+      console.error('Error saving ipn transaction');
+    }
+  });
+}
+
+function ipnListener(req, res) {
   var data = req.body;
   console.log('Paypal IPN: ', data);
   res.send();
@@ -23,17 +38,7 @@ function ipnHandler(req, res) {
   }).then(function (body) {
     console.log('Paypal response: ' + body);
     if (body === 'VERIFIED') {
-      var transaction = new TransactionsModel({data: data});
-      transaction.save(function (err) {
-        if (!err) {
-          console.log(data.recurring_payment_id,
-            data.product_name,
-            data.profile_status
-          );
-        } else {
-          console.error('Error saving ipn transaction');
-        }
-      });
+      saveTransaction(data);
     }
   }).catch(function (err) {
     console.error('Error with verifying paypal ipn', ppConfig.ipnUrl, err);
@@ -126,6 +131,6 @@ function paymentHandler(req, res, next) {
 }
 
 module.exports = {
-  ipnHandler: ipnHandler,
+  ipnListener: ipnListener,
   paymentHandler: paymentHandler
 };

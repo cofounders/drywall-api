@@ -27,7 +27,9 @@ function testRoutes() {
 function setup(app) {
   var router = express.Router();
 
-  router.get('/', function(req, res){
+  router.get('/', function(req, res) {
+    var config = require('../config');
+    console.log(config);
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
@@ -35,7 +37,7 @@ function setup(app) {
     .get(mid.github.readAccess, coordinates.list)
     .post(mid.github.writeAccess, mid.authenticate, coordinates.add);
 
-  router.post('/paypal_callback', paypal.ipnHandler);
+  router.post('/paypal_callback', paypal.ipnListener);
   router.post('/paypal', paypal.paymentHandler);
 
   app.use('/', router);

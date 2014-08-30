@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var PaymentPlansModel = require('../models/paymentplans');
 
 function log() {
   console.log.apply(this, Array.prototype.slice.call(arguments));
@@ -19,6 +20,23 @@ function connect(dbUrl, cb) {
   });
 }
 
+function loadPaymentPlans(config) {
+  PaymentPlansModel
+    .find({})
+    .select('-timestamp -_id')
+    .exec(function (err, plans) {
+      if (err) {
+        console.error('Error loading payment plans');
+        throw err;
+      } else {
+        console.log('Loaded ' + plans.length + ' payment plans');
+        config.paymentPlans = plans;
+      }
+    }
+  );
+}
+
 module.exports = {
-  connect: connect
+  connect: connect,
+  loadPaymentPlans: loadPaymentPlans
 };
