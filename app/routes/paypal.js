@@ -12,7 +12,6 @@ function ipnHandler(req, res) {
   var data = req.body;
   console.log('Paypal IPN: ', data);
   res.send();
-  res.end();
 
   data.cmd = '_notify-validate';
 
