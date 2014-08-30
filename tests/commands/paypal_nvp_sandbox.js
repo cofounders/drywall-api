@@ -14,8 +14,8 @@ function createBillingPlan(options) {
       user: paypalConfig.user,
       pwd: paypalConfig.password,
       signature: paypalConfig.signature,
-      RETURNURL: 'http://staging.drywall.cf.sg',
-      CANCELURL: 'http://staging.drywall.cf.sg/404',
+      RETURNURL: options.returnUrl + '/?plan=' + options.plan,
+      CANCELURL: options.cancelUrl,
       version: '104.0',
       PAYMENTREQUEST_0_AMT: options.amount,
       PAYMENTREQUEST_0_CURRENCYCODE: 'USD',
@@ -28,14 +28,15 @@ function createBillingPlan(options) {
       REQCONFIRMSHIPPING: 0,
       NOSHIPPING: 1,
       ADDROVERRIDE: 0,
+      BRANDNAME: 'drywall.cf.sg',
       LOGOIMG: 'http://img4.wikia.nocookie.net/__cb20131205162124/' +
       'elysiantail/images/3/3d/Tasty_Cupcake.png'
     })
   }).then(function (data) {
     data = qs.parse(data);
     if (data.ACK === 'Success') {
-      console.log('https://www.sandbox.paypal.com/cgi-bin' +
-        '/webscr?cmd=_express-checkout&token=' + data.TOKEN);
+      console.log(paypalConfig.paymentUrl +
+        '?cmd=_express-checkout&token=' + data.TOKEN);
     } else {
       console.error('Error SetExpressCheckout failed', data);
     }
@@ -55,6 +56,7 @@ function createPaymentProfile(token, options) {
       PROFILESTARTDATE: moment().add(2, 'hours').format(),
       BILLINGFREQUENCY: 1,
       BILLINGPERIOD: options.billingPeriod,
+      L_PAYMENTREQUEST_0_DESC0: 'plan 3',
       DESC: options.planName,
       VERSION: '104.0',
       user: paypalConfig.user,
@@ -100,6 +102,8 @@ var options = {
 };
 options.planName = 'Drywall {0}ly {1} Plan'.format(
   options.billingPeriod, options.name);
+options.returnUrl = 'http://staging.drywall.cf.sg';
+options.cancelUrl ='http://staging.drywall.cf.sg/404';
 
 if (process.argv[2] === '1') {
   createBillingPlan(options);

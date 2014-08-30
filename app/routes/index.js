@@ -1,7 +1,8 @@
 var express = require('express');
-var coordinates = require('./coordinates');
-var paypal = require('./paypal');
 var mid = require('../middlewares');
+var coordinates = require('./coordinates');
+var ipnListener = require('./ipnListener');
+var billing = require('./billing');
 
 function testRoutes() {
   var router = express.Router();
@@ -28,8 +29,6 @@ function setup(app) {
   var router = express.Router();
 
   router.get('/', function(req, res) {
-    var config = require('../config');
-    console.log(config);
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
@@ -37,8 +36,12 @@ function setup(app) {
     .get(mid.github.readAccess, coordinates.list)
     .post(mid.github.writeAccess, mid.authenticate, coordinates.add);
 
-  router.post('/paypal_callback', paypal.ipnListener);
-  router.post('/paypal', paypal.paymentHandler);
+  router.use('/billing', mid.authenticate);
+  router.post('/billing/create', billing.create);
+  router.post('/billing/execute', billing.execute);
+  router.post('/billing/update', billing.update);
+
+  router.post('/paypal_callback', ipnListener);
 
   app.use('/', router);
   app.use(testRoutes());
