@@ -3,7 +3,7 @@ var qs = require('querystring');
 var _ = require('underscore');
 var NodeCache = require('node-cache');
 var cache = new NodeCache({checkperiod: 0});
-var prequest = require('../components/prequest');
+var prequest = require('../modules/prequest');
 var config = require('../config');
 
 function authorization(req, res, next) {

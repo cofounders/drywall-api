@@ -5,7 +5,7 @@ var cors = require('cors');
 var mongoose = require('mongoose');
 var morgan  = require('morgan');
 var config = require('./config');
-var db = require('./components/database');
+var db = require('./modules/database');
 var routes = require('./routes');
 
 var app = express();

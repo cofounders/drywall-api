@@ -1,6 +1,6 @@
 var assert = require('chai').assert;
 var config = require('../../app/config');
-var database = require('../../app/components/database');
+var database = require('../../app/modules/database');
 var PaymentPlanModel = require('../../app/models/paymentplans');
 
 describe('Payment Plan collection test', function() {

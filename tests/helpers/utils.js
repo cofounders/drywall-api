@@ -1,7 +1,7 @@
 var config = require('../../app/config');
 var jwt = require('jsonwebtoken');
 var Promise = require('bluebird');
-var prequest = require('../../app/components/prequest');
+var prequest = require('../../app/modules/prequest');
 
 function localhost(path) {
   var base = 'http://localhost';

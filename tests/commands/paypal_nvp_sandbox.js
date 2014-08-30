@@ -1,5 +1,5 @@
 var config = require('../../app/config');
-var prequest = require('../../app/components/prequest');
+var prequest = require('../../app/modules/prequest');
 var mode = config.paypal.mode;
 var paypalConfig = config.paypal[mode];
 var qs = require('querystring');
@@ -71,13 +71,14 @@ function createPaymentProfile(token, options) {
   });
 }
 
-function cancelRecurringPayment(paymentId) {
+function cancelRecurringPayment(paymentId, action) {
+  action = action || 'Reactivate';
   prequest(paypalConfig.nvpApiUrl, {
     method: 'POST',
     body: qs.stringify({
       METHOD: 'ManageRecurringPaymentsProfileStatus',
       PROFILEID: paymentId,
-      ACTION: 'Suspend',
+      ACTION: action, //'suspend', 'reactivate', 'cancel'
       VERSION: '104.0',
       user: paypalConfig.user,
       pwd: paypalConfig.password,
@@ -105,5 +106,5 @@ if (process.argv[2] === '1') {
 } else if (process.argv[2] === '2') {
   createPaymentProfile(process.argv[3], options);
 } else if (process.argv[2] === '3') {
-  cancelRecurringPayment(process.argv[3], options);
+  cancelRecurringPayment(process.argv[3], process.argv[4]);
 }

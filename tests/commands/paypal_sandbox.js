@@ -1,6 +1,6 @@
 var paypal_api = require('paypal-rest-sdk');
 var config = require('../../app/config');
-var prequest = require('../../app/components/prequest');
+var prequest = require('../../app/modules/prequest');
 var paypalMode = config.paypal.mode;
 var url = require('url');
 var moment = require('moment');
