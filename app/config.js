@@ -26,7 +26,7 @@ module.exports = {
       secret: process.env.DRYWALL_PAYPAL_LIVE_SECRET,
       url: 'https://api.paypal.com/v1',
       nvpApiUrl: 'https://api-3t.paypal.com/nvp',
-      ipnUrl: 'https://paypal.com/cgi-bin/webscr',
+      ipnUrl: 'https://www.paypal.com/cgi-bin/webscr',
       user: process.env.DRYWALL_PAYPAL_LIVE_USER,
       password: process.env.DRYWALL_PAYPAL_LIVE_PASSWORD,
       signature: process.env.DRYWALL_PAYPAL_LIVE_SIGNATURE
@@ -36,7 +36,7 @@ module.exports = {
       secret: process.env.DRYWALL_PAYPAL_SANDBOX_SECRET,
       url: 'https://api.sandbox.paypal.com/v1',
       nvpApiUrl: 'https://api-3t.sandbox.paypal.com/nvp',
-      ipnUrl: 'https://sandbox.paypal.com/cgi-bin/webscr',
+      ipnUrl: 'https://www.sandbox.paypal.com/cgi-bin/webscr',
       user: process.env.DRYWALL_PAYPAL_SANDBOX_USER,
       password: process.env.DRYWALL_PAYPAL_SANDBOX_PASSWORD,
       signature: process.env.DRYWALL_PAYPAL_SANDBOX_SIGNATURE

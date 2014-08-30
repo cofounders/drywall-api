@@ -12,6 +12,7 @@ function ipnHandler(req, res) {
   var data = req.body;
   console.log('Paypal IPN: ', data);
   res.send();
+  res.end();
 
   data.cmd = '_notify-validate';
 
@@ -36,7 +37,7 @@ function ipnHandler(req, res) {
       });
     }
   }).catch(function (err) {
-    console.error('Error with verifying paypal ipn', err);
+    console.error('Error with verifying paypal ipn', ppConfig.ipnUrl, err);
   });
 }
 
