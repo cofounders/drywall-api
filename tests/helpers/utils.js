@@ -15,7 +15,9 @@ function bearerToken(data) {
   var audience = config.auth0.clientId;
 
   return 'Bearer ' + jwt.sign(
-    data || {},
+    data || {iss: 'https://drywall.auth0.com/',
+      sub: 'github|8487474',
+      user: 'drywallcfsg'},
     secret,
     {'audience': audience}
   );

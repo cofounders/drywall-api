@@ -15,7 +15,8 @@ function PayPal(options) {
   this.credQuery = qs.stringify({
     user: this.options.user,
     pwd: this.options.password,
-    signature: this.options.signature
+    signature: this.options.signature,
+    version: '104.0'
   }) + '&';
 
   Object.defineProperty(this.options, 'planName', {
@@ -46,11 +47,10 @@ PayPal.prototype.createBillingPlan = function(data) {
       method: 'POST',
       body: that.credQuery + qs.stringify({
         METHOD: 'SetExpressCheckout',
-        RETURNURL: '{0}/execute?url={1}&{2}'.format(
-          options.internalUrl, data.returnUrl, query),
-        CANCELURL: '{0}/abort?url={1}&{2}'.format(
-          options.internalUrl, data.cancelUrl, query),
-        version: '104.0',
+        RETURNURL: '{0}/{1}/execute?url={2}&{3}'.format(
+          options.internalUrl, data.user, data.returnUrl, query),
+        CANCELURL: '{0}/{1}/abort?url={2}&{3}'.format(
+          options.internalUrl, data.user, data.cancelUrl, query),
         PAYMENTREQUEST_0_AMT: options.amount,
         PAYMENTREQUEST_0_CURRENCYCODE: 'USD',
         PAYMENTREQUEST_0_PAYMENTACTION: 'Sale',
@@ -99,10 +99,9 @@ PayPal.prototype.createRecurringPayment = function(data) {
         BILLINGFREQUENCY: 1,
         CURRENCYCODE: 'USD',
         PROFILESTARTDATE: moment().add(2, 'hours').format(),
-        VERSION: '104.0',
         DESC: options.planName,
-        MAXFAILEDPAYMENTS: 1,
-        AUTOBILLOUTAMT: 'AddToNextBilling'
+        MAXFAILEDPAYMENTS: 0,
+        AUTOBILLOUTAMT: 'NoAutoBill'
       })
     }).then(function (data) {
       data = qs.parse(data);
@@ -120,10 +119,9 @@ PayPal.prototype.createRecurringPayment = function(data) {
   });
 };
 
-PayPal.prototype.updateRecurringPayment = function(paymentId, action) {
+PayPal.prototype.cancelRecurringPayment = function(paymentId) {
   var that = this;
   var options = this.options;
-  action = action || 'Reactivate';
 
   return new Promise(function (resolve, reject) {
     prequest(options.nvpApiUrl, {
@@ -131,8 +129,7 @@ PayPal.prototype.updateRecurringPayment = function(paymentId, action) {
       body: that.credQuery + qs.stringify({
         METHOD: 'ManageRecurringPaymentsProfileStatus',
         PROFILEID: paymentId,
-        ACTION: action, //'suspend', 'reactivate', 'cancel'
-        VERSION: '104.0'
+        ACTION: 'cancel' //'suspend', 'reactivate', 'cancel'
       })
     }).then(function (data) {
       data = qs.parse(data);
@@ -145,6 +142,33 @@ PayPal.prototype.updateRecurringPayment = function(paymentId, action) {
       }
     }).catch(function (err) {
       console.error('Error suspending payment id: ' + paymentId);
+      reject(err);
+    });
+  });
+};
+
+PayPal.prototype.listRecurringPayment = function(paymentId) {
+  var that = this;
+  var options = this.options;
+
+  return new Promise(function (resolve, reject) {
+    prequest(options.nvpApiUrl, {
+      method: 'POST',
+      body: that.credQuery + qs.stringify({
+        METHOD: 'GetRecurringPaymentsProfileDetails',
+        PROFILEID: paymentId
+      })
+    }).then(function (data) {
+      data = qs.parse(data);
+
+      if (data.ACK === 'Success') {
+        resolve(data);
+      } else {
+        console.error('Error getRecurringPaymentProfile failed', data);
+        reject(JSON.stringify(data));
+      }
+    }).catch(function (err) {
+      console.error('Error getting payment id: ' + paymentId);
       reject(err);
     });
   });

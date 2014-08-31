@@ -1,12 +1,16 @@
 var mongoose = require('mongoose');
 
 var AccountSchema = new mongoose.Schema({
-  pid: {type: Number, required: true},
+  paymentId: {type: Number, required: true},
   owner: {type: String, required: true},
   plan: Number,
-  user: String,
+  paidBy: String,
   lastPaid: Date,
-  isPaid: {type: Boolean, default: false}
+  activeUsers: [String],
+  status: {type: String, default: 'Active'}, //active or cancelled
+  dateCreated: {type: Date, default: Date.now},
+  timestamp: {type: Date, default: Date.now},
+  cyclesCompleted: Number
 });
 
 AccountSchema.statics.hasOwnerPaid = function(owner, cb) {

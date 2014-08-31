@@ -36,11 +36,12 @@ function setup(app) {
     .get(mid.github.readAccess, coordinates.list)
     .post(mid.github.writeAccess, mid.authenticate, coordinates.add);
 
- // router.use('/billing', mid.authenticate);
-  router.post('/billing/create', billing.create);
-  router.post('/billing/update', billing.update);
-  router.get('/billing/execute', billing.execute);
-  router.get('/billing/abort', billing.abort);
+  //router.use('/billing', mid.authenticate);
+  router.post('/billing/:user/create', billing.create);
+  router.post('/billing/:user/update', billing.update);
+  router.get('/billing/:user/execute', billing.execute);
+  router.get('/billing/:user/abort', billing.abort);
+  router.get('/billing/:user/list', billing.list);
 
   router.post('/paypal_callback', ipnListener);
 

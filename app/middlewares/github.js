@@ -7,7 +7,7 @@ var prequest = require('../modules/prequest');
 var config = require('../config');
 
 function authorization(req, res, next) {
-  console.log('Authorizing github' + req.path);
+  console.log('Authorizing github ' + req.path);
 
   var token = req.query.access_token || (req.body && req.body.access_token);
   var query = token ? 'access_token=' + token : qs.stringify({
