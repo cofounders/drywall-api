@@ -15,7 +15,7 @@ describe('Paid Access tests', function () {
 
   var app = express();
   app.get('/:owner/:repo',
-    mid.github.authorization,
+    mid.authorize,
     mid.paidAccess,
     function(req, res) {
       res.send(req.github || 'nothing');

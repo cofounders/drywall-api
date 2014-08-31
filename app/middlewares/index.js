@@ -2,6 +2,6 @@
 module.exports = {
   errorHandler: require('./error'),
   authenticate: require('./authenticate'),
-  github: require('./github'),
+  authorize: require('./authorize'),
   paidAccess: require('./paidAccess')
 };

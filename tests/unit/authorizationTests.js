@@ -12,7 +12,7 @@ describe('Github Authorization tests', function () {
 
   var app = express();
   app.get('/:owner/:repo',
-    mid.github.authorization,
+    mid.authorize,
     function(req, res) {
       res.send(req.github || 'nothing');
     }

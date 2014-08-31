@@ -10,7 +10,7 @@ function testRoutes() {
   router.use('/api', mid.authenticate);
 
   router.get('/ping/:owner/:repo',
-    mid.github.authorization,
+    mid.authorize,
     function(req, res) {
     console.log(req.github);
     res.status(200).send({text: 'All good. No need to be authenticated'});
@@ -32,7 +32,7 @@ function setup(app) {
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
-    .all(mid.github.authorization, mid.paidAccess, mid.authenticate)
+    .all(mid.authorize, mid.paidAccess, mid.authenticate)
     .get(coordinates.list)
     .post(coordinates.add);
 
@@ -42,7 +42,7 @@ function setup(app) {
   router.get('/billing/:user/execute', billing.execute);
   router.get('/billing/:user/abort', billing.abort);
   router.get('/billing/:user/list',
-    mid.github.authorization, mid.paidAccess, billing.list);
+    mid.authorize, mid.paidAccess, billing.list);
 
   router.post('/paypal_callback', ipnListener);
 

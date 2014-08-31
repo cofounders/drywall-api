@@ -12,10 +12,10 @@ function githubOrganisations(data) {
   });
 }
 
+// Get a user's list of organisations from /users/:user/orgs
 function userOrganisations(opts) {
   var url = ApiUrl + path.join('users', opts.user, 'orgs') +
     '?access_token=' + opts.access_token;
-
   var moreHeaders = {};
   var orgs = {};
 
@@ -47,6 +47,52 @@ function userOrganisations(opts) {
   });
 }
 
+function githubPermissions(data) {
+  var permissions = data.permissions || {};
+  return {
+    private: data.private || false,
+    read: !data.private ? true : permissions.pull || false,
+    write: permissions.push || false,
+  };
+}
+
+// Get a user's permission to a repo from /repos/:owner/:repo
+function userPermissions(opts) {
+  var url = ApiUrl + path.join('repos', opts.owner, opts.repo) +
+    '?' + opts.query;
+  var moreHeaders = {};
+  var permissions = {};
+
+  cache.get(url, function(err, store) {
+    if (!err && Object.keys(store).length !== 0) {
+      console.log('From cache: ' + url);
+      permissions = store[url].permissions;
+      moreHeaders = {'If-None-Match': store[url].etag};
+    }
+  });
+
+  return new Promise(function (resolve, reject) {
+    prequest({
+      url: url,
+      headers: _.defaults({'User-Agent': opts.owner}, moreHeaders),
+      arrayResponse: true
+    }).spread(function (response, data) {
+      if (response.statusCode === 304) {
+        resolve(permissions);
+      }
+
+      permissions = githubPermissions(data);
+      cache.set(url, {permissions: permissions, etag: response.headers.etag});
+      console.log(opts.user, permissions);
+      resolve(permissions);
+    }).catch(function (err) {
+      err.message = 'Cannot access ' + url;
+      reject(err);
+    });
+  });
+}
+
 module.exports = {
-  userOrganisations: userOrganisations
+  userOrganisations: userOrganisations,
+  userPermissions: userPermissions
 };
