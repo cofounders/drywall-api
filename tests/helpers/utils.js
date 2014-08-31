@@ -15,7 +15,7 @@ function bearerToken(data) {
   var audience = config.auth0.clientId;
 
   return 'Bearer ' + jwt.sign(
-    data || '',
+    data || {},
     secret,
     {'audience': audience}
   );
@@ -40,7 +40,7 @@ function testerAccessToken() {
       }).then(function(data) {
         resolve(data.identities[0].access_token);
       }).catch(function(err) {
-        console.error('Error' + JSON.stringify(err));
+        console.error('Error github token' + JSON.stringify(err));
         reject(err);
       });
     }).catch(function(err) {

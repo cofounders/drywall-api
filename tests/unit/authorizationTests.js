@@ -17,6 +17,7 @@ describe('Github Authorization tests', function () {
       res.send(req.github || 'nothing');
     }
   );
+  app.use(mid.errorHandler);
   var agent = supertest(app);
 
   before(function (done) {
@@ -24,7 +25,7 @@ describe('Github Authorization tests', function () {
     utils.testerAccessToken().then(function (testerToken) {
       githubAccessToken = testerToken;
       done();
-    }).catch(function(err) {
+    }).catch(function (err) {
       console.error('Cannot get github token');
     });
   });
@@ -35,16 +36,16 @@ describe('Github Authorization tests', function () {
       .expect(200)
       .end(function (err, res) {
         assert.ok(res.body.private === false);
-        done();
+        return err ? done(err) : done();
       });
   });
 
   it('should fail if private repo has no authorization', function (done) {
     this.timeout(3000);
-    agent.get('/cofounders/drywall-api')
+    agent.get('/cofounders/drywall')
       .expect(404)
       .end(function (err, res) {
-        done();
+        return err ? done(err) : done();
       });
   });
 
@@ -52,14 +53,17 @@ describe('Github Authorization tests', function () {
     this.timeout(5000);
     agent.get('/cofounders/drywall-api?access_token=' + githubAccessToken)
       //.set('Authorization', utils.bearerToken())
-      .expect(200);
-    done();
+      .expect(200, done());
   });
 });
 
 describe('API Authorization header tests', function() {
   var app = express();
-  app.get('/api', mid.authenticate);
+  app.get('/api', mid.authenticate,
+    function(req, res) {
+      res.send(req.body || 'nothing');
+    }
+  );
   app.use(mid.errorHandler);
   var agent = supertest(app);
 
@@ -67,9 +71,9 @@ describe('API Authorization header tests', function() {
     this.timeout(4000);
     agent.get('/api')
       .expect(401)
-      .end(function(err, res) {
+      .end(function (err, res) {
         assert.equal(res.body.message, 'No Authorization header was found');
-        done();
+        return err ? done(err) : done();
       });
   });
 
@@ -77,7 +81,9 @@ describe('API Authorization header tests', function() {
     this.timeout(4000);
     agent.get('/api')
       .set('Authorization', utils.bearerToken())
-      .expect(200);
-    done();
+      .expect(200)
+      .end(function (err, res) {
+        return err ? done(err) : done();
+      });
   });
 });
