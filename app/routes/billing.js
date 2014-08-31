@@ -2,23 +2,15 @@ var _ = require('underscore');
 var path = require('path');
 var qs = require('querystring');
 var validUrl = require('valid-url');
+var Promise = require('bluebird');
+var moment = require('moment');
 var prequest = require('../modules/prequest');
 var paypalApi = require('../modules/paypal');
+var githubApi = require('../modules/github');
 var config = require('../config');
 var ppConfig = config.paypal[config.paypal.mode];
 var PayPal = new paypalApi(ppConfig);
 var AccountsModel = require('../models/accounts');
-
-function createAccount(data) {
-  var account = new AccountsModel(data);
-  account.save(function (err) {
-    if (!err) {
-      console.log('Account created for ' + data.user);
-    } else {
-      console.error(err.errors);
-    }
-  });
-}
 
 function hasMissingProperties(data, arr) {
   return arr.some(function (elem) {
@@ -84,6 +76,7 @@ function execute(req, res) {
     data.paymentId = profile.PROFILEID;
     data.paidBy = data.user;
     data.activeUsers = [data.user];
+    data.nextBillingDate = moment().add(2, 'hours').format();
     var account = new AccountsModel(data);
     account.save(function (err) {
       if (!err) {
@@ -118,6 +111,22 @@ function abort(req, res) {
   res.redirect(data.url);
 }
 
+function mergeLists(githubOrgs, paidOrgs) {
+  var orgs = [];
+  githubOrgs.forEach(function (githubOrg) {
+    var hasSameOwner = paidOrgs.some(function (paidOrg) {
+      return (paidOrg.owner === githubOrg.owner);
+    });
+    if (!hasSameOwner) {
+      orgs.push(githubOrg);
+    }
+  });
+
+  return orgs.concat(paidOrgs);
+}
+
+// List all github organisations and paid organisations for a user
+//  A user may still be paying for an organisation have lost github access.
 function list(req, res) {
   var data = req.query;
   data.user = req.params.user;
@@ -126,18 +135,31 @@ function list(req, res) {
     return res.status(400)
       .send('Missing payload: ' + requiredProperties.join(', '));
   }
-  // TODO: return list of users' paid org and orgs user has access to
-  // Do a github call to check list of orgs
-  return res.send([]);
+
+  var findAccount = Promise.promisify(AccountsModel.find, AccountsModel);
+  Promise.props({
+    paidOrgs: findAccount({paidBy: data.user},
+      '-_id owner paidBy nextBillingDate'
+    ),
+    githubOrgs: githubApi.userOrganisations(data)
+  }).then(function (results) {
+    var orgs = mergeLists(results.githubOrgs, results.paidOrgs);
+    res.send(orgs);
+  }).catch(function (err) {
+    err.message = 'Error getting paid organisations for ' + data.user;
+    console.error(err.message);
+    res.status(500).send(err);
+  });
 
   // PayPal.listRecurringPayment('I-FXKU0WPKWKUL').then(function (payments) {
   //   console.log(payments);
   //   res.send(payments);
   // }).catch(function (err) {
   //   err.statusCode = 500;
-  //   res.status(500).send(msg('Unable to list payments for ' + data.user));
+  //
   // });
 }
+
 
 module.exports = {
   create: create,

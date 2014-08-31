@@ -2,6 +2,11 @@ var jwt = require('express-jwt');
 var config = require('../config');
 
 function authenticate(req, res, next) {
+  req.github = req.github || {};
+  if (req.github.read) {
+    return next();
+  }
+
   return jwt({
     secret: new Buffer(config.auth0.secret || '', 'base64'),
     audience: config.auth0.clientId

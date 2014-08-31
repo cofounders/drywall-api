@@ -6,6 +6,15 @@ var cache = new NodeCache({checkperiod: 0});
 var prequest = require('../modules/prequest');
 var config = require('../config');
 
+function githubPermissions(data) {
+  var permissions = data.permissions || {};
+  return {
+    private: data.private || false,
+    read: !data.private ? true : permissions.pull || false,
+    write: permissions.push || false,
+  };
+}
+
 function authorization(req, res, next) {
   console.log('Authorizing github ' + req.path);
 
@@ -37,14 +46,9 @@ function authorization(req, res, next) {
       return next();
     }
 
-    var permissions = data.permissions || {};
-    req.github = {
-      private: data.private || false,
-      read: !data.private ? true : permissions.pull || false,
-      write: permissions.push || false,
-    };
-
+    req.github = githubPermissions(data);
     cache.set(url, {github: req.github, etag: response.headers.etag});
+    console.log(req.github);
     return next();
   }).catch(function (err) {
     err.message = 'Cannot access ' + url;
@@ -52,21 +56,6 @@ function authorization(req, res, next) {
   });
 }
 
-function access(type) {
-  return function (req, res, next) {
-    if (req.github[type]) {
-      console.log(req.github);
-      next();
-    } else {
-      var error = new Error('No ' + type + ' access to github repo');
-      error.status = 401;
-      next(error);
-    }
-  };
-}
-
 module.exports = {
-  authorization: authorization,
-  readAccess: access('read'),
-  writeAccess: access('write')
+  authorization: authorization
 };
