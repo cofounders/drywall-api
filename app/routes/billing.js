@@ -47,6 +47,7 @@ function msg(str) {
   return {message: str};
 }
 
+//TODO: Check that an owner has already been paid
 function create(req, res) {
   var data = req.body;
   data.user = req.params.user;
@@ -72,7 +73,7 @@ function create(req, res) {
 function execute(req, res) {
   var data = req.query;
   data.user = req.params.user;
-  console.log('Execute billing: ', data);
+  console.log('Execute billing for ' + data.user, data.owner);
   var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
@@ -80,12 +81,18 @@ function execute(req, res) {
   }
 
   PayPal.createRecurringPayment(data).then(function (profile) {
-    //TODO: Create an account with data.user, data.owner, data.plan
-
     data.paymentId = profile.PROFILEID;
     data.paidBy = data.user;
-    //createAccount(data);
-    console.log('Recurring Payment created: ' + data.owner, data.user);
+    data.activeUsers = [data.user];
+    var account = new AccountsModel(data);
+    account.save(function (err) {
+      if (!err) {
+        console.log('Recurring Payment created: ', data);
+      } else {
+        console.error('Error saving Account to DB: ', err);
+      }
+    });
+
     res.redirect(data.url);
   }).catch(function (err) {
     console.error(err);
@@ -121,13 +128,15 @@ function list(req, res) {
   }
   // TODO: return list of users' paid org and orgs user has access to
   // Do a github call to check list of orgs
-  PayPal.listRecurringPayment('I-FXKU0WPKWKUL').then(function (payments) {
-    console.log(payments);
-    res.send(payments);
-  }).catch(function (err) {
-    err.statusCode = 500;
-    res.status(500).send(msg('Unable to list payments for ' + data.user));
-  });
+  return res.send([]);
+
+  // PayPal.listRecurringPayment('I-FXKU0WPKWKUL').then(function (payments) {
+  //   console.log(payments);
+  //   res.send(payments);
+  // }).catch(function (err) {
+  //   err.statusCode = 500;
+  //   res.status(500).send(msg('Unable to list payments for ' + data.user));
+  // });
 }
 
 module.exports = {
