@@ -27,7 +27,7 @@ function list(req, res) {
       return res.send(coordinates);
     } else {
       console.error(err.errors);
-      return res.status(404)
+      return res.status(500)
          .send('Error finding coordinates for ' + owner + '/' + repo);
     }
   });
@@ -50,7 +50,7 @@ function create(req, res) {
       return res.send(values);
     } else {
       console.error(err.errors);
-      return res.status(400)
+      return res.status(500)
          .send('Error saving coordinates for ' + owner + '/' + repo);
     }
   });
@@ -84,7 +84,7 @@ function addUpdate(req, res) {
       return res.send(_.extend(queryVals, updateVals));
     } else {
       console.error(err.errors);
-      return res.status(400)
+      return res.status(500)
          .send('Error updating coordinates for ' + owner + '/' + repo);
     }
   }
