@@ -4,7 +4,7 @@ var consts = require('../modules/consts');
 var config = require('../config');
 
 function paidAccess(req, res, next) {
-  if (!req.github.private) {
+  if (req.github && !req.github.private) {
     return next();
   }
   var owner = req.params.owner;
