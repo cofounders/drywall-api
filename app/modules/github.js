@@ -8,7 +8,7 @@ var ApiUrl = 'https://api.github.com/';
 
 function githubOrganisations(data) {
   return _.map(data, function(obj) {
-    return {'owner': obj.login};
+    return obj.login;
   });
 }
 
@@ -36,7 +36,7 @@ function userOrganisations(opts) {
       if (response.statusCode === 304) {
         return resolve(orgs);
       }
-
+      data.push({login: opts.user}); // Add user into list of orgs
       orgs = githubOrganisations(data);
       cache.set(url, {orgs: orgs, etag: response.headers.etag});
       resolve(orgs);
