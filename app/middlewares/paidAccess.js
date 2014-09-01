@@ -30,7 +30,7 @@ function paidAccess(req, res, next) {
       return next(error);
     } else {
       if (_.contains(account.activeUsers, user)) {
-        next();
+        return next();
       }
       //TODO: Need to flush activeUsers every month
       var planDetails = _.findWhere(config.paymentPlans,
