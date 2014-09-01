@@ -29,6 +29,9 @@ function paidAccess(req, res, next) {
       console.log(error.message);
       return next(error);
     } else {
+      if (_.contains(account.activeUsers, user)) {
+        next();
+      }
       //TODO: Need to flush activeUsers every month
       var planDetails = _.findWhere(config.paymentPlans,
         {plan: parseInt(account.plan)}
@@ -40,13 +43,11 @@ function paidAccess(req, res, next) {
         error1.statusCode = 402;
         console.log(error1.message, error1.details, user, account.activeUsers);
         return next(error1);
-      }
-
-      if (!_.contains(account.activeUsers, user)) {
+      } else {
         account.activeUsers.push(user);
         account.save();
+        return next();
       }
-      next();
     }
   });
 }
