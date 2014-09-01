@@ -36,12 +36,11 @@ function setup(app) {
     .get(coordinates.list)
     .post(coordinates.add);
 
-  router.use('/billing', mid.authenticate);
-  router.post('/billing/:user/create', billing.create);
-  router.post('/billing/:user/update', billing.update);
+  router.post('/billing/:user/create', mid.authenticate, billing.create);
+  router.post('/billing/:user/update', mid.authenticate, billing.update);
+  router.get('/billing/:user/list', mid.authenticate, billing.list);
   router.get('/billing/:user/execute', billing.execute);
   router.get('/billing/:user/abort', billing.abort);
-  router.get('/billing/:user/list', billing.list);
 
   router.post('/paypal_callback', ipnListener);
 
