@@ -38,7 +38,8 @@ module.exports = {
       url: 'https://api.sandbox.paypal.com/v1',
       nvpApiUrl: 'https://api-3t.sandbox.paypal.com/nvp',
       paymentUrl: 'https://www.sandbox.paypal.com/cgi-bin/webscr',
-      internalUrl: 'http://localhost:8000/billing',
+      internalUrl: process.env.INTERNAL_PAYPAL_REDIRECT ||
+        'http://drywall-api-staging/billing',
       user: process.env.DRYWALL_PAYPAL_SANDBOX_USER,
       password: process.env.DRYWALL_PAYPAL_SANDBOX_PASSWORD,
       signature: process.env.DRYWALL_PAYPAL_SANDBOX_SIGNATURE
