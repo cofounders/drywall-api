@@ -29,27 +29,24 @@ function paidAccess(req, res, next) {
       console.log(error.message);
       return next(error);
     } else {
-      if (_.contains(account.activeUsers, user)) {
-        return next(); // User already recorded as an activeUser
-      }
-
       //TODO: Need to flush activeUsers every month
       var planDetails = _.findWhere(config.paymentPlans,
         {plan: parseInt(account.plan)}
       );
 
-      account.activeUsers.push(user);
-      account.save();
-      console.log(account.activeUsers);
-      if (account.activeUsers.length > planDetails.users) {
-        var error1 = new Error('Max active users reached. Current plan: ' +
-          planDetails);
+      if (account.activeUsers.length >= planDetails.users) {
+        var error1 = new Error('Max active users reached');
+        error1.details = planDetails;
         error1.statusCode = 402;
-        console.log(error1.message);
+        console.log(error1.message, error1.details, user, account.activeUsers);
         return next(error1);
       }
 
-      return next();
+      if (!_.contains(account.activeUsers, user)) {
+        account.activeUsers.push(user);
+        account.save();
+      }
+      next();
     }
   });
 }
