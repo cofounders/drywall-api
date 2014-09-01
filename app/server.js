@@ -19,8 +19,9 @@ app.use(morgan('combined'));
 app.use(compression());
 app.use(cors({
   origin: '*',
-  methods: ['GET, PUT, POST, DELETE, OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET, POST, OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400
 }));
 
 console.log('Connecting to', dbUrl);
