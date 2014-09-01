@@ -36,7 +36,8 @@ PayPal.prototype.paymentPlanOptions = function(planId) {
 PayPal.prototype.createBillingPlan = function(data) {
   var that = this;
   var planOpts = this.paymentPlanOptions(data.plan);
-  var options = _.extend(this.options, planOpts);
+  var options = _.defaults(this.options, planOpts);
+  console.log('Creating billing Plan: ', data.user, options);
 
   return new Promise(function (resolve, reject) {
     var query = qs.stringify({
@@ -86,7 +87,7 @@ PayPal.prototype.createBillingPlan = function(data) {
 PayPal.prototype.createRecurringPayment = function(data) {
   var that = this;
   var planOpts = this.paymentPlanOptions(data.plan);
-  var options = _.extend(this.options, planOpts);
+  var options = _.defaults(this.options, planOpts);
 
   return new Promise(function (resolve, reject) {
     prequest(options.nvpApiUrl, {

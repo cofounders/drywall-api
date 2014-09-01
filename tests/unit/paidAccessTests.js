@@ -37,6 +37,7 @@ describe('Paid Access tests', function () {
       db: connectDb(config.db.uri),
       testerToken: utils.testerAccessToken()
     }).then(function (results) {
+      db.loadPaymentPlans(config);
       githubAccessToken = results.testerToken;
       done();
     }).catch(function (err) {
@@ -63,9 +64,20 @@ describe('Paid Access tests', function () {
       });
   });
 
-  it('should pass if private repo has been paid', function (done) {
+  it('should return 402 if plan needs to upgrade', function (done) {
     this.timeout(5000);
     agent.get('/cofounders/drywall-api?user=drywallcfsg&access_token=' +
+      githubAccessToken)
+      .expect(402)
+      .end(function (err, res) {
+        assert.equal(res.body.message, 'Max active users reached');
+        return err ? done(err) : done();
+      });
+  });
+
+  it('should pass if organisation has been paid', function (done) {
+    this.timeout(5000);
+    agent.get('/superdrywall/egg?user=drywallcfsg&access_token=' +
       githubAccessToken)
       .expect(200)
       .end(function (err, res) {

@@ -83,7 +83,6 @@ function userPermissions(opts) {
 
       permissions = githubPermissions(data);
       cache.set(url, {permissions: permissions, etag: response.headers.etag});
-      console.log(opts.user, permissions);
       resolve(permissions);
     }).catch(function (err) {
       err.message = 'Cannot access ' + url;
