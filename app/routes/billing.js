@@ -11,6 +11,7 @@ var config = require('../config');
 var ppConfig = config.paypal[config.paypal.mode];
 var PayPal = new paypalApi(ppConfig);
 var AccountsModel = require('../models/accounts');
+var findAccount = Promise.promisify(AccountsModel.find, AccountsModel);
 
 function hasMissingProperties(data, arr) {
   return arr.some(function (elem) {
@@ -111,18 +112,18 @@ function abort(req, res) {
   res.redirect(data.url);
 }
 
-function mergeLists(githubOrgs, paidOrgs) {
-  var orgs = [];
-  githubOrgs.forEach(function (githubOrg) {
-    var hasSameOwner = paidOrgs.some(function (paidOrg) {
-      return (paidOrg.owner === githubOrg.owner);
-    });
-    if (!hasSameOwner) {
-      orgs.push(githubOrg);
+function mergeLists(paidOrgs, githubOrgs) {
+  var githubDict = _.object(githubOrgs, []);
+
+  paidOrgs.forEach(function (paidOrg) {
+    if (_.has(githubDict, paidOrg.owner)) {
+      delete(githubDict[paidOrg.owner]);
     }
   });
 
-  return orgs.concat(paidOrgs);
+  return paidOrgs.concat(_.map(Object.keys(githubDict),
+    function(org) { return {owner: org}; }
+  ));
 }
 
 // List all github organisations and paid organisations for a user
@@ -136,17 +137,24 @@ function list(req, res) {
       .send('Missing payload: ' + requiredProperties.join(', '));
   }
 
-  var findAccount = Promise.promisify(AccountsModel.find, AccountsModel);
-  Promise.props({
-    paidOrgs: findAccount({paidBy: data.user},
-      '-_id owner paidBy nextBillingDate'
-    ),
-    githubOrgs: githubApi.userOrganisations(data)
-  }).then(function (results) {
-    var orgs = mergeLists(results.githubOrgs, results.paidOrgs);
-    res.send(orgs);
+  githubApi.userOrganisations(data).then(function (githubOrgs) {
+    findAccount({
+      '$or': [{
+        paidBy: data.user
+      },{
+        owner: {'$in': githubOrgs}
+      }]
+    }, '-_id owner paidBy plan nextBillingDate').then(function (paidOrgs) {
+      var orgs = mergeLists(paidOrgs, githubOrgs);
+      console.log(orgs);
+      return res.send(orgs);
+    }).catch(function (err) {
+      err.message = 'Error getting paid organisations for ' + data.user;
+      console.error(err.message);
+      res.status(500).send(err);
+    });
   }).catch(function (err) {
-    err.message = 'Error getting paid organisations for ' + data.user;
+    err.message = 'Error getting github organisations for ' + data.user;
     console.error(err.message);
     res.status(500).send(err);
   });
@@ -166,5 +174,8 @@ module.exports = {
   execute: execute,
   update: update,
   abort: abort,
-  list: list
+  list: list,
+  test: {
+    mergeLists: mergeLists
+  }
 };
