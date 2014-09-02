@@ -4,6 +4,7 @@ var qs = require('querystring');
 var validUrl = require('valid-url');
 var Promise = require('bluebird');
 var moment = require('moment');
+var consts = require('../modules/consts');
 var prequest = require('../modules/prequest');
 var paypalApi = require('../modules/paypal');
 var githubApi = require('../modules/github');
@@ -11,7 +12,8 @@ var config = require('../config');
 var ppConfig = config.paypal[config.paypal.mode];
 var PayPal = new paypalApi(ppConfig);
 var AccountsModel = require('../models/accounts');
-var findAccount = Promise.promisify(AccountsModel.find, AccountsModel);
+var findAccounts = Promise.promisify(AccountsModel.find, AccountsModel);
+var findOneAccount = Promise.promisify(AccountsModel.findOne, AccountsModel);
 
 function hasMissingProperties(data, arr) {
   return arr.some(function (elem) {
@@ -58,8 +60,7 @@ function create(req, res) {
     console.log(approvalUrl);
     res.send({url: approvalUrl});
   }).catch(function (err) {
-    console.error(err);
-    res.status(500).send(msg('Unable to create billing plan'));
+    res.status(500).send(msg('Failed to create billing plan'));
   });
 }
 
@@ -89,28 +90,10 @@ function execute(req, res) {
 
     res.redirect(data.url);
   }).catch(function (err) {
-    console.error(err);
     res.redirect(data.url + '?error=1');
   });
 }
 
-function update(req, res) {
-
-}
-
-function abort(req, res) {
-  var data = req.query;
-  data.user = req.params.user;
-  var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
-  if (hasMissingProperties(data, requiredProperties)) {
-    return res.status(400)
-      .send('Missing payload: ' + requiredProperties.join(', '));
-  }
-
-  console.log(data.token, data.owner + ' aborted plan ' + data.plan);
-  //TODO: Save to DB
-  res.redirect(data.url);
-}
 
 function mergeLists(paidOrgs, githubOrgs) {
   var githubDict = _.object(githubOrgs, []);
@@ -138,7 +121,7 @@ function list(req, res) {
   }
 
   githubApi.userOrganisations(data).then(function (githubOrgs) {
-    findAccount({
+    findAccounts({
       '$or': [{
         paidBy: data.user
       },{
@@ -168,13 +151,54 @@ function list(req, res) {
   // });
 }
 
+function cancel(req, res) {
+  var data = req.query;
+  data.user = req.params.user;
+  var requiredProperties = ['owner', 'user'];
+  if (hasMissingProperties(data, requiredProperties)) {
+    return res.status(400)
+      .send(msg('Missing payload: ' + requiredProperties.join(', ')));
+  }
+
+  findOneAccount({
+    owner: data.owner,
+    status: consts.active
+  }).then(function (account) {
+    PayPal.cancelRecurringPayment(account.paymentId).then(function (data) {
+      account.status = consts.cancelled;
+      account.lastModifiedBy = data.user;
+      account.save();
+      console.log('Recurring Payment cancelled for ' + data.owner);
+      res.send(msg('Success. ' + account.paymentId + ' cancelled.'));
+    }).catch(function (err) {
+      return res.status(500).send(msg('Failed to cancel recurring payment'));
+    });
+  }).catch(function (err) {
+    return res.status(500)
+      .send(msg('Failed to find active account for ' + data.owner));
+  });
+}
+
+function abort(req, res) {
+  var data = req.query;
+  data.user = req.params.user;
+  var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
+  if (hasMissingProperties(data, requiredProperties)) {
+    return res.status(400)
+      .send('Missing payload: ' + requiredProperties.join(', '));
+  }
+
+  console.log(data.token, data.owner + ' aborted plan ' + data.plan);
+  //TODO: Save to DB
+  res.redirect(data.url);
+}
 
 module.exports = {
   create: create,
   execute: execute,
-  update: update,
-  abort: abort,
   list: list,
+  cancel: cancel,
+  abort: abort,
   test: {
     mergeLists: mergeLists
   }

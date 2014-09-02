@@ -1,12 +1,14 @@
 var mongoose = require('mongoose');
+var consts = require('../modules/consts');
 
 var AccountSchema = new mongoose.Schema({
-  paymentId: {type: String, required: true},
-  owner: {type: String, required: true},
+  paymentId: {type: String, required: true, unique: true},
+  owner: {type: String, required: true, unique: true},
   plan: Number,
   paidBy: String,
+  lastModifiedBy: String,
   activeUsers: [String],
-  status: {type: String, default: 'Active'}, //active or cancelled
+  status: {type: String, default: consts.active},
   dateCreated: {type: Date, default: Date.now},
   timestamp: {type: Date, default: Date.now},
   cyclesCompleted: {type: Number, default: 0},

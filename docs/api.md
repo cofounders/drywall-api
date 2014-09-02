@@ -5,7 +5,7 @@ _Drywall API Specification_
 ## Endpoints
 [/:owner/:repository/coordinates](#coordinates) [GET/POST]
 [/billing/:user/create](#create-billings) [POST]
-[/billing/:user/update](#update-billings) [POST]
+[/billing/:user/cancel](#cancel-billings) [POST]
 [/billing/:user/list](#list-billings) [GET]
 
 ## Authentication & Authorization
@@ -85,8 +85,16 @@ Object of one billing plan
 3b. If the user cancels when they are at the payment screen, the user will be redirected to the `cancelUrl`.
 3c. If the payment fails (paypal goes down or our servers go down), the user will be redirected to the `returnUrl` with `?error=1` in the URL.
 
-## Update Billings
-### `POST /billing/:user/update`
+## Cancel Billing
+### `POST /billing/:user/cancel`
+Cancel a recurring payment plan for :user
+##### Sample Payload
+Object containing owner to cancel
+```js
+{
+  owner: "cofounders",  // github organisation to cancel payment
+}
+```
 
 ## List Billings
 ### `GET /billing/:user/list`

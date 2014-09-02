@@ -37,7 +37,7 @@ function setup(app) {
     .post(coordinates.add);
 
   router.post('/billing/:user/create', mid.authenticate, billing.create);
-  router.post('/billing/:user/update', mid.authenticate, billing.update);
+  router.post('/billing/:user/cancel', mid.authenticate, billing.cancel);
   router.get('/billing/:user/list', mid.authenticate, billing.list);
   router.get('/billing/:user/execute', billing.execute);
   router.get('/billing/:user/abort', billing.abort);
