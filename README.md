@@ -39,18 +39,20 @@ Sanity check the code and run integration tests.
 The following environment variables are used in this app and can be configured by creating a `.env` file in the root of the project.
 It should be in the format: KEY=VALUE
 
-`PORT` (default: 8000): TCP port where the app listens for HTTP requests
-`DRYWALL_AUTH0_CLIENT_SECRET`: [Auth0](http://auth0.com) client secret for drywall. It handles user social logins.
-`DRYWALL_AUTH0_ID`: [Auth0](http://auth0.com) client id for drywall. It handles user social logins.
-`DRYWALL_MONGOHQ_URI`: [MongoHQ/compose](https://www.compose.io) connection string (only one MongoDB connection).
-`DRYWALL_MONGOLAB_URI`: [MongoLab](https://mongolab.com/) connection string (only one MongoDB connection).
-`GITHUB_CLIENT_ID`: client id from a github application. This is to allow more requests.
-`GITHUB_SECRET`: client secret from a github application.
-
-paypalMode is either `SANDBOX` or `LIVE`
-`DRYWALL_PAYPAL_LIVE_MODE` (default: false): Either `true` or `false` to specify whether to use live mode credentials
-`DRYWALL_PAYPAL_<paypalMode>_CLIENT_ID`: Paypal client id for this mode.
-`DRYWALL_PAYPAL_<paypalMode>_SECRET`: Paypal secret for this mode.
+ * `PORT` (default: 8000): TCP port where the app listens for HTTP requests
+ * `DRYWALL_AUTH0_CLIENT_SECRET`: [Auth0](http://auth0.com) client secret for drywall. It handles user social logins.
+ * `DRYWALL_AUTH0_ID`: [Auth0](http://auth0.com) client id for drywall. It handles user social logins.
+ * `DRYWALL_MONGOHQ_URI`: [MongoHQ/compose](https://www.compose.io) connection string (only one MongoDB connection).
+ * `DRYWALL_MONGOLAB_URI`: [MongoLab](https://mongolab.com/) connection string (only one MongoDB connection).
+ * `GITHUB_CLIENT_ID`: client id from a github application. This is to allow more requests.
+ * `GITHUB_SECRET`: client secret from a github application.
+ * `DRYWALL_PAYPAL_LIVE_MODE` (default: false): Either `true` or `false` to specify whether to use live mode credentials.
+ * For the following, `<paypalMode>` = `SANDBOX` or `LIVE`.
+ * `DRYWALL_PAYPAL_<paypalMode>_CLIENT_ID`: Paypal client id for this mode.
+ * `DRYWALL_PAYPAL_<paypalMode>_SECRET`: Paypal secret for this mode.
+ * `DRYWALL_PAYPAL_<paypalMode>_USER`: Paypal user for this mode.
+ * `DRYWALL_PAYPAL_<paypalMode>_PASSWORD`: Paypal password for this mode.
+ * `DRYWALL_PAYPAL_<paypalMode>_SIGNATURE`: Paypal signature for this mode.
 
 By default the app connects to MongoDB as `mongodb://localhost:27017/test`.
 
