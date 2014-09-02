@@ -7,5 +7,5 @@
 exports.config = {
   app_name : ['Drywall'],
   license_key : '5277c6e4ff9a75e27c5aa00d26e4f2c3aba00c60',
-  logging : { level : 'trace'}
+  logging : { level : 'info'}
 };
