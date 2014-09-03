@@ -42,6 +42,49 @@ function msg(str) {
   return {message: str};
 }
 
+function update(req, res) {
+  var data = req.body;
+  data.user = req.params.user;
+
+  var requiredProperties = ['plan', 'owner', 'returnUrl', 'cancelUrl'];
+  if (hasMissingProperties(data, requiredProperties)) {
+    return res.status(400)
+      .send(msg('Missing payload: ' + requiredProperties.join(', ')));
+  }
+  var invalidResults = invalidProperties(data);
+  if (!_.isEmpty(invalidResults)) {
+    return res.status(400).send(msg(invalidResults));
+  }
+
+  findOneAccount({
+    owner: data.owner,
+    status: consts.active
+  }).then(function (account) { // find and cancel
+    if (account) {
+      return [account, PayPal.cancelRecurringPayment(account.paymentId)];
+    }
+    return [];
+  }).spread(function (account) {
+    //TODO: update status to upgraded or downgraded
+    if (account) { // cancelled, update status
+      account.status = consts.cancelled;
+      account.lastModifiedBy = data.user;
+      console.log('Recurring Payment cancelled for ' + data.owner);
+      return account.save();
+    }
+  }).then(function () {
+    PayPal = new paypalApi(ppConfig);
+    PayPal.createBillingPlan(data).then(function (approvalUrl) {
+      res.send({url: approvalUrl});
+    }).catch(function (err) {
+      res.status(500).send(msg('Failed to create billing plan'));
+    });
+  }).catch(function (err) {
+    console.error(err);
+    res.status(500).send(msg('Failed to update billing plan'));
+  });
+}
+
 //TODO: Check that an owner has already been paid
 function create(req, res) {
   var data = req.body;
@@ -185,9 +228,10 @@ function checkAccounts(req, res) {
 }
 
 function cancel(req, res) {
-  var data = req.query;
+  var data = req.body;
   data.user = req.params.user;
   var requiredProperties = ['owner', 'user'];
+
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
       .send(msg('Missing payload: ' + requiredProperties.join(', ')));
@@ -197,18 +241,16 @@ function cancel(req, res) {
     owner: data.owner,
     status: consts.active
   }).then(function (account) {
-    PayPal.cancelRecurringPayment(account.paymentId).then(function (data) {
-      account.status = consts.cancelled;
-      account.lastModifiedBy = data.user;
-      account.save();
-      console.log('Recurring Payment cancelled for ' + data.owner);
-      res.send(msg('Success. ' + account.paymentId + ' cancelled.'));
-    }).catch(function (err) {
-      return res.status(500).send(msg('Failed to cancel recurring payment'));
-    });
+    return [account, PayPal.cancelRecurringPayment(account.paymentId)];
+  }).spread(function (account, paypalRes) {
+    account.status = consts.cancelled;
+    account.lastModifiedBy = data.user;
+    account.save();
+    console.log('Recurring Payment cancelled for ' + data.owner);
+    res.send(msg('Success. ' + account.paymentId + ' cancelled.'));
   }).catch(function (err) {
-    return res.status(500)
-      .send(msg('Failed to find active account for ' + data.owner));
+    err.message = 'Error cancelling recurring payment' + data.user + data.owner;
+    return res.status(500).send(err.message);
   });
 }
 
@@ -227,6 +269,7 @@ function abort(req, res) {
 }
 
 module.exports = {
+  update: update,
   create: create,
   execute: execute,
   list: list,

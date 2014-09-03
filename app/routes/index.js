@@ -39,12 +39,9 @@ function setup(app) {
   router.route('/:user/billings')
     .all(mid.authenticate)
     .get(billings.list)
-    .post(billings.create)
+    .post(billings.update)
     .delete(billings.cancel);
 
-  router.post('/billing/:user/create', mid.authenticate, billings.create);
-  router.post('/billing/:user/cancel', mid.authenticate, billings.cancel);
-  router.get('/billing/:user/list', mid.authenticate, billings.list);
   router.get('/billing/:user/execute', billings.execute);
   router.get('/billing/:user/abort', billings.abort);
   router.get('/billing/check', billings.checkAccounts);
