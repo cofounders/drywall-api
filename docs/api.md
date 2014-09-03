@@ -104,7 +104,7 @@ Object of one billing plan
 3c. If the payment fails (paypal goes down or our servers go down), the user will be redirected to the `returnUrl` with `?error=1` in the URL.
 
 ## Cancel Billing
-### `DELETE /:user/billing`
+### `DELETE /:user/billings`
 Cancel a recurring payment plan for :user
 ##### Sample Payload
 Object containing owner to cancel
