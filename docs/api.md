@@ -4,9 +4,7 @@ _Drywall API Specification_
 
 ## Endpoints
 [/:owner/:repository/coordinates](#coordinates) [GET/POST]
-[/billing/:user/create](#create-billings) [POST]
-[/billing/:user/cancel](#cancel-billings) [POST]
-[/billing/:user/list](#list-billings) [GET]
+[/:user/billings](#billings) [GET/POST/DELETE]
 
 ## Authentication & Authorization
 
@@ -14,26 +12,27 @@ The following table summarizes the required (:white_check_mark:) and optional (:
 
  * __Auth Header__: `Authorization : Bearer <auth0_id_token>`
  * __Github Token__: Github `access_token` in URL query or payload data
- * __Github User__: Github `user` in URL query or payload data
 
-| Description | Type | Auth Header | Github Token | Github User |
-| --- | --- | --- |--- | --- |
-| Public Coordinates | `GET`| :white_circle: | :white_circle: | :white_circle: |
-| Private Coordinates | `GET`| :white_check_mark:  | :white_check_mark: | :white_check_mark: |
-| Public Coordinates | `POST`| :white_check_mark: | :white_check_mark: | :white_circle: |
-| Private Coordinates | `POST`| :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Create Billing      | `POST` | :white_check_mark: | :white_circle: | :white_circle: |
-| List Billings      | `GET` | :white_check_mark: | :white_check_mark: | :white_circle: |
+| Description | Type | Auth Header | Github Token |
+| --- | --- | --- |--- |
+| Public Coordinates | `GET`| :white_circle: | :white_circle: |
+| Private Coordinates | `GET`| :white_check_mark:  | :white_check_mark: |
+| Public Coordinates | `POST`| :white_check_mark: | :white_check_mark: |
+| Private Coordinates | `POST`| :white_check_mark: | :white_check_mark: |
+| List Billings   | `GET` | :white_check_mark: | :white_check_mark: |
+| Create/Change Billing      | `POST` | :white_check_mark: | :white_circle: |
+| Cancel Billing  | `DELETE` | :white_check_mark: | :white_circle: |
 
 ### `Responses`
- * __404__ if no public or private repo was returned from github
- * __401__ if failed authorization for private repo
- * __400__ if missing or failed validation of params
- * __500__ if database actions fail
  * __200__ if all succeeds
+ * __400__ if missing or failed validation of params
+ * __401__ if failed authorization for private repo
+ * __402__ if payment is required or plan has reached its limit
+ * __404__ if no public or private repo was returned from github
+ * __500__ if database actions fail
 
 ## Coordinates
-### `GET  /:owner/:repository/coordinates`
+### `GET  /:owner/:repo/coordinates?user=jane`
 ##### Sample Response
 Array of coordinates, empty array if no coordinates
 ```
@@ -45,7 +44,7 @@ Array of coordinates, empty array if no coordinates
 ]
 ```
 
-### `POST  /:owner/:repository/coordinates`
+### `POST  /:owner/:repo/coordinates?user=jane`
 ##### Sample Payload
 Object of one set of coordinates
 ```
@@ -56,9 +55,28 @@ Object of one set of coordinates
 }
 ```
 
-## Create Billings
-### `POST /billing/:user/create`
+## Billings
+### `GET /:user/billings`
+List all github organisations and paid organisations belonging to this :user
+##### Sample Response
+Array of organisations for a user
+```
+[
+  {
+    "owner": "superdrywall"  // unpaid github organisation
+  },
+  {
+    "owner": "cofounders",  // paid github organisation
+    "plan": 2,  // plan number [1-8]
+    "paidBy": "drywallcfsg",  // payee
+    "nextBillingDate": "2014-08-31T10:00:00.000Z"
+  }
+]
+```
+
+### `POST /:user/billings`
 Creating a billing plan for a :user requires the following 3 steps.
+This route can be used to change a user's plan. If an account already exists, the user's old plan will first be cancelled and a new billing plan is created with the usual steps.
 
 1. Create a billing plan
 ##### Sample Payload
@@ -86,31 +104,12 @@ Object of one billing plan
 3c. If the payment fails (paypal goes down or our servers go down), the user will be redirected to the `returnUrl` with `?error=1` in the URL.
 
 ## Cancel Billing
-### `POST /billing/:user/cancel`
+### `DELETE /:user/billing`
 Cancel a recurring payment plan for :user
 ##### Sample Payload
 Object containing owner to cancel
 ```js
 {
-  owner: "cofounders",  // github organisation to cancel payment
+  owner: "cofounders",  // github organisation to cancel
 }
-```
-
-## List Billings
-### `GET /billing/:user/list`
-List all organisations and paid organisations for this :user
-##### Sample Response
-Array of organisations for user `drywallcfsg`
-```
-[
-  {
-    "owner": "superdrywall"  // unpaid github organisation
-  },
-  {
-    "owner": "cofounders",  // paid github organisation
-    "plan": 2,  // plan number [1-8]
-    "paidBy": "drywallcfsg",  // payee
-    "nextBillingDate": "2014-08-31T10:00:00.000Z"
-  }
-]
 ```
