@@ -2,7 +2,7 @@ var express = require('express');
 var mid = require('../middlewares');
 var coordinates = require('./coordinates');
 var ipnListener = require('./ipnListener');
-var billing = require('./billing');
+var billings = require('./billings');
 
 function testRoutes() {
   var router = express.Router();
@@ -36,11 +36,18 @@ function setup(app) {
     .get(coordinates.list)
     .post(coordinates.add);
 
-  router.post('/billing/:user/create', mid.authenticate, billing.create);
-  router.post('/billing/:user/cancel', mid.authenticate, billing.cancel);
-  router.get('/billing/:user/list', mid.authenticate, billing.list);
-  router.get('/billing/:user/execute', billing.execute);
-  router.get('/billing/:user/abort', billing.abort);
+  router.route('/:user/billings')
+    .all(mid.authenticate)
+    .get(billings.list)
+    .post(billings.create)
+    .delete(billings.cancel);
+
+  router.post('/billing/:user/create', mid.authenticate, billings.create);
+  router.post('/billing/:user/cancel', mid.authenticate, billings.cancel);
+  router.get('/billing/:user/list', mid.authenticate, billings.list);
+  router.get('/billing/:user/execute', billings.execute);
+  router.get('/billing/:user/abort', billings.abort);
+  router.get('/billing/check', billings.checkAccounts);
 
   router.post('/paypal_callback', ipnListener);
 

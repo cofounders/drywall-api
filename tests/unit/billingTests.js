@@ -7,7 +7,7 @@ var mongoose = require('mongoose');
 var Promise = require('bluebird');
 var _ = require('underscore');
 var config = require('../../app/config');
-var billing = require('../../app/routes/billing');
+var billings = require('../../app/routes/billings');
 var utils = require('../helpers/utils');
 var mid = require('../../app/middlewares');
 var db = require('../../app/modules/database');
@@ -16,7 +16,7 @@ describe('Billing tests', function () {
   var githubAccessToken = '';
 
   var app = express();
-  app.get('/:user/list', billing.list);
+  app.get('/:user/list', billings.list);
   app.use(mid.errorHandler);
   var agent = supertest(app);
 
@@ -57,7 +57,7 @@ describe('Billing Function tests', function() {
     var githubOrgs = ['cofounders', 'supernew', 'happycamper'];
     var paidOrgs = [{owner: 'cofounders', paidBy: 'drywall', plan: 1},
     {owner: 'strawberry', paidBy: 'farmer', plan: 2}];
-    var orgs = billing.test.mergeLists(paidOrgs, githubOrgs);
+    var orgs = billings.test.mergeLists(paidOrgs, githubOrgs);
     assert.isArray(orgs);
     assert.lengthOf(orgs, 4);
     assert.sameMembers(_.pluck(orgs, 'owner'),

@@ -19,7 +19,7 @@ app.use(morgan('combined'));
 app.use(compression());
 app.use(cors({
   origin: '*',
-  methods: ['GET, POST, OPTIONS'],
+  methods: ['GET, POST, DELETE, OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   maxAge: 86400
 }));

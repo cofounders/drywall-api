@@ -109,8 +109,8 @@ function mergeLists(paidOrgs, githubOrgs) {
   ));
 }
 
-// List all github organisations and paid organisations for a user
-//  A user may still be paying for an organisation have lost github access.
+// List all billings - paid and open source organisations for a user
+//  A user may still be paying but not belong to an organisation.
 function list(req, res) {
   var data = req.query;
   data.user = req.params.user;
@@ -121,34 +121,67 @@ function list(req, res) {
   }
 
   githubApi.userOrganisations(data).then(function (githubOrgs) {
-    findAccounts({
-      '$or': [{
-        paidBy: data.user
-      },{
-        owner: {'$in': githubOrgs}
-      }]
-    }, '-_id owner paidBy plan nextBillingDate').then(function (paidOrgs) {
-      var orgs = mergeLists(paidOrgs, githubOrgs);
-      console.log(orgs);
-      return res.send(orgs);
-    }).catch(function (err) {
-      err.message = 'Error getting paid organisations for ' + data.user;
-      console.error(err.message);
-      res.status(500).send(err);
-    });
+    return [githubOrgs, findAccounts({'$or': [
+      {paidBy: data.user}, {owner: {'$in': githubOrgs}}
+    ]}, '-_id owner paidBy plan nextBillingDate')];
+  }).spread(function (githubOrgs, paidOrgs) {
+    var orgs = mergeLists(paidOrgs, githubOrgs);
+    console.log(orgs);
+    return res.send(orgs);
   }).catch(function (err) {
-    err.message = 'Error getting github organisations for ' + data.user;
+    err.message = 'Error getting billings for ' + data.user;
     console.error(err.message);
-    res.status(500).send(err);
+    return res.status(500).send(err);
   });
+}
 
-  // PayPal.listRecurringPayment('I-FXKU0WPKWKUL').then(function (payments) {
-  //   console.log(payments);
-  //   res.send(payments);
-  // }).catch(function (err) {
-  //   err.statusCode = 500;
-  //
-  // });
+function checkAndUpdateAccount(account) {
+  return function() {
+    PayPal.listRecurringPayment(account.paymentId).then(function (payment) {
+      if (account.status !== payment.STATUS) {
+        console.error('Error! Account and PayPal status differ');
+        console.error(account, payment);
+      }
+      if (payment.NUMCYCLESCOMPLETED > account.cyclesCompleted) {
+        var newAcc = {
+          _id: account._id,
+          status: payment.STATUS,
+          cyclesCompleted: payment.NUMCYCLESCOMPLETED,
+          nextBillingDate: payment.NEXTBILLINGDATE,
+          timestamp: moment().format()
+        };
+        return newAcc;
+      }
+    }).then(function (updatedAcc) {
+      if (!updatedAcc) {
+        return;
+      }
+      var id = updatedAcc._id;
+      console.log('Updating', updatedAcc);
+      delete(updatedAcc._id);
+      var query = AccountsModel.findByIdAndUpdate(
+        id, updatedAcc, function (err, d) {
+        if (err) {
+          console.error(err);
+        }
+      });
+    });
+  };
+}
+
+function checkAccounts(req, res) {
+  findAccounts({}).then(function (accts) {
+    accts.map(function (account) {
+      return checkAndUpdateAccount(account);
+    }).forEach(function (func) {
+      func();
+    });
+    return res.send(msg('Accounts updated!'));
+  }).catch(function (err) {
+    err.message = 'Error: Failed to get all Accounts from db';
+    console.error(err.message);
+    return res.status(500).send(msg(err.message));
+  });
 }
 
 function cancel(req, res) {
@@ -199,6 +232,7 @@ module.exports = {
   list: list,
   cancel: cancel,
   abort: abort,
+  checkAccounts: checkAccounts,
   test: {
     mergeLists: mergeLists
   }
