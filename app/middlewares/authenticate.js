@@ -12,7 +12,7 @@ function authenticate(req, res, next) {
   })(req, res, function(err) {
     if (!err) {
       req.user.access_token = req.user.identities[0].access_token;
-      console.log(req.user);
+      console.log(req.user.nickname, req.user.sub, 'logged in');
       return next();
     } else {
       console.error(err.status, err.message);

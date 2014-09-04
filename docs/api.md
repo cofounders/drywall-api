@@ -12,17 +12,16 @@ _Drywall API Specification_
 The following table summarizes the required (:white_check_mark:) and optional (:white_circle:) information when performing a request to the drywall API.
 
  * __Auth Header__: `Authorization : Bearer <auth0_id_token>`
- * __Github Token__: Github `access_token` in URL query or payload data
 
-| Description | Type | Auth Header | Github Token |
-| --- | --- | --- |--- |
-| Public Coordinates | `GET`| :white_circle: | :white_circle: |
-| Private Coordinates | `GET`| :white_check_mark:  | :white_check_mark: |
-| Public Coordinates | `POST`| :white_check_mark: | :white_check_mark: |
-| Private Coordinates | `POST`| :white_check_mark: | :white_check_mark: |
-| List Billings   | `GET` | :white_check_mark: | :white_check_mark: |
-| Create/Change Billing      | `POST` | :white_check_mark: | :white_circle: |
-| Cancel Billing  | `DELETE` | :white_check_mark: | :white_circle: |
+| Description | Type | Auth Header |
+| --- | --- | --- |
+| Public Coordinates | `GET`| :white_circle: |
+| Private Coordinates | `GET`| :white_check_mark:  |
+| Public Coordinates | `POST`| :white_check_mark: |
+| Private Coordinates | `POST`| :white_check_mark: |
+| List Billings   | `GET` | :white_check_mark: |
+| Create/Change Billing      | `POST` | :white_check_mark: |
+| Cancel Billing  | `DELETE` | :white_check_mark: |
 
 ### `Responses`
  * __200__ if all succeeds

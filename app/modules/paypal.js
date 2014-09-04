@@ -98,7 +98,7 @@ PayPal.prototype.createRecurringPayment = function(data) {
         BILLINGPERIOD: planOpts.billingPeriod,
         BILLINGFREQUENCY: 1,
         CURRENCYCODE: 'USD',
-        PROFILESTARTDATE: moment().add(2, 'hours').format(),
+        PROFILESTARTDATE: moment().add(3, 'hours').format(),
         DESC: planOpts.planName,
         MAXFAILEDPAYMENTS: 0,
         AUTOBILLOUTAMT: 'NoAutoBill'
