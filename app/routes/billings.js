@@ -142,11 +142,8 @@ function mergeLists(paidOrgs, githubOrgs) {
 function list(req, res) {
   var data = req.query;
   data.user = req.user.sub;
-  var requiredProperties = ['access_token'];
-  if (hasMissingProperties(data, requiredProperties)) {
-    return res.status(400)
-      .send('Missing payload: ' + requiredProperties.join(', '));
-  }
+  data.nickname = req.user.nickname; //github username
+  data.access_token = req.user.access_token; //github access token
 
   githubApi.userOrganisations(data).then(function (githubOrgs) {
     return [githubOrgs, findAccounts({'$or': [

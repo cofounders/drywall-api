@@ -6,12 +6,13 @@ var githubApi = require('../modules/github');
 
 function authorize(req, res, next) {
   console.log('Authorizing github ' + req.path);
+
   var opts = req.params;
-  var token = req.query.access_token || (req.body && req.body.access_token);
-  opts.query = token ? 'access_token=' + token : qs.stringify({
-    client_id: config.github.clientId,
-    client_secret: config.github.secret
-  });
+  opts.query = req.user ? 'access_token=' + req.user.access_token :
+    qs.stringify({
+      client_id: config.github.clientId,
+      client_secret: config.github.secret
+    });
 
   githubApi.userPermissions(opts).then(function (permissions) {
     req.github = permissions;

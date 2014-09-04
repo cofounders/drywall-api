@@ -10,21 +10,8 @@ function localhost(path) {
   return [base, ':', port, path || ''].join('');
 }
 
-function bearerToken(data) {
-  var secret = new Buffer(config.auth0.secret || '', 'base64');
-  var audience = config.auth0.clientId;
-
-  return 'Bearer ' + jwt.sign(
-    data || {iss: 'https://drywall.auth0.com/',
-      sub: 'github|8487474',
-      user: 'drywallcfsg'},
-    secret,
-    {'audience': audience}
-  );
-}
-
-function testerAccessToken() {
-  var testerId = 'github|8487474';
+function testerAccessToken(testerId) {
+  testerId = testerId || 'github|8487474';
 
   return new Promise(function(resolve, reject) {
     prequest({
@@ -49,6 +36,30 @@ function testerAccessToken() {
       console.error('Error getting Auth0 token: ' + JSON.stringify(err));
       reject(err);
     });
+  });
+}
+
+function bearerToken() {
+  var secret = new Buffer(config.auth0.secret || '', 'base64');
+  var audience = config.auth0.clientId;
+  var id = 'github|8487474';
+
+  return new Promise(function(resolve, reject) {
+    testerAccessToken(id).then(function (token) {
+      resolve('Bearer ' + jwt.sign(
+        {
+          identities: [{
+            access_token: token,
+            provider: 'github'
+          }],
+          iss: 'https://drywall.auth0.com/',
+          sub: id,
+          nickname: 'drywallcfsg'
+        },
+        secret,
+        {'audience': audience}
+      ));
+    }).catch(reject);
   });
 }
 

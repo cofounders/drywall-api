@@ -2,8 +2,7 @@ var jwt = require('express-jwt');
 var config = require('../config');
 
 function authenticate(req, res, next) {
-  req.github = req.github || {};
-  if (req.github.read) {
+  if (!req.headers.hasOwnProperty('authorization')) {
     return next();
   }
 
@@ -12,6 +11,7 @@ function authenticate(req, res, next) {
     audience: config.auth0.clientId
   })(req, res, function(err) {
     if (!err) {
+      req.user.access_token = req.user.identities[0].access_token;
       console.log(req.user);
       return next();
     } else {

@@ -7,22 +7,13 @@ frisby.create('Test index')
   .expectStatus(200)
 .toss();
 
-frisby.create('Authenticated user')
-  .get(utils.localhost('/api/ping'))
-  .addHeader('Authorization', utils.bearerToken())
-  .expectStatus(200)
-.toss();
-
 frisby.create('Bad token user')
   .get(utils.localhost('/api/ping'))
   .addHeader('Authorization', 'Bearer 1234567890')
   .expectStatus(401)
 .toss();
 
-frisby.create('No Authorization header')
+frisby.create('No Authorization header is fine')
   .get(utils.localhost('/api/ping'))
-  .expectStatus(401)
-  .expectJSONTypes({
-    message: String
-  })
+  .expectStatus(200)
 .toss();

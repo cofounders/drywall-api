@@ -32,7 +32,7 @@ function setup(app) {
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
-    .all(mid.authorize, mid.authenticate, mid.paidAccess)
+    .all(mid.authenticate, mid.authorize, mid.paidAccess)
     .get(coordinates.list)
     .post(coordinates.add);
 

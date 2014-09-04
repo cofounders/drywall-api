@@ -13,7 +13,7 @@ var mid = require('../../app/middlewares');
 var db = require('../../app/modules/database');
 
 describe('Billing tests', function () {
-  var githubAccessToken = '';
+  var BEARERTOKEN = '';
 
   var app = express();
   app.get('/:user/list',
@@ -32,9 +32,9 @@ describe('Billing tests', function () {
 
     Promise.props({
       db: connectDb(config.db.uri),
-      testerToken: utils.testerAccessToken()
+      token: utils.bearerToken()
     }).then(function (results) {
-      githubAccessToken = results.testerToken;
+      BEARERTOKEN = results.token;
       done();
     }).catch(function (err) {
       done(err);
@@ -43,8 +43,8 @@ describe('Billing tests', function () {
 
   it('should list paid organisations for authorized user', function (done) {
     this.timeout(10000);
-    agent.get('/drywallcfsg/list?access_token=' + githubAccessToken)
-      .set('Authorization', utils.bearerToken())
+    agent.get('/drywallcfsg/list')
+      .set('Authorization', BEARERTOKEN)
       .expect(200)
       .end(function (err, res) {
         assert.ok(res.body.length > 0);

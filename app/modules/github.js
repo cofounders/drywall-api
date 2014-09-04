@@ -30,13 +30,13 @@ function userOrganisations(opts) {
   return new Promise(function (resolve, reject) {
     prequest({
       url: url,
-      headers: _.defaults({'User-Agent': opts.user}, moreHeaders),
+      headers: _.defaults({'User-Agent': opts.nickname}, moreHeaders),
       arrayResponse: true
     }).spread(function (response, data) {
       if (response.statusCode === 304) {
         return resolve(orgs);
       }
-      data.push({login: opts.user}); // Add user into list of orgs
+      data.push({login: opts.nickname}); // Add user into list of orgs
       orgs = githubOrganisations(data);
       cache.set(url, {orgs: orgs, etag: response.headers.etag});
       resolve(orgs);
