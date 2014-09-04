@@ -150,7 +150,8 @@ function list(req, res) {
 
   githubApi.userOrganisations(data).then(function (githubOrgs) {
     return [githubOrgs, findAccounts({'$or': [
-      {paidBy: data.user}, {owner: {'$in': githubOrgs}}
+      {paidBy: data.user, status: consts.active},
+      {owner: {'$in': githubOrgs}, status: consts.active}
     ]}, '-_id owner paidBy plan nextBillingDate')];
   }).spread(function (githubOrgs, paidOrgs) {
     var orgs = mergeLists(paidOrgs, githubOrgs);
