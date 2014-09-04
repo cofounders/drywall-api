@@ -32,9 +32,10 @@ function paidAccess(req, res, next) {
       //TODO: Need to flush activeUsers every month
       var planDetails = _.findWhere(config.paymentPlans,
         {plan: parseInt(account.plan)}
-      ) || {};
+      );
 
-      if (account.activeUsers.length >= planDetails.users) {
+      if (planDetails &&
+        account.activeUsers.length >= planDetails.users) {
         var error1 = new Error('Max active users reached');
         error1.details = planDetails;
         error1.statusCode = 402;
