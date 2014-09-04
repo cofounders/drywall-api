@@ -5,7 +5,7 @@ _Drywall API Specification_
 ## Endpoints
 [/:owner/:repository/coordinates](#coordinates) [GET/POST]
 
-[/billings](#billings) [GET/POST/DELETE]
+[/billings](#billings) [GET/POST]
 
 ## Authentication & Authorization
 
