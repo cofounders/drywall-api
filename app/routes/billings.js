@@ -95,7 +95,7 @@ function update(req, res) {
 function execute(req, res) {
   var data = req.query;
   data.user = req.params.user;
-  data.nextBillingDate = moment().add(3, 'hours').utc().format();
+  data.nextBillingDate = moment().add(12, 'hours').utc().format();
   console.log('Execute billing for ' +
     data.user, data.owner, data.nextBillingDate);
   var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
