@@ -87,6 +87,7 @@ PayPal.prototype.createRecurringPayment = function(data) {
   var options = this.options;
   var planOpts = this.paymentPlanOptions(data.plan);
   planOpts.planName = this.planName(planOpts);
+  planOpts.nextBillingDate = data.nextBillingDate;
 
   return new Promise(function (resolve, reject) {
     prequest(options.nvpApiUrl, {
@@ -98,7 +99,7 @@ PayPal.prototype.createRecurringPayment = function(data) {
         BILLINGPERIOD: planOpts.billingPeriod,
         BILLINGFREQUENCY: 1,
         CURRENCYCODE: 'USD',
-        PROFILESTARTDATE: moment().add(2, 'hours').utc().format(),
+        PROFILESTARTDATE: planOpts.nextBillingDate,
         DESC: planOpts.planName,
         MAXFAILEDPAYMENTS: 0,
         AUTOBILLOUTAMT: 'NoAutoBill'

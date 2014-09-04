@@ -95,7 +95,9 @@ function update(req, res) {
 function execute(req, res) {
   var data = req.query;
   data.user = req.params.user;
-  console.log('Execute billing for ' + data.user, data.owner);
+  data.nextBillingDate = moment().add(3, 'hours').utc().format();
+  console.log('Execute billing for ' +
+    data.user, data.owner, data.nextBillingDate);
   var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
@@ -106,7 +108,7 @@ function execute(req, res) {
     data.paymentId = profile.PROFILEID;
     data.paidBy = data.user;
     data.activeUsers = [data.user];
-    data.nextBillingDate = moment().add(2, 'hours').utc().format();
+    data.nextBillingDate = data.nextBillingDate;
     var account = new AccountsModel(data);
     account.save(function (err) {
       if (!err) {
