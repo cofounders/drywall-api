@@ -37,11 +37,13 @@ The following table summarizes the required (:white_check_mark:) and optional (:
 ##### Sample Response
 Array of coordinates, empty array if no coordinates
 ```
-[{
-  x: 1,
-  y: 2,
-  number: 70
-}, ...
+[
+  {
+    x: 1,
+    y: 2,
+    number: 70
+  },
+  ...
 ]
 ```
 
@@ -84,6 +86,7 @@ If an account already exists, the user's old plan will first be cancelled and a 
 Creating a billing plan for a user requires the following 3 steps.
 
 1. Create a billing plan
+
 ##### Sample Payload
 Object of one billing plan
 ```js
@@ -97,6 +100,7 @@ Object of one billing plan
 
 ##### Sample Response
 2a. If successful, redirect the user to the returned URL in the response to proceed with the payment.
+
 2b. If it fails, 500 is returned.
 ```
 {
@@ -105,5 +109,7 @@ Object of one billing plan
 ```
 
 3a. Once the user has completed the payment, the user will be redirected to the `returnUrl`.
+
 3b. If the user cancels when they are at the payment screen, the user will be redirected to the `cancelUrl`.
+
 3c. If the payment fails (paypal goes down or our servers go down), the user will be redirected to the `returnUrl` with `?error=1` in the URL.
