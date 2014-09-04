@@ -106,7 +106,7 @@ function execute(req, res) {
     data.paymentId = profile.PROFILEID;
     data.paidBy = data.user;
     data.activeUsers = [data.user];
-    data.nextBillingDate = moment().add(2, 'hours').format();
+    data.nextBillingDate = moment().add(2, 'hours').utc().format();
     var account = new AccountsModel(data);
     account.save(function (err) {
       if (!err) {
@@ -174,7 +174,7 @@ function checkAndUpdateAccount(account) {
           status: payment.STATUS,
           cyclesCompleted: payment.NUMCYCLESCOMPLETED,
           nextBillingDate: payment.NEXTBILLINGDATE,
-          timestamp: moment().format()
+          timestamp: (new Date()).toISOString()
         };
         return newAcc;
       }
