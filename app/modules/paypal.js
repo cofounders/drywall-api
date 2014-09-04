@@ -11,21 +11,19 @@ var config = require('../config');
  *  with PayPal's NVP API.
 */
 function PayPal(options) {
-  this.options = _.extend({}, options);
+  this.options = options;
   this.credQuery = qs.stringify({
     user: this.options.user,
     pwd: this.options.password,
     signature: this.options.signature,
     version: '104.0'
   }) + '&';
-
-  Object.defineProperty(this.options, 'planName', {
-    get: function() {
-      return 'Drywall {0}ly {1} Plan'.format(
-        this.billingPeriod, this.name);
-    }
-  });
 }
+
+PayPal.prototype.planName = function(planOpts) {
+  return 'Drywall {0}ly {1} Plan'.format(
+    planOpts.billingPeriod, planOpts.name);
+};
 
 PayPal.prototype.paymentPlanOptions = function(planId) {
   return _.findWhere(config.paymentPlans,
@@ -35,9 +33,9 @@ PayPal.prototype.paymentPlanOptions = function(planId) {
 
 PayPal.prototype.createBillingPlan = function(data) {
   var that = this;
+  var options = this.options;
   var planOpts = this.paymentPlanOptions(data.plan);
-  var options = _.defaults(this.options, planOpts);
-  console.log('Creating billing Plan: ', data.user, options);
+  planOpts.planName = this.planName(planOpts);
 
   return new Promise(function (resolve, reject) {
     var query = qs.stringify({
@@ -52,13 +50,13 @@ PayPal.prototype.createBillingPlan = function(data) {
           options.internalUrl, data.user, data.returnUrl, query),
         CANCELURL: '{0}/{1}/abort?url={2}&{3}'.format(
           options.internalUrl, data.user, data.cancelUrl, query),
-        PAYMENTREQUEST_0_AMT: options.amount,
+        PAYMENTREQUEST_0_AMT: planOpts.amount,
         PAYMENTREQUEST_0_CURRENCYCODE: 'USD',
         PAYMENTREQUEST_0_PAYMENTACTION: 'Sale',
-        L_PAYMENTREQUEST_0_NAME0: options.planName,
-        L_PAYMENTREQUEST_0_AMT0: options.amount,
-        L_PAYMENTREQUEST_0_DESC0: options.users + ' active users',
-        L_BILLINGAGREEMENTDESCRIPTION0: options.planName,
+        L_PAYMENTREQUEST_0_NAME0: planOpts.planName,
+        L_PAYMENTREQUEST_0_AMT0: planOpts.amount,
+        L_PAYMENTREQUEST_0_DESC0: planOpts.users + ' active users',
+        L_BILLINGAGREEMENTDESCRIPTION0: planOpts.planName,
         L_BILLINGTYPE0: 'RecurringPayments',
         REQCONFIRMSHIPPING: 0,
         NOSHIPPING: 1,
@@ -86,8 +84,9 @@ PayPal.prototype.createBillingPlan = function(data) {
 
 PayPal.prototype.createRecurringPayment = function(data) {
   var that = this;
+  var options = this.options;
   var planOpts = this.paymentPlanOptions(data.plan);
-  var options = _.defaults(this.options, planOpts);
+  planOpts.planName = this.planName(planOpts);
 
   return new Promise(function (resolve, reject) {
     prequest(options.nvpApiUrl, {
@@ -95,12 +94,12 @@ PayPal.prototype.createRecurringPayment = function(data) {
       body: that.credQuery + qs.stringify({
         TOKEN: data.token,
         METHOD: 'CreateRecurringPaymentsProfile',
-        AMT: options.amount,
-        BILLINGPERIOD: options.billingPeriod,
+        AMT: planOpts.amount,
+        BILLINGPERIOD: planOpts.billingPeriod,
         BILLINGFREQUENCY: 1,
         CURRENCYCODE: 'USD',
         PROFILESTARTDATE: moment().add(2, 'hours').format(),
-        DESC: options.planName,
+        DESC: planOpts.planName,
         MAXFAILEDPAYMENTS: 0,
         AUTOBILLOUTAMT: 'NoAutoBill'
       })
@@ -142,7 +141,7 @@ PayPal.prototype.cancelRecurringPayment = function(paymentId) {
         reject(JSON.stringify(data));
       }
     }).catch(function (err) {
-      console.error('Error suspending payment id: ' + paymentId);
+      console.error('Error cancelling payment id: ' + paymentId);
       reject(err);
     });
   });

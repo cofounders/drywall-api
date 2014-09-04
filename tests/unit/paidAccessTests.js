@@ -15,10 +15,10 @@ describe('Paid Access tests', function () {
 
   var app = express();
   app.get('/:owner/:repo',
-    mid.authorize,
+    mid.authenticate,
     mid.paidAccess,
     function(req, res) {
-      res.send(req.github || 'nothing');
+      res.send(req.body || 'nothing');
     }
   );
   app.use(mid.errorHandler);
@@ -45,29 +45,11 @@ describe('Paid Access tests', function () {
     });
   });
 
-  it('should pass if public repo', function (done) {
-    this.timeout(3000);
-    agent.get('/alyssaq/egg')
-      .expect(200)
-      .end(function (err, res) {
-        assert.ok(res.body.private === false);
-        return err ? done(err) : done();
-      });
-  });
-
-  it('should return 400 without user', function (done) {
-    this.timeout(5000);
-    agent.get('/cofounders/drywall-api?access_token=' + githubAccessToken)
-      .expect(400)
-      .end(function (err, res) {
-        return err ? done(err) : done();
-      });
-  });
-
   it('should return 402 if plan needs to upgrade', function (done) {
     this.timeout(5000);
-    agent.get('/cofounders/drywall-api?user=drywallcfsg&access_token=' +
+    agent.get('/superdrywall/somerepo?access_token=' +
       githubAccessToken)
+      .set('Authorization', utils.bearerToken())
       .expect(402)
       .end(function (err, res) {
         assert.equal(res.body.message, 'Max active users reached');
@@ -77,10 +59,12 @@ describe('Paid Access tests', function () {
 
   it('should pass if organisation has been paid', function (done) {
     this.timeout(5000);
-    agent.get('/superdrywall/egg?user=drywallcfsg&access_token=' +
+    agent.get('/cofounders/drywall-api?access_token=' +
       githubAccessToken)
+      .set('Authorization', utils.bearerToken())
       .expect(200)
       .end(function (err, res) {
+        console.log(res.body);
         return err ? done(err) : done();
       });
   });

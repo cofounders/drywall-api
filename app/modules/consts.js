@@ -1,4 +1,5 @@
 module.exports = {
   active: 'Active',
-  cancelled: 'Cancelled'
+  cancelled: 'Cancelled',
+  freePlan: 0
 };

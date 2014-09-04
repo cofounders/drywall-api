@@ -23,11 +23,9 @@ function hasMissingProperties(data, arr) {
 
 function invalidProperties(arr) {
   var results = {};
-  if (arr.plan) {
-    var num = parseInt(arr.plan);
-    if (num > 8 || num < 1) {
-      results.plan = 'plan must be between 1 and 8';
-    }
+  var num = parseInt(arr.plan, 10);
+  if (num > 8 || num < 0) {
+    results.plan = 'Plan must be between 0 and 8';
   }
   if (arr.returnUrl && !validUrl.isUri(arr.returnUrl)) {
     results.returnUrl = 'Invalid url';
@@ -44,9 +42,9 @@ function msg(str) {
 
 function update(req, res) {
   var data = req.body;
-  data.user = req.params.user;
+  data.user = req.user.sub;
 
-  var requiredProperties = ['plan', 'owner', 'returnUrl', 'cancelUrl'];
+  var requiredProperties = ['plan', 'owner'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
       .send(msg('Missing payload: ' + requiredProperties.join(', ')));
@@ -56,55 +54,42 @@ function update(req, res) {
     return res.status(400).send(msg(invalidResults));
   }
 
-  findOneAccount({
-    owner: data.owner,
-    status: consts.active
-  }).then(function (account) { // find and cancel
+  function cancelPayPalAccount(account) { // find and cancel
     if (account) {
       return [account, PayPal.cancelRecurringPayment(account.paymentId)];
     }
-    return [];
-  }).spread(function (account) {
+  }
+
+  function updateDatabaseAccount(account, ppRes) {
     //TODO: update status to upgraded or downgraded
     if (account) { // cancelled, update status
       account.status = consts.cancelled;
       account.lastModifiedBy = data.user;
       console.log('Recurring Payment cancelled for ' + data.owner);
-      return account.save();
+      account.save();
     }
-  }).then(function () {
-    PayPal = new paypalApi(ppConfig);
-    PayPal.createBillingPlan(data).then(function (approvalUrl) {
-      res.send({url: approvalUrl});
-    }).catch(function (err) {
-      res.status(500).send(msg('Failed to create billing plan'));
+
+    if (parseInt(data.plan, 10) > consts.freePlan) {
+      return PayPal.createBillingPlan(data)
+        .then(function (approvalUrl) {
+          res.send({url: approvalUrl});
+        }, function (err) {
+          res.status(500).send(msg('Failed to create billing plan'));
+        });
+    } else {
+      return res.send(ppRes);
+    }
+  }
+
+  findOneAccount({
+    owner: data.owner,
+    status: consts.active
+  }).then(cancelPayPalAccount)
+    .spread(updateDatabaseAccount)
+    .catch(function (err) {
+      console.error(err);
+      res.status(500).send(msg('Failed to update billing plan'));
     });
-  }).catch(function (err) {
-    console.error(err);
-    res.status(500).send(msg('Failed to update billing plan'));
-  });
-}
-
-//TODO: Check that an owner has already been paid
-function create(req, res) {
-  var data = req.body;
-  data.user = req.params.user;
-
-  var requiredProperties = ['plan', 'owner', 'returnUrl', 'cancelUrl'];
-  if (hasMissingProperties(data, requiredProperties)) {
-    return res.status(400)
-      .send(msg('Missing payload: ' + requiredProperties.join(', ')));
-  }
-  var invalidResults = invalidProperties(data);
-  if (!_.isEmpty(invalidResults)) {
-    return res.status(400).send(msg(invalidResults));
-  }
-  PayPal.createBillingPlan(data).then(function (approvalUrl) {
-    console.log(approvalUrl);
-    res.send({url: approvalUrl});
-  }).catch(function (err) {
-    res.status(500).send(msg('Failed to create billing plan'));
-  });
 }
 
 function execute(req, res) {
@@ -156,7 +141,7 @@ function mergeLists(paidOrgs, githubOrgs) {
 //  A user may still be paying but not belong to an organisation.
 function list(req, res) {
   var data = req.query;
-  data.user = req.params.user;
+  data.user = req.user.sub;
   var requiredProperties = ['access_token'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
@@ -173,7 +158,7 @@ function list(req, res) {
     return res.send(orgs);
   }).catch(function (err) {
     err.message = 'Error getting billings for ' + data.user;
-    console.error(err.message);
+    console.error(err.body, err.message);
     return res.status(500).send(err);
   });
 }
@@ -227,33 +212,6 @@ function checkAccounts(req, res) {
   });
 }
 
-function cancel(req, res) {
-  var data = req.body;
-  data.user = req.params.user;
-  var requiredProperties = ['owner', 'user'];
-
-  if (hasMissingProperties(data, requiredProperties)) {
-    return res.status(400)
-      .send(msg('Missing payload: ' + requiredProperties.join(', ')));
-  }
-
-  findOneAccount({
-    owner: data.owner,
-    status: consts.active
-  }).then(function (account) {
-    return [account, PayPal.cancelRecurringPayment(account.paymentId)];
-  }).spread(function (account, paypalRes) {
-    account.status = consts.cancelled;
-    account.lastModifiedBy = data.user;
-    account.save();
-    console.log('Recurring Payment cancelled for ' + data.owner);
-    res.send(msg('Success. ' + account.paymentId + ' cancelled.'));
-  }).catch(function (err) {
-    err.message = 'Error cancelling recurring payment' + data.user + data.owner;
-    return res.status(500).send(err.message);
-  });
-}
-
 function abort(req, res) {
   var data = req.query;
   data.user = req.params.user;
@@ -270,10 +228,8 @@ function abort(req, res) {
 
 module.exports = {
   update: update,
-  create: create,
   execute: execute,
   list: list,
-  cancel: cancel,
   abort: abort,
   checkAccounts: checkAccounts,
   test: {

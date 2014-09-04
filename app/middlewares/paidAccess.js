@@ -4,16 +4,12 @@ var consts = require('../modules/consts');
 var config = require('../config');
 
 function paidAccess(req, res, next) {
-  if (req.github && !req.github.private) {
+  if (req.github && req.github.private === false) {
     return next();
   }
   var owner = req.params.owner;
-  var user = req.query.user || (req.body && req.body.user);
+  var user = req.user.sub;
 
-  if (!user) {
-    return res.status(400)
-      .send({message: 'Github `user` required in query or payload'});
-  }
   AccountsModel.findOne({
     owner: owner,
     status: consts.active
@@ -32,6 +28,7 @@ function paidAccess(req, res, next) {
       if (_.contains(account.activeUsers, user)) {
         return next();
       }
+
       //TODO: Need to flush activeUsers every month
       var planDetails = _.findWhere(config.paymentPlans,
         {plan: parseInt(account.plan)}

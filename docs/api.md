@@ -4,7 +4,7 @@ _Drywall API Specification_
 
 ## Endpoints
 [/:owner/:repository/coordinates](#coordinates) [GET/POST]
-[/:user/billings](#billings) [GET/POST/DELETE]
+[/billings](#billings) [GET/POST/DELETE]
 
 ## Authentication & Authorization
 
@@ -32,7 +32,7 @@ The following table summarizes the required (:white_check_mark:) and optional (:
  * __500__ if database actions fail
 
 ## Coordinates
-### `GET  /:owner/:repo/coordinates?user=jane`
+### `GET  /:owner/:repo/coordinates`
 ##### Sample Response
 Array of coordinates, empty array if no coordinates
 ```
@@ -44,7 +44,7 @@ Array of coordinates, empty array if no coordinates
 ]
 ```
 
-### `POST  /:owner/:repo/coordinates?user=jane`
+### `POST  /:owner/:repo/coordinates`
 ##### Sample Payload
 Object of one set of coordinates
 ```
@@ -56,8 +56,9 @@ Object of one set of coordinates
 ```
 
 ## Billings
-### `GET /:user/billings`
-List all github organisations and paid organisations belonging to this :user
+### `GET /billings`
+List all github organisations and paid organisations belonging to this user
+`user` is an Auth0 user id in the form `github|<7_numbers>` that is taken from the bearer token in the Authentication header.
 ##### Sample Response
 Array of organisations for a user
 ```
@@ -68,15 +69,18 @@ Array of organisations for a user
   {
     "owner": "cofounders",  // paid github organisation
     "plan": 2,  // plan number [1-8]
-    "paidBy": "drywallcfsg",  // payee
+    "paidBy": "drywallcfsg",  // payer
     "nextBillingDate": "2014-08-31T10:00:00.000Z"
   }
 ]
 ```
 
-### `POST /:user/billings`
-Creating a billing plan for a :user requires the following 3 steps.
-This route can be used to change a user's plan. If an account already exists, the user's old plan will first be cancelled and a new billing plan is created with the usual steps.
+### `POST /billings`
+Create or change a billing plan for a user.
+
+If an account already exists, the user's old plan will first be cancelled and a new billing plan is created. If the plan is 0, the current plan is cancelled.
+
+Creating a billing plan for a user requires the following 3 steps.
 
 1. Create a billing plan
 ##### Sample Payload

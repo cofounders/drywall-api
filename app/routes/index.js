@@ -32,15 +32,14 @@ function setup(app) {
     res.send('Hello from Drywall');
   });
   router.route('/:owner/:repo/coordinates')
-    .all(mid.authorize, mid.paidAccess, mid.authenticate)
+    .all(mid.authorize, mid.authenticate, mid.paidAccess)
     .get(coordinates.list)
     .post(coordinates.add);
 
-  router.route('/:user/billings')
+  router.route('/billings')
     .all(mid.authenticate)
     .get(billings.list)
-    .post(billings.update)
-    .delete(billings.cancel);
+    .post(billings.update);
 
   router.get('/billing/:user/execute', billings.execute);
   router.get('/billing/:user/abort', billings.abort);

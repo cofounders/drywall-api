@@ -12,9 +12,9 @@ function githubOrganisations(data) {
   });
 }
 
-// Get a user's list of organisations from /users/:user/orgs
+// Get a user's list of organisations from /user/orgs
 function userOrganisations(opts) {
-  var url = ApiUrl + path.join('users', opts.user, 'orgs') +
+  var url = ApiUrl + 'user/orgs' +
     '?access_token=' + opts.access_token;
   var moreHeaders = {};
   var orgs = {};

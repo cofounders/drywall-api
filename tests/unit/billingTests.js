@@ -16,7 +16,8 @@ describe('Billing tests', function () {
   var githubAccessToken = '';
 
   var app = express();
-  app.get('/:user/list', billings.list);
+  app.get('/:user/list',
+    mid.authenticate, billings.list);
   app.use(mid.errorHandler);
   var agent = supertest(app);
 
@@ -43,6 +44,7 @@ describe('Billing tests', function () {
   it('should list paid organisations for authorized user', function (done) {
     this.timeout(10000);
     agent.get('/drywallcfsg/list?access_token=' + githubAccessToken)
+      .set('Authorization', utils.bearerToken())
       .expect(200)
       .end(function (err, res) {
         assert.ok(res.body.length > 0);
