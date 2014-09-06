@@ -42,13 +42,20 @@ function msg(str) {
 
 function update(req, res) {
   var data = req.body;
-  data.user = req.user.sub;
+  data.userId = req.user.sub;
+  data.githubName = req.user.nickname;
 
   var requiredProperties = ['plan', 'owner'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
       .send(msg('Missing payload: ' + requiredProperties.join(', ')));
   }
+  githubApi.userOrganisations(req.user).then(function (githubOrgs) {
+    if (!_.contains(githubOrgs, data.owner)) {
+      return res.status(403)
+        .send(data.githubName + ' no longer has access to ' + data.owner);
+    }
+  });
   var invalidResults = invalidProperties(data);
   if (!_.isEmpty(invalidResults)) {
     return res.status(400).send(msg(invalidResults));
@@ -64,7 +71,7 @@ function update(req, res) {
     //TODO: update status to upgraded or downgraded
     if (account) { // cancelled, update status
       account.status = consts.cancelled;
-      account.lastModifiedBy = data.user;
+      account.lastModifiedBy = data.userId;
       console.log('Recurring Payment cancelled for ' + data.owner);
       account.save();
     }
@@ -143,13 +150,11 @@ function mergeLists(paidOrgs, githubOrgs) {
 //  A user may still be paying but not belong to an organisation.
 function list(req, res) {
   var data = req.query;
-  data.user = req.user.sub;
-  data.nickname = req.user.nickname; //github username
-  data.access_token = req.user.access_token; //github access token
+  data.githubName = req.user.sub;
 
-  githubApi.userOrganisations(data).then(function (githubOrgs) {
+  githubApi.userOrganisations(req.user).then(function (githubOrgs) {
     return [githubOrgs, findAccounts({'$or': [
-      {paidBy: data.user, status: consts.active},
+      {paidBy: data.githubName, status: consts.active},
       {owner: {'$in': githubOrgs}, status: consts.active}
     ]}, '-_id owner paidBy plan nextBillingDate')];
   }).spread(function (githubOrgs, paidOrgs) {
@@ -157,7 +162,7 @@ function list(req, res) {
     console.log(orgs);
     return res.send(orgs);
   }).catch(function (err) {
-    err.message = 'Error getting billings for ' + data.user;
+    err.message = 'Error getting billings for ' + data.githubName;
     console.error(err.body, err.message);
     return res.status(500).send(err);
   });

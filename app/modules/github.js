@@ -13,6 +13,7 @@ function githubOrganisations(data) {
 }
 
 // Get a user's list of organisations from /user/orgs
+//  Options object:  `nickname` and `access_token`
 function userOrganisations(opts) {
   var url = ApiUrl + 'user/orgs' +
     '?access_token=' + opts.access_token;
@@ -57,6 +58,7 @@ function githubPermissions(data) {
 }
 
 // Get a user's permission to a repo from /repos/:owner/:repo
+// Options object: `owner`, `repo`, `query`
 function userPermissions(opts) {
   var url = ApiUrl + path.join('repos', opts.owner, opts.repo) +
     '?' + opts.query;
