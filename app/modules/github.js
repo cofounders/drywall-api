@@ -2,7 +2,7 @@ var _ = require('underscore');
 var path = require('path');
 var Promise = require('bluebird');
 var NodeCache = require('node-cache');
-var cache = new NodeCache({checkperiod: 0});
+var cache = new NodeCache({checkperiod: 0, stdTTL: 172800}); //2days
 var prequest = require('../modules/prequest');
 var ApiUrl = 'https://api.github.com/';
 

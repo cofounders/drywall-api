@@ -22,6 +22,7 @@ function paidAccess(req, res, next) {
     } else if (_.isEmpty(account)) {
       var error = new Error('No paid account found for ' + owner);
       error.statusCode = 402;
+      error.details = {plan: 0};
       console.log(error.message);
       return next(error);
     } else {

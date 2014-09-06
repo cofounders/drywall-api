@@ -18,7 +18,7 @@ function authorize(req, res, next) {
     req.github = permissions;
     return next();
   }).catch(function (err) {
-    err.message = 'Error getting github permissions';
+    err.message = 'Cannot get github permissions. ' + opts.query;
     console.error(err.message);
     return next(err);
   });
