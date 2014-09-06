@@ -168,8 +168,8 @@ function list(req, res) {
 }
 
 function checkAndUpdateAccount(account) {
-  return function() {
-    PayPal.listRecurringPayment(account.paymentId).then(function (payment) {
+  return PayPal.listRecurringPayment(account.paymentId)
+    .then(function (payment) {
       if (account.status !== payment.STATUS) {
         console.error('Error! Account and PayPal status differ');
         console.error(account, payment);
@@ -198,17 +198,14 @@ function checkAndUpdateAccount(account) {
         }
       });
     });
-  };
 }
 
 function checkAccounts(req, res) {
-  findAccounts({}).then(function (accts) {
-    accts.map(function (account) {
+  findAccounts({status: consts.active}).then(function (accts) {
+    var arr = accts.map(function (account) {
       return checkAndUpdateAccount(account);
-    }).forEach(function (func) {
-      func();
     });
-    return res.send(msg('Accounts updated!'));
+    return res.send('Billings. Checking ' + accts.length + ' active accounts');
   }).catch(function (err) {
     err.message = 'Error: Failed to get all Accounts from db';
     console.error(err.message);
