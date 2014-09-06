@@ -101,11 +101,10 @@ function update(req, res) {
 
 function execute(req, res) {
   var data = req.query;
-  data.user = req.params.user;
   data.nextBillingDate = moment().add(12, 'hours').utc().format();
   console.log('Execute billing for ' +
-    data.user, data.owner, data.nextBillingDate);
-  var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
+    data.userId, data.owner, data.nextBillingDate);
+  var requiredProperties = ['token', 'plan', 'owner', 'userId', 'url'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
       .send(msg('Missing payload: ' + requiredProperties.join(', ')));
@@ -113,8 +112,8 @@ function execute(req, res) {
 
   PayPal.createRecurringPayment(data).then(function (profile) {
     data.paymentId = profile.PROFILEID;
-    data.paidBy = data.user;
-    data.activeUsers = [data.user];
+    data.paidBy = data.userId;
+    data.activeUsers = [data.userId];
     data.nextBillingDate = data.nextBillingDate;
     var account = new AccountsModel(data);
     account.save(function (err) {
@@ -219,8 +218,7 @@ function checkAccounts(req, res) {
 
 function abort(req, res) {
   var data = req.query;
-  data.user = req.params.user;
-  var requiredProperties = ['token', 'plan', 'owner', 'user', 'url'];
+  var requiredProperties = ['token', 'plan', 'owner', 'userId', 'url'];
   if (hasMissingProperties(data, requiredProperties)) {
     return res.status(400)
       .send('Missing payload: ' + requiredProperties.join(', '));

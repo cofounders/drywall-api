@@ -1,6 +1,7 @@
 var prequest = require('../../app/modules/prequest');
 var qs = require('querystring');
 var moment = require('moment');
+var path = require('path');
 var stringFormat = require('string-format');
 var _ = require('underscore');
 var Promise = require('bluebird');
@@ -31,6 +32,11 @@ PayPal.prototype.paymentPlanOptions = function(planId) {
   );
 };
 
+PayPal.prototype.constructUrl = function(type, nextUrl, query) {
+  return '{0}/{1}?url={2}&{3}'.format(
+    this.options.internalUrl, type, nextUrl, query);
+};
+
 PayPal.prototype.createBillingPlan = function(data) {
   var that = this;
   var options = this.options;
@@ -40,16 +46,15 @@ PayPal.prototype.createBillingPlan = function(data) {
   return new Promise(function (resolve, reject) {
     var query = qs.stringify({
       plan: data.plan,
-      owner: data.owner
+      owner: data.owner,
+      userId: data.userId
     });
     prequest(options.nvpApiUrl, {
       method: 'POST',
       body: that.credQuery + qs.stringify({
         METHOD: 'SetExpressCheckout',
-        RETURNURL: '{0}/{1}/execute?url={2}&{3}'.format(
-          options.internalUrl, data.user, data.returnUrl, query),
-        CANCELURL: '{0}/{1}/abort?url={2}&{3}'.format(
-          options.internalUrl, data.user, data.cancelUrl, query),
+        RETURNURL: that.constructUrl('execute', data.returnUrl, query),
+        CANCELURL: that.constructUrl('abort', data.cancelUrl, query),
         PAYMENTREQUEST_0_AMT: planOpts.amount,
         PAYMENTREQUEST_0_CURRENCYCODE: 'USD',
         PAYMENTREQUEST_0_PAYMENTACTION: 'Sale',

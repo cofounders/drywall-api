@@ -41,8 +41,8 @@ function setup(app) {
     .get(billings.list)
     .post(billings.update);
 
-  router.get('/billing/:user/execute', billings.execute);
-  router.get('/billing/:user/abort', billings.abort);
+  router.get('/billing/execute', billings.execute);
+  router.get('/billing/abort', billings.abort);
   router.get('/billing/check', billings.checkAccounts);
 
   router.post('/paypal_callback', ipnListener);
