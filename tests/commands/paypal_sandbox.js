@@ -1,10 +1,10 @@
 var paypal_api = require('paypal-rest-sdk');
-var config = require('../../app/config');
-var prequest = require('../../app/modules/prequest');
-var paypalMode = config.paypal.mode;
+var prequest = require('prequest');
 var url = require('url');
 var moment = require('moment');
 var basicAuth = require('basic-auth-header');
+var config = require('../../app/config');
+var paypalMode = config.paypal.mode;
 
 paypal_api.configure({
   'mode': 'sandbox', //sandbox or live

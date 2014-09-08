@@ -1,10 +1,10 @@
-var config = require('../../app/config');
-var prequest = require('../../app/modules/prequest');
-var mode = config.paypal.mode;
-var paypalConfig = config.paypal[mode];
 var qs = require('querystring');
 var moment = require('moment');
 var stringFormat = require('string-format');
+var prequest = require('prequest');
+var config = require('../../app/config');
+var mode = config.paypal.mode;
+var paypalConfig = config.paypal[mode];
 
 function createBillingPlan(options) {
   prequest(paypalConfig.nvpApiUrl, {

@@ -1,4 +1,4 @@
-var prequest = require('../../app/modules/prequest');
+var prequest = require('prequest');
 var qs = require('querystring');
 var moment = require('moment');
 var path = require('path');

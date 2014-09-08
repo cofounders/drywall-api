@@ -1,8 +1,8 @@
 var assert = require('chai').assert;
+var mongoose = require('mongoose');
 var config = require('../../app/config');
 var database = require('../../app/modules/database');
 var PaymentPlanModel = require('../../app/models/paymentplans');
-var mongoose = require('mongoose');
 
 describe('Payment Plan collection test', function() {
   before(function (done) {

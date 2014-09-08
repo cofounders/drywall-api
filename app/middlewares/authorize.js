@@ -1,6 +1,6 @@
 var path = require('path');
 var qs = require('querystring');
-var prequest = require('../modules/prequest');
+var prequest = require('prequest');
 var config = require('../config');
 var githubApi = require('../modules/github');
 

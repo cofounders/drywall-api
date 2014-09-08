@@ -1,4 +1,4 @@
-var prequest = require('bluebird').promisify(require('request'));
+var prequest = require('prequest');
 var jwt = require('jsonwebtoken');
 var expressjwt = require('express-jwt');
 var config = require('../../app/config');
@@ -13,30 +13,32 @@ var token = jwt.sign(
 );
 var baseUrl = 'http://localhost:' + config.port;
 
-prequest({
-  url: baseUrl + '/api/ping',
-  headers: {
-    'Authorization': 'Bearer ' + token
-  }
-}).spread(function (response, data) {
-  console.log(data);
-}).catch(function(err) {
-  console.error('Could not connect');
-});
+function testapi() {
+  prequest({
+    url: baseUrl + '/api/ping',
+    headers: {
+      'Authorization': 'Bearer ' + token
+    }
+  }).then(function (data) {
+    console.log(data);
+  }).catch(function(err) {
+    console.error('Could not connect');
+  });
+}
 
 function postCoordinates() {
   prequest({
     method: 'POST',
     url: baseUrl + '/cofounders/drywall-web/coordinates' +
           '?x=10&y=20&number=70'
-  }).spread(function (response, data) {
+  }).then(function (data) {
     console.log(data);
   }).catch(errFunc);
 }
 
 function getCoordinates() {
-  prequest(baseUrl + '/webuildsg/live/coordinates')
-  .spread(function (response, data) {
+  prequest(baseUrl + '/webuildsg/webuild/coordinates')
+  .then(function (data) {
     console.log(data);
   }).catch(errFunc);
 }
@@ -50,7 +52,7 @@ function updateCoordinates() {
       'y': 100,
       'number': 72
     }
-  }).spread(function (response, data) {
+  }).then(function (data) {
     console.log(data);
   }).catch(errFunc);
 }

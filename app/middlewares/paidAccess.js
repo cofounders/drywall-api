@@ -3,6 +3,17 @@ var AccountsModel = require('../models/accounts');
 var consts = require('../modules/consts');
 var config = require('../config');
 
+function errorObj(code, message, details) {
+  var error = new Error(message);
+  error.statusCode = code;
+  console.error(error.message);
+  if (details) {
+    error.details = details;
+  }
+
+  return error;
+}
+
 function paidAccess(req, res, next) {
   if (req.github && req.github.private === false) {
     return next();
@@ -20,11 +31,8 @@ function paidAccess(req, res, next) {
       console.error(err.message);
       return next(err);
     } else if (_.isEmpty(account)) {
-      var error = new Error('No paid account found for ' + owner);
-      error.statusCode = 402;
-      error.details = {plan: 0};
-      console.log(error.message);
-      return next(error);
+      return next(errorObj(402,
+        'No paid account found for ' + owner, {plan: 0}));
     } else {
       if (_.contains(account.activeUsers, user)) {
         return next();
@@ -35,13 +43,12 @@ function paidAccess(req, res, next) {
         {plan: parseInt(account.plan)}
       );
 
-      if (planDetails &&
-        account.activeUsers.length >= planDetails.users) {
-        var error1 = new Error('Max active users reached');
-        error1.details = planDetails;
-        error1.statusCode = 402;
-        console.log(error1.message, error1.details, user, account.activeUsers);
-        return next(error1);
+      if (!planDetails) {
+        return next(errorObj(500,
+          'Error! Cannot find details for plan ' + account.plan));
+      } else if (account.activeUsers.length >= planDetails.users) {
+        console.log(planDetails, user, account.activeUsers);
+        return next(errorObj(402, 'Max active users reached', planDetails));
       } else {
         account.activeUsers.push(user);
         account.save();

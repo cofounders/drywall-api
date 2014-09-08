@@ -2,8 +2,8 @@
 
 var expressjwt = require('express-jwt');
 var jwt = require('jsonwebtoken');
-var config = require('../../app/config');
 var assert = require('assert');
+var config = require('../../app/config');
 
 describe('JWT token tests', function () {
   var req = {};
