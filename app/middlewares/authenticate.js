@@ -16,7 +16,7 @@ function authenticate(req, res, next) {
       return next();
     } else {
       if (err.message === 'jwt expired') {
-        err.status = 419;
+        err.statusCode = 419;
       }
       console.error(err.status, err.message);
       return next(err);
