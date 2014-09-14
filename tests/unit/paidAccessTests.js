@@ -37,9 +37,11 @@ describe('Paid Access tests', function () {
       db: connectDb(config.db.uri),
       token: utils.bearerToken()
     }).then(function (results) {
-      db.loadPaymentPlans(config);
+      db.loadPaymentPlans().then(function (plans) {
+        config.paymentPlans = plans;
+        done();
+      });
       BEARERTOKEN = results.token;
-      done();
     }).catch(function (err) {
       done(err);
     });

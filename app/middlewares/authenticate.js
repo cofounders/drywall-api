@@ -15,6 +15,9 @@ function authenticate(req, res, next) {
       console.log(req.user.nickname, req.user.sub, 'logged in');
       return next();
     } else {
+      if (err.message === 'jwt expired') {
+        err.status = 419;
+      }
       console.error(err.status, err.message);
       return next(err);
     }

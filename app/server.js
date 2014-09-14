@@ -30,7 +30,9 @@ db.connect(dbUrl, function(err) {
     console.log('Not connected to a database');
     process.exit(1);
   } else {
-    db.loadPaymentPlans(config);
+    db.loadPaymentPlans().then(function (plans) {
+      config.paymentPlans = plans;
+    });
     routes.setup(app);
     app.listen(config.port);
     console.log('Server up at port ' + config.port);

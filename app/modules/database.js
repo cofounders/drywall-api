@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var PaymentPlansModel = require('../models/paymentplans');
+var Promise = require('bluebird');
 
 function log() {
   console.log.apply(this, Array.prototype.slice.call(arguments));
@@ -20,20 +21,21 @@ function connect(dbUrl, cb) {
   });
 }
 
-function loadPaymentPlans(config) {
-  PaymentPlansModel
-    .find({})
-    .select('-timestamp -_id')
-    .exec(function (err, plans) {
-      if (err) {
-        console.error('Error loading payment plans');
-        throw err;
-      } else {
-        console.log('Loaded ' + plans.length + ' payment plans');
-        config.paymentPlans = plans;
-      }
-    }
-  );
+function loadPaymentPlans() {
+  return new Promise(function (resolve, reject) {
+    PaymentPlansModel
+      .find({})
+      .select('-timestamp -_id')
+      .exec(function (err, plans) {
+        if (err) {
+          console.error('Error loading payment plans');
+          reject(err);
+        } else {
+          console.log('Loaded ' + plans.length + ' payment plans');
+          resolve(plans);
+        }
+      });
+  });
 }
 
 module.exports = {
