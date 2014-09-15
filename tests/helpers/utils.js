@@ -44,22 +44,18 @@ function bearerToken() {
   var audience = config.auth0.clientId;
   var id = 'github|8487474';
 
-  return new Promise(function(resolve, reject) {
-    testerAccessToken(id).then(function (token) {
-      resolve('Bearer ' + jwt.sign(
-        {
-          identities: [{
-            access_token: token,
-            provider: 'github'
-          }],
-          iss: 'https://drywall.auth0.com/',
-          sub: id,
-          nickname: 'drywallcfsg'
-        },
-        secret,
-        {'audience': audience}
-      ));
-    }).catch(reject);
+  return testerAccessToken(id).then(function (token) {
+    return 'Bearer ' + jwt.sign({
+        identities: [{
+          access_token: token,
+          provider: 'github'
+        }],
+        iss: 'https://drywall.auth0.com/',
+        sub: id,
+        nickname: 'drywallcfsg'
+      },
+      secret, {'audience': audience}
+    );
   });
 }
 

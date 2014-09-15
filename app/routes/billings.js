@@ -14,6 +14,7 @@ var PayPal = new paypalApi(ppConfig);
 var AccountsModel = require('../models/accounts');
 var findAccounts = Promise.promisify(AccountsModel.find, AccountsModel);
 var findOneAccount = Promise.promisify(AccountsModel.findOne, AccountsModel);
+var dbUtils = require('../modules/dbUtils');
 
 function hasMissingProperties(data, arr) {
   return arr.some(function (elem) {
@@ -89,7 +90,7 @@ function update(req, res) {
   }
 
   findOneAccount({
-    owner: data.owner.toLowerCase(),
+    owner: dbUtils.caseinsensitiveRegex(data.owner),
     status: consts.active
   }).then(cancelPayPalAccount)
     .spread(updateDatabaseAccount)

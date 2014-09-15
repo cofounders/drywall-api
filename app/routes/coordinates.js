@@ -1,5 +1,6 @@
 var _ = require('underscore');
 var CoordinatesModel = require('../models/coordinates');
+var dbUtils = require('../modules/dbUtils');
 
 function modelValues(obj) {
   var attributes = {};
@@ -15,12 +16,12 @@ function modelValues(obj) {
 
 function list(req, res) {
   console.log('GET: ', req.params);
-  var owner = req.params.owner.toLowerCase();
-  var repo = req.params.repo.toLowerCase();
+  var owner = req.params.owner;
+  var repo = req.params.repo;
 
   CoordinatesModel.find({
-    repo: repo,
-    owner: owner
+    owner: dbUtils.caseinsensitiveRegex(owner),
+    repo: dbUtils.caseinsensitiveRegex(repo)
   }).select('-_id -timestamp'
   ).exec(function (err, coordinates) {
     if (!err) {
@@ -39,8 +40,8 @@ function create(req, res) {
   var repo = req.params.repo;
 
   var values = modelValues(_.extend(req.query, {
-    owner: owner,
-    repo: repo
+    owner: dbUtils.caseinsensitiveRegex(owner),
+    repo: dbUtils.caseinsensitiveRegex(repo)
   }));
 
   var coordinates = new CoordinatesModel(values);
@@ -65,11 +66,11 @@ function addUpdate(req, res) {
     return res.status(400)
        .send('Missing required data `x`,`y` or `number`');
   }
-  var owner = req.params.owner.toLowerCase();
-  var repo = req.params.repo.toLowerCase();
+  var owner = req.params.owner;
+  var repo = req.params.repo;
   var queryVals = {
-    owner: owner,
-    repo: repo,
+    owner: dbUtils.caseinsensitiveRegex(owner),
+    repo: dbUtils.caseinsensitiveRegex(repo),
     number: req.body.number
   };
   var updateVals = {

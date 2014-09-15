@@ -8,7 +8,7 @@ var ApiUrl = 'https://api.github.com/';
 
 function githubOrganisations(data) {
   return _.map(data, function(obj) {
-    return obj.login.toLowerCase();
+    return obj.login;
   });
 }
 

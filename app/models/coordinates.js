@@ -5,8 +5,8 @@ var CoordinateSchema = new mongoose.Schema({
   x: {type: Number, required: true},
   y: {type: Number, required: true},
   z: Number,
-  owner: {type: String, lowercase: true},
-  repo: {type: String, lowercase: true},
+  owner: String,
+  repo: String,
   timestamp: {
     type: Date,
     default: Date.now
