@@ -47,7 +47,7 @@ describe('Billing tests', function () {
       .set('Authorization', BEARERTOKEN)
       .expect(200)
       .end(function (err, res) {
-        assert.ok(res.body.length > 0);
+        assert.isTrue(res.body.length > 0);
         assert.isArray(res.body, 'list of billed organisations');
         return err ? done(err) : done();
       });
