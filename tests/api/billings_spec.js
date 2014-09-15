@@ -8,7 +8,7 @@ utils.bearerToken().then(function(token) {
     .expectStatus(200)
     .expectJSONLength(4)
     .expectJSONTypes('?', {
-      owner: String,
+      owner: 'superdrywall',
       paidBy: String,
       plan: Number,
       nextBillingDate: String
