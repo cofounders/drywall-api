@@ -74,6 +74,8 @@ function addUpdate(req, res) {
     number: req.body.number
   };
   var updateVals = {
+    owner: owner,
+    repo: repo,
     x: req.body.x,
     y: req.body.y,
     timestamp: new Date().toISOString()
