@@ -89,7 +89,7 @@ function update(req, res) {
   }
 
   findOneAccount({
-    owner: data.owner,
+    owner: data.owner.toLowerCase(),
     status: consts.active
   }).then(cancelPayPalAccount)
     .spread(updateDatabaseAccount)
@@ -149,11 +149,12 @@ function mergeLists(paidOrgs, githubOrgs) {
 //  A user may still be paying but not belong to an organisation.
 function list(req, res) {
   var data = req.query;
-  data.githubName = req.user.sub;
+  data.userId = req.user.sub;
+  data.githubName = req.user.nickname;
 
   githubApi.userOrganisations(req.user).then(function (githubOrgs) {
     return [githubOrgs, findAccounts({'$or': [
-      {paidBy: data.githubName, status: consts.active},
+      {paidBy: data.userId, status: consts.active},
       {owner: {'$in': githubOrgs}, status: consts.active}
     ]}, '-_id owner paidBy plan nextBillingDate')];
   }).spread(function (githubOrgs, paidOrgs) {

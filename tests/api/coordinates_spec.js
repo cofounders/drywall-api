@@ -8,16 +8,16 @@ var coordinatesUrl = utils.localhost(
   path.join(owner, repo, 'coordinates')
 );
 
-frisby.create('Test getting coordinates from public repo')
+frisby.create('Test getting coordinates from public repo ignorecase')
   .get(utils.localhost(
-    path.join('alyssaq', 'egg', 'coordinates')
+    path.join('Webuildsg', 'Webuild', 'coordinates')
   ))
   .expectStatus(200)
-  // .expectJSONTypes('?', {
-  //   number: Number,
-  //   x: Number,
-  //   y: Number
-  // })
+  .expectJSONTypes('?', {
+    number: Number,
+    x: Number,
+    y: Number
+  })
 .toss();
 
 // frisby.create('Get Auth0 access token')

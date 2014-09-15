@@ -3,7 +3,7 @@ var consts = require('../modules/consts');
 
 var AccountSchema = new mongoose.Schema({
   paymentId: {type: String, required: true, unique: true},
-  owner: {type: String, required: true},
+  owner: {type: String, lowercase: true, required: true},
   plan: Number,
   paidBy: String,
   lastModifiedBy: String,

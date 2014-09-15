@@ -8,12 +8,12 @@ var ApiUrl = 'https://api.github.com/';
 
 function githubOrganisations(data) {
   return _.map(data, function(obj) {
-    return obj.login;
+    return obj.login.toLowerCase();
   });
 }
 
 // Get a user's list of organisations from /user/orgs
-//  Options object:  `nickname` and `access_token`
+//  Options github object: nickname` and `access_token`
 function userOrganisations(opts) {
   var url = ApiUrl + 'user/orgs' +
     '?access_token=' + opts.access_token;

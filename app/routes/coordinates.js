@@ -15,8 +15,8 @@ function modelValues(obj) {
 
 function list(req, res) {
   console.log('GET: ', req.params);
-  var owner = req.params.owner;
-  var repo = req.params.repo;
+  var owner = req.params.owner.toLowerCase();
+  var repo = req.params.repo.toLowerCase();
 
   CoordinatesModel.find({
     repo: repo,
@@ -65,8 +65,8 @@ function addUpdate(req, res) {
     return res.status(400)
        .send('Missing required data `x`,`y` or `number`');
   }
-  var owner = req.params.owner;
-  var repo = req.params.repo;
+  var owner = req.params.owner.toLowerCase();
+  var repo = req.params.repo.toLowerCase();
   var queryVals = {
     owner: owner,
     repo: repo,
