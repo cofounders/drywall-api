@@ -58,13 +58,12 @@ describe('Paid Access tests', function () {
       });
   });
 
-  it('should pass if organisation has been paid', function (done) {
+  it('should pass if paid organisation (case-insensitive)', function (done) {
     this.timeout(5000);
-    agent.get('/alyssaquek/void')
+    agent.get('/AlyssaQuek/void')
       .set('Authorization', BEARERTOKEN)
       .expect(200)
       .end(function (err, res) {
-        console.log(res.body);
         return err ? done(err) : done();
       });
   });

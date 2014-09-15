@@ -2,6 +2,7 @@ var _ = require('underscore');
 var AccountsModel = require('../models/accounts');
 var consts = require('../modules/consts');
 var config = require('../config');
+var dbUtils = require('../modules/dbUtils');
 
 function errorObj(code, message, details) {
   var error = new Error(message);
@@ -22,7 +23,7 @@ function paidAccess(req, res, next) {
   var user = req.user.sub;
 
   AccountsModel.findOne({
-    owner: owner,
+    owner: dbUtils.caseinsensitiveRegex(owner),
     status: consts.active
   }, function (err, account) {
     if (err) {
