@@ -28,7 +28,6 @@ console.log('Connecting to', dbUrl);
 db.connect(dbUrl, function(err) {
   if (err) {
     console.log('Not connected to a database');
-    process.exit(1);
   } else {
     db.loadPaymentPlans().then(function (plans) {
       config.paymentPlans = plans;
