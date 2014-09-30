@@ -9,14 +9,10 @@ var options = {
   }
 };
 
-function log() {
-  console.log.apply(this, Array.prototype.slice.call(arguments));
-}
-
 function connect(dbUrl, cb) {
   mongoose.connect(dbUrl, options, function (err) {
     if (err) {
-      log('mongo connection error - retry ' + retryNum + ':', err);
+      console.warn('mongo connection error - retry ' + retryNum + ':', err);
       if (retryNum < maxRetries) {
         retryNum = retryNum + 1;
         setTimeout(function() {
@@ -27,7 +23,7 @@ function connect(dbUrl, cb) {
       }
     } else {
       retryNum = 1;
-      log('mongo connection opened at:', dbUrl);
+      console.log('mongo connection opened at:', dbUrl);
       cb(null);
     }
   });
