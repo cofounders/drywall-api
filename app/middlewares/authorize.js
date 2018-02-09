@@ -8,8 +8,13 @@ function authorize(req, res, next) {
   console.log('Authorizing github ' + req.path);
 
   var opts = req.params;
-  opts.query = req.user ? 'access_token=' + req.user.access_token :
-    qs.stringify({
+  console.log(!!req.user, req.headers)
+  opts.query = req.user ?
+    'access_token=' + (
+      req.user.access_token ||
+      req.headers['github-access-token']
+    )
+    : qs.stringify({
       client_id: config.github.clientId,
       client_secret: config.github.secret
     });

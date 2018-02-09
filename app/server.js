@@ -1,4 +1,3 @@
-require('newrelic');
 var bodyParser = require('body-parser');
 var express = require('express');
 var compression = require('compression');
@@ -20,14 +19,15 @@ app.use(compression());
 app.use(cors({
   origin: '*',
   methods: ['GET, POST, DELETE, OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'GitHub-Access-Token'],
   maxAge: 86400
 }));
 
-console.log('Connecting to', dbUrl);
+console.log('Connecting to MongoDB');
 db.connect(dbUrl, function(err) {
   if (err) {
     console.log('Not connected to a database');
+    process.exit(1);
   } else {
     db.loadPaymentPlans().then(function (plans) {
       config.paymentPlans = plans;

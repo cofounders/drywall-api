@@ -63,7 +63,7 @@ function addUpdate(req, res) {
   if (!req.body.hasOwnProperty('number') ||
       !req.body.hasOwnProperty('x') ||
       !req.body.hasOwnProperty('y')) {
-    return res.status(400)
+    return res.status(404)
        .send('Missing required data `x`,`y` or `number`');
   }
   var owner = req.params.owner;
