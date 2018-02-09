@@ -1,0 +1,36 @@
+{
+  "name": "drywall-api",
+  "scripts": {
+  },
+  "env": {
+    "DRYWALL_AUTH0_CLIENT_ID": {
+      "required": true
+    },
+    "DRYWALL_AUTH0_CLIENT_SECRET": {
+      "required": true
+    },
+    "DRYWALL_MONGOHQ_URI": {
+      "required": true
+    },
+    "DRYWALL_PAYPAL_SANDBOX_PASSWORD": {
+      "required": true
+    },
+    "DRYWALL_PAYPAL_SANDBOX_SIGNATURE": {
+      "required": true
+    },
+    "DRYWALL_PAYPAL_SANDBOX_USER": {
+      "required": true
+    },
+    "GITHUB_CLIENT_ID": {
+      "required": true
+    },
+    "GITHUB_SECRET": {
+      "required": true
+    }
+  },
+  "addons": [
+    "papertrail",
+    "newrelic",
+    "logentries"
+  ]
+}
